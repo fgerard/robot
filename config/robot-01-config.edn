@@ -1,0 +1,137 @@
+{:robot.core.state/system
+ {}
+
+ :robot.util.selenium-common/driver
+ {:firefox {:driver "./resources/selenium_drivers/geckodriver" :arguments [] }
+  :chrome {:driver "./resources/selenium_drivers/chromedriver" :arguments [] } }
+
+ :keyval.leveldb/factory
+ {:db-path "./leveldb"}
+
+  :robot.web/rest-server
+  {:https-port 4050
+   :server-key "resources/security/robot.key"           ; innovacion-mx.key
+   ;:server-key-pass
+   :server-crt "resources/security/robot.crt"          ;innovacion-mx.crt
+   :http-port 8050
+   :handler #ig/ref :robot/handlers
+   }
+
+ [:robot.web.rest-handle/handlers :robot/handlers]
+ [
+  [["login"] {{:request-method :post} #ig/ref :rest-handle/login}]
+  [["operations"] {{:request-method :get} #ig/ref :rest-handle/get-operations}]
+  [["operation"] {{:request-method :get} #ig/ref :rest-handle/get-operation}]
+  [["operation/" :operation] {{:request-method :get} #ig/ref :rest-handle/get-operation}]
+
+  [["applications"] {{:request-method :get} #ig/ref :rest-handle/get-applications}]
+  [["application/" :application] {{:request-method :get} #ig/ref :rest-handle/get-application}]
+  [[:cmd "/" :app-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+  [["robot-client"] {{:request-method :get} #ig/ref :ws-handle/handshake}]
+  [["robot-client"] {{:request-method :post} #ig/ref :ws-handle/post}]
+  [[:cmd "/" :app-id "/" :inst-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+  [["users"] {{:request-method :get} #ig/ref :users/get}]
+  [["users"] {{:request-method :put} #ig/ref :users/put}]
+  [true #ig/ref :rest-handle/default]
+  ]
+
+ [:robot.web.rest-handle/login :rest-handle/login]
+ {:db #ig/ref :keyval.leveldb/factory}
+
+ [:robot.web.rest-handle/load-users :users/get]
+ {:db #ig/ref :keyval.leveldb/factory}
+
+ [:robot.web.rest-handle/save-users :users/put]
+ {:db #ig/ref :keyval.leveldb/factory}
+
+ [:robot.web.rest-handle/get-operation :rest-handle/get-operation]
+ {:operations #ig/ref :essentials/operations
+  }
+
+  [:robot.web.rest-handle/get-operations :rest-handle/get-operations]
+  {:operations #ig/ref :essentials/operations
+   }
+
+ [:robot.web.rest-handle/get-applications :rest-handle/get-applications]
+ {:robot-info #ig/ref :essentials/robot-info
+  }
+
+ [:robot.web.rest-handle/get-application :rest-handle/get-application]
+ {:app-info #ig/ref :essentials/app-info
+  }
+
+ [:robot.web.ws-handle/manager :ws-handle/mananger]
+ {}
+
+ [:robot.web.ws-handle/handshake :ws-handle/handshake]
+ {:manager #ig/ref :ws-handle/mananger}
+
+ [:robot.web.ws-handle/post :ws-handle/post]
+ {:manager #ig/ref :ws-handle/mananger}
+
+ [:robot.web.rest-handle/robot :rest-handle/robot]
+ {:robot-controller #ig/ref :essentials/robot-controller}
+
+ [:robot.web.rest-handle/default :rest-handle/default]
+ {}
+
+ ;[:robot.web.ws-handle/robot-follower :ws-handle/robot-follower]
+ ;{:robot-controller #ig/ref :essentials/robot-controller}
+
+
+ [:robot.core.essentials/operations :essentials/operations]
+ {:sleep #ig/ref :operations/sleep-opr-factory
+  :socket #ig/ref :operations/socket-opr-factory
+  :date-time #ig/ref :operations/date-time-opr-factory
+  :http #ig/ref :operations/http-opr-factory
+  :switch-good #ig/ref :operations/switch-good-opr-factory
+  :switch-bad #ig/ref :operations/switch-bad-opr-factory
+  :mail-send #ig/ref :operations/send-mail-opr-factory
+  :js #ig/ref :operations/js-opr-factory
+  :clojure #ig/ref :operations/clojure-opr-factory
+  :browser #ig/ref :operations/selenium-opr-factory
+  :twitter #ig/ref :operations/twitter-opr-factory
+  :ibm3270 #ig/ref :operations/jagacy3270-opr-factory
+  :telegram-send #ig/ref :operations/telegram-opr-factory
+  :telegram-get #ig/ref :operations/cmd-telegram-opr-factory
+  :mail-get #ig/ref :operations/get-mail-opr-factory
+  :os-cmd #ig/ref :operations/os-cmd-opr-factory
+  :sql #ig/ref :operations/sql-read-opr-factory
+  :play-sound #ig/ref :operations/play-sound-opr-factory
+  :selfie #ig/ref :operations/selfie-opr-factory
+  :slack-send #ig/ref :operations/slack-opr-factory
+  :caudal #ig/ref :operations/caudal-opr-factory
+  :ldap #ig/ref :operations/ldap-opr-factory
+  :mq #ig/ref :operations/mq-opr-factory
+  :gsheet-send #ig/ref :operations/gsheet-appender-opr-factory
+
+  }
+
+ [:robot.core.essentials/flow-factory :essentials/flow-factory]
+ {:delay 1000}
+
+ [:robot.core.essentials/state-factory :essentials/state-factory]
+ {}
+
+ [:robot.core.essentials/app-controller :essentials/app-controller]
+ {:operations #ig/ref :essentials/operations
+  :state-factory #ig/ref :essentials/state-factory
+  :flow-factory #ig/ref :essentials/flow-factory
+  :db #ig/ref :keyval.leveldb/factory}
+
+ [:robot.core.essentials/robot-controller :essentials/robot-controller]
+ {:operations #ig/ref :essentials/operations
+  :app-controller #ig/ref :essentials/app-controller
+  :manager #ig/ref :ws-handle/mananger}
+
+ [:robot.core.essentials/robot-info :essentials/robot-info]
+ {:robot-controller #ig/ref :essentials/robot-controller
+  :db #ig/ref :keyval.leveldb/factory
+  }
+
+ [:robot.core.essentials/app-info :essentials/app-info]
+ {:robot-controller #ig/ref :essentials/robot-controller
+  :db #ig/ref :keyval.leveldb/factory
+  }
+
+ }

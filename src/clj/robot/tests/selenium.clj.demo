@@ -1,0 +1,71 @@
+(ns robot.tests.wstest
+  (:require [clojure.xml :as X]
+            [clojure.zip :as Z])
+  (:import (org.openqa.selenium WebDriver)
+           (org.openqa.selenium.firefox FirefoxDriver)))
+
+(def url "http://www.google.com")
+
+(System/setProperty "webdriver.gecko.driver"
+                    "./bingecko/geckodriver")
+
+(let [driver (org.openqa.selenium.firefox.FirefoxDriver.)
+      ]
+  (-> driver
+      (.navigate)
+      (.to url)))
+
+(def navigate
+  (let [xml-str (slurp "/Users/fgerard/Documents/maps.xml")
+        xml (X/parse "/Users/fgerard/Documents/maps.xml")]
+    xml))
+
+(def nav [{:cmd "to"
+           :val ["http://wwww.google.com"]}
+          {:cmd "open"
+           :val ["/maps/@19.3660316,-99.1843784,15z"]}
+          {:cmd "type"
+           :val ["id=searchboxinput" "interware"]}])
+
+(defn create-firefox []
+  (org.openqa.selenium.firefox.FirefoxDriver.))
+
+(defmulti exec-cmd (fn [_ {:keys [cmd]}] cmd))
+
+(defmethod exec-cmd "to" [driver {:keys [cmd val]}]
+  (-> driver
+      .navigate
+      (.to (first val))))
+
+(defmethod exec-cmd "open" [driver {:keys [cmd val]}]
+  (-> driver
+      (.open (first val))))
+
+(defmethod exec-cmd "type" [driver {:keys [cmd val]}]
+  (-> driver
+      (.type (first val) (second val))))
+
+(defn nav-reducer [[driver result] [step command]]
+  (let [r (exec-cmd driver command)]
+    [driver (conj result [step r])]))
+
+(defn doit [driver nav]
+  (reduce nav-reducer
+          [driver []]
+          (map-indexed (fn [step comando]
+                         [step comando]) nav))
+
+  )
+
+(comment
+ (require '[clojure.xml :as X])
+ (def drv (create-firefox))
+ (def nav [{:cmd "to"
+            :val ["http://wwww.google.com"]}
+           ;{:cmd "open"
+            ;:val ["/maps/@19.3660316,-99.1843784,15z"]}
+           ;{:cmd "type"
+            ;:val ["id=searchboxinput" "interware"]}
+           ])
+ (doit drv nav)
+ )

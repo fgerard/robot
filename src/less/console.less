@@ -1,0 +1,267 @@
+@base-color: #4EA9C3;
+@base-bad-color: #FF0000;
+@base-bad-font-color: #FA0000;
+@sub-color: #97D0E5;
+@filter-font-color: #848484;
+.console-container {
+    .header-bar {
+        .console-header {
+            height: 2em;
+            color: #ffffff;
+            margin-right: 0.1em;
+            background-color: @sub-color;
+            letter-spacing: 0.05em;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            margin-bottom: 0px !important;
+            margin-top: 0px !important;
+            padding-top:0.5em;
+            padding-bottom:0.5em;
+        }
+        .status {
+                justify-content: center;
+                text-align: center;
+                width: 12.5em;
+            }
+        .applications {
+                justify-content: center;
+                text-align: center;
+                width: 15em;
+            }
+        .instances {
+                justify-content: center;
+                text-align: center;
+                width: 15em;
+                 margin-right: 0px;
+            }
+        .icons {
+                justify-content: center;
+                text-align: center;
+                width: 4.8em;
+                margin-right: 0px;
+                background-color: #ffffff;
+                border-bottom: 1px solid @base-color;
+                height: 1.7rem;
+                color: #000000;
+            }
+        .state {
+                justify-content: center;
+                text-align: center;
+                border-left: 1px solid @base-color;
+                border-bottom: 1px solid @base-color;
+                border-right: 1px solid @base-color;
+                width: 9.8em;
+                background-color: #ffffff;
+                color: @base-color;
+                height: 1.7rem;
+                padding-top:0.5em;
+                padding-bottom:0.5em;
+            }
+    }
+    .apps-container {
+        .zmdi {
+            font-size: 20px;
+        }
+        .zmdi-caret-right {
+            margin-top: 7px;
+            color: #ff5a38;
+            width: 9px !important;
+        }
+        .zmdi-caret-down {
+            margin-top: 7px;
+            color: #ff5a38;
+            width: 9px !important;
+        }
+        .app-container {
+            .separator-0 {
+                width: 169px;
+            }
+            .separator-1 {
+                width: 60px;
+                border-left: 1px solid @base-color;
+                border-right: 1px solid @base-color;
+            }
+        }
+    }
+    
+        .app-name-filter {
+            height: 2em;
+            letter-spacing: 0.05em;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            color: @filter-font-color;
+            width: 180px;
+            border: 1px solid @base-color;
+            border-radius: 0px;
+            padding: 5px;
+            
+        }
+         .app-instance-filter {
+             height: 2em;
+             letter-spacing: 0.05em;
+             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+             font-size: 12px;
+             font-weight: 400;
+             color: @filter-font-color;
+             width: 180px;
+             border: 1px solid @base-color;
+             border-radius: 0px;
+             padding: 5px;
+        }
+        .apps-container {
+            margin-top: 2em;
+            //margin-bottom: 1em;
+            border: 1px solid @base-color;
+        }
+        .apps-container-bad {
+            margin-top: 2em;
+            //margin-bottom: 1em;
+            box-shadow: 0 0 5px red;
+            border: 1px solid @base-bad-color;
+        }
+        
+        /*.apps-rows  {
+            padding-top: 1em;
+            padding-bottom: 1em;
+        }*/
+        @app-header-padding: 0.5rem;
+
+        .console-status {
+            width: 12.5em; 
+            color: #000000;
+            margin-right: 0.1em;
+            letter-spacing: 0.2em;
+            font-size: 11px;
+            margin-bottom: 0px !important;
+            margin-top: 0px !important;
+            padding-top:1px;
+            padding-bottom:1px;
+            justify-content: center !important;
+            text-align: center;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            .summary-container {
+                padding-left: 1px;
+                .summary {
+                    display: table-cell;
+                    width: 30px;
+                    height: 30px;
+                    border-radius:  50%;
+                    text-align:     center;
+                    vertical-align: middle;
+                    color: white;
+                    letter-spacing: 0px;
+                    font-size: 12px;
+                }
+            }
+        }
+        .app-name {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            color: @base-color;
+            width: 11.5em;
+            padding-left: 10px;
+            padding-right: 5px;
+            padding-top: @app-header-padding;
+        }
+        .instance-dots {
+            color: @base-color;
+            width: 11.5rem;
+            border-right: 1px solid @base-color;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.5em;
+            letter-spacing: -1px;
+            cursor: pointer;
+            padding-top: @app-header-padding;
+        }
+
+        .instance-name-container {
+            border-right: 1px solid @base-color;
+            width: 176px;
+            .rc-box {
+                width:100%
+            }
+        }
+        .instance-name {
+                color: @base-color;
+                width: 100%;
+                margin-bottom: @app-header-padding;
+        }
+
+        .instance-name-container-bad {
+            border-right: 1px solid @base-color;
+            width: 11.6rem;
+        }
+        .instance-name-bad {
+                color: @base-bad-font-color;
+                border-bottom: 1px solid @base-bad-color;
+                width: 100%;
+                margin-bottom: @app-header-padding;
+        }
+
+        .btn-container {
+            width: 58px;
+            .zmdi {
+                font-size: 16px;
+            }
+            .zmdi-settings {
+                .btn;
+                background: url(../images/icons/cog-on.png) no-repeat scroll;
+                font-size: 21px !important;
+                width: 18px;
+                height: 18px;
+                padding: 6px 6px;
+                color: transparent;
+                margin-left: 3px;
+                
+            }
+            .zmdi-settings :before {
+                .btn;
+            }
+            .zmdi-settings:hover {
+                color: transparent !important;
+            }
+            
+            .zmdi-settings-off {
+                .btn;
+                background: url(../images/icons/cog-off.png) no-repeat scroll;
+                font-size: 21px !important;
+                width: 18px;
+                height: 19px;
+                padding: 6px 6px;
+                color: transparent;
+                margin-left: 3px;
+            }
+            .zmdi-settings-off :before {
+                .btn;
+            }
+            .zmdi-settings-off :hover {
+                color: transparent !important;
+            }
+        }
+
+        .btn-console {
+            margin-left: 0.5rem;
+        }
+
+        .current-state {
+                border-left: 1px solid @base-color;
+                text-align: center;
+                color: @base-color;
+                padding-bottom: @app-header-padding;
+                width: 7.5rem;
+
+        }
+        
+         .current-state-bad {
+                border-left: 1px solid @base-color;
+                text-align: center;
+                color: @base-bad-font-color;
+                padding-bottom: @app-header-padding;
+                width: 7.5rem;
+
+        }
+}

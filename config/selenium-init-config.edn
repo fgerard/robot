@@ -1,0 +1,4 @@
+{
+ :firefox-driver "./resources/selenium_drivers/geckodriver_linux_x64"
+ :chrome-driver "./resources/selenium_drivers/chromedriver_linux_x64"
+ }

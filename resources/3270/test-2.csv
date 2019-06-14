@@ -1,0 +1,15 @@
+CMD,PARAMETROS,VALORES,CTX-VARS
+waitForChange,30000,,
+writePosition,"20,21",TSO,
+writeKey,key.ENTER,,
+waitForChange,30000,,
+waitForChange,30000,,
+waitForChange,30000,,
+writePosition,"1,0",GIBTDC,
+writeKey,key.ENTER,,
+waitForChange,30000,,
+writePosition,"7,19",12345678,
+writeKey,key.ENTER,,
+waitForChange,30000,,
+readPosition,"0,1",8,NUMERO
+writeKey,key.CLEAR,,

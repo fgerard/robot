@@ -1,0 +1,69 @@
+@base-color: #4EA9C3;
+.header {
+    .logo-container {
+        padding-top: 1.5em;
+        padding-left: 2.0em;
+        padding-bottom: 1.5em;
+    }
+    .user-info {
+        background-color: @base-color;
+        position: absolute;
+        right: 2em;
+        flex: initial;
+        width: auto;
+        padding-top: 0.8em;
+        padding-bottom: 0.8em;
+        padding-left: 1em;
+        padding-right: 0.5em;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        box-shadow: 2px 1px 2px grey;
+        .user-email {
+            color: #ffffff;
+            margin-right: 4em;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            // font-weight: initial !important;
+        }
+        .logout-btn {
+            color: transparent;
+            i {
+                background-image: url('../images/icons/logout.png');
+                background-repeat: no-repeat;
+            }
+            
+        }
+    }
+}
+
+.nav-tabs {
+    li {
+        border: 0px;
+        a {
+            color: @base-color !important;
+            padding-left: 2em;
+            padding-right: 2em;
+            
+            &:hover {
+                border-color: #eeeeee #eeeeee @base-color;
+            }
+        }
+    }
+    .active {
+        a {
+            background-color: @base-color !important;
+            color: #ffffff !important;
+            border: 1px solid @base-color !important;
+            padding-left: 2em;
+            padding-right: 2em;
+        }
+    }
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    border-bottom: 2px solid @base-color;
+    padding-left: 2em;
+}

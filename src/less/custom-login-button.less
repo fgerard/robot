@@ -1,0 +1,162 @@
+@base-color: #4EA9C3;
+.googleButton {
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: background-color .218s, border-color .218s, box-shadow .218s;
+    transition: background-color .218s, border-color .218s, box-shadow .218s;
+    -webkit-user-select: none;
+    -webkit-appearance: none;
+    background-color: #4EA9C3;
+    background-image: none;
+    color: #262626;
+    cursor: pointer;
+    outline: none;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: auto
+}
+
+.googleButtonBlue {
+    background-color: #4285f4;
+    border: none;
+    color: #fff
+}
+
+.googleButtonBlue:hover {
+    background-color: #4285f4
+}
+
+.googleButtonBlue:active {
+    background-color: #3367d6
+}
+
+.googleButtonLightBlue {
+    background-color: @base-color;
+    color: #ffffff
+}
+
+.googleButtonLightBlue:active {
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+.googleButtonIcon {
+    float: left;
+    margin-top:1px;
+    margin-bottom:1px;
+    margin-left:1px;
+    background-color: #ffffff;
+}
+
+.googleButtonBlue .googleButtonIcon {
+    background-color: #fff;
+    -webkit-border-radius: 1px;
+    border-radius: 1px
+}
+
+.googleButtonSvg {
+    display: block
+}
+
+.googleButtonContents {
+    font-family: Roboto, arial, sans-serif;
+    font-size: 14px !important;
+    font-weight: 500;
+    letter-spacing: .21px;
+    margin-left: 6px;
+    margin-right: 6px;
+    vertical-align: top
+}
+
+.googleButtonContentWrapper {
+    height: 100%;
+    width: 100%
+}
+
+.googleButtonBlue .googleButtonContentWrapper {
+    border: 1px solid transparent
+}
+
+.googleButtonErrorWrapper,
+.googleButtonWorkingWrapper {
+    display: none;
+    height: 100%;
+    width: 100%
+}
+
+.googleButtonErrorIcon,
+.googleButtonWorkingIcon {
+    margin-left: auto;
+    margin-right: auto
+}
+
+.googleButtonErrorState,
+.googleButtonWorkingState {
+    border: 1px solid #d5d5d5;
+    border: 1px solid rgba(0, 0, 0, .17);
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .05);
+    color: #262626
+}
+
+.googleButtonErrorState:hover,
+.googleButtonWorkingState:hover {
+    border: 1px solid #aaa;
+    border: 1px solid rgba(0, 0, 0, .25);
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1)
+}
+
+.googleButtonErrorState:active,
+.googleButtonWorkingState:active {
+    border: 1px solid #aaa;
+    border: 1px solid rgba(0, 0, 0, .25);
+    -webkit-box-shadow: inset 0 1px 0 #ddd;
+    box-shadow: inset 0 1px 0 #ddd;
+    color: #262626
+}
+
+.googleButtonWorkingState,
+.googleButtonWorkingState:hover {
+    background-color: #f5f5f5
+}
+
+.googleButtonWorkingState:active {
+    background-color: #e5e5e5
+}
+
+.googleButtonErrorState,
+.googleButtonErrorState:hover {
+    background-color: #fff
+}
+
+.googleButtonErrorState:active {
+    background-color: #e5e5e5
+}
+
+.googleButtonWorkingState .googleButtonWorkingWrapper,
+.googleButtonErrorState .googleButtonErrorWrapper {
+    display: block
+}
+
+.googleButtonErrorState .googleButtonContentWrapper,
+.googleButtonWorkingState .googleButtonContentWrapper,
+.googleButtonErrorState .googleButtonWorkingWrapper {
+    display: none
+}
+
+.-webkit-keyframes googleButtonWorkingIconPathSpinKeyframes {
+    0% {
+        -webkit-transform: rotate(0)
+    }
+}
+
+.btn-cursor {
+    cursor: pointer;
+}

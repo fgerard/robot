@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+# robot script
+
+# Environment variables to determine startup behavior
+#
+# ROBOT_BIN      Location of this file
+# ROBOT_HOME     Location of i directory
+# ROBOT_LIB      Location of JAR dependency
+# ROBOT_LIB      Location of logs
+# ROBOT_CONFIG   Location of Config directory (*.clj and log4j2.xml)
+# MINIMUM_MEMORY  Minimum Memory of JVM
+# MAXIMUM_MEMORY  Maximum Memory of JVM
+# TIMEZONE        ID for a TimeZone, either an abbreviation such as 
+#                 "PST", a full name such as "America/Los_Angeles", or
+#                 a custom ID such as "GMT-8:00".
+# ROBOT_JVM_OPTS Exact Java Options to run a JVM
+
+if test -z "$ROBOT_BIN"; then
+  export ROBOT_BIN="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+fi
+
+if test -z "$ROBOT_HOME"; then
+  export ROBOT_HOME=$(dirname $ROBOT_BIN)
+fi
+
+if test -z "$ROBOT_LOGS"; then
+  export ROBOT_LOGS=$ROBOT_HOME/logs
+  if [ ! -d "$ROBOT_LOGS" ]; then
+  mkdir -p $ROBOT_LOGS
+fi
+fi
+
+if test -z "$ROBOT_LIB"; then
+  export ROBOT_LIB=$ROBOT_HOME/lib/*:$ROBOT_HOME/target/*
+fi
+
+if test -z "$ROBOT_CONFIG"; then
+  export ROBOT_CONFIG=$ROBOT_HOME/config
+fi
+
+if test -z "$MININUM_MEMORY"; then
+  export MININUM_MEMORY=512m
+fi
+
+if test -z "$MAXIMUM_MEMORY"; then
+  export MAXIMUM_MEMORY=1536m
+fi
+
+if test -z "$TIMEZONE"; then 
+  export TIMEZONE=America/Mexico_City
+fi
+
+if test -z "$ROBOT_JVM_OPTS"; then 
+  export ROBOT_JVM_OPTS="-server "
+fi
+
+# robot name & Java Class to start
+export ROBOT_NAME=robot
+export ROBOT_STARTER=robot.main.starter
+
+start() {
+  
+  CURRENT=$(pwd)
+  cd $ROBOT_HOME
+
+  # Check for process already started in daemon mode
+  if [ -f "$ROBOT_HOME/$ROBOT_NAME.pid" ] ; then
+    pid=$( cat $ROBOT_HOME/$ROBOT_NAME.pid )
+    verif=$( ps -fea | grep "$pid" | grep -v "grep" )
+    if [ $? == 0 ] ; then
+      echo "robot already started PID : $pid"
+      exit 2
+    else
+      echo "robot PID file is orphan PID : $pid, deleting ..."
+      rm $ROBOT_HOME/$ROBOT_NAME.pid 
+    fi
+  fi
+
+  # Check for JAVA
+  echo "Verifying JAVA installation ..."
+  if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    JAVA_BIN="$JAVA_HOME/bin/java"
+  elif type -p java; then
+    JAVA_BIN=java
+    $JAVA_BIN -version
+  else
+    echo "No JAVA installation found, please verify. Exiting ..."
+    exit 1
+  fi
+  echo "Using JVM installed on : $JAVA_BIN ..."
+  
+  # Check version
+  if [[ "$JAVA_BIN" ]]; then
+    JAVA_VERSION=$("$JAVA_BIN" -version 2>&1 | awk -F '"' '/version/ {print $2}')
+  fi
+
+  # Start: normal or daemon mode
+  if [ -z "$ROBOT_DAEMON" ] ; then
+    $JAVA_BIN -Xms$MININUM_MEMORY -Xmx$MAXIMUM_MEMORY -Duser.timezone=$TIMEZONE $ROBOT_JVM_OPTS -cp "$ROBOT_LIB" $ROBOT_STARTER
+  else
+    $JAVA_BIN -Xms$MININUM_MEMORY -Xmx$MAXIMUM_MEMORY -Duser.timezone=$TIMEZONE $ROBOT_JVM_OPTS -cp "$ROBOT_LIB" -Djava.net.preferIPv4Stack=true $ROBOT_STARTER 2>&1 &
+
+    retval=$?
+    pid=$!
+
+    echo "Using PID : $pid"
+    # echo "check logs: tail -f " $ROBOT_LOGS/robot.log
+
+    echo "$pid" > $ROBOT_HOME/$ROBOT_NAME.pid
+    [ $retval -eq 0 ] || exit $retval
+    if ! ps -p $pid > /dev/null ; then
+      exit 1
+    fi
+    exit 0
+  fi
+  cd $CURRENT
+  exit $?
+}
+
+stop() {
+  # Stop: daemon or normal mode
+  if [ -f "$ROBOT_HOME/$ROBOT_NAME.pid" ] ; then
+    pid=$( cat $ROBOT_HOME/$ROBOT_NAME.pid )
+    echo "Shutdown robot with PID: " $pid # >> $ROBOT_LOGS/robot.log
+    kill $pid > /dev/null 2>&1   
+    rm $ROBOT_HOME/$ROBOT_NAME.pid
+    while ps -fea | grep $pid | grep $ROBOT_NAME > /dev/null ; do
+      sleep 1      
+    done
+    echo 
+    exit 0
+  else
+    echo "Unable to find $ROBOT_HOME/$ROBOT_NAME.pid"
+    exit 1
+  fi
+}
+
+restart() {
+  # Restarts only in daemon mode
+  ROBOT_DAEMON=true
+  if [ -f "$ROBOT_HOME/$ROBOT_NAME.pid" ] ; then
+    pid=$( cat $ROBOT_HOME/$ROBOT_NAME.pid )
+    kill $pid > /dev/null 2>&1
+    rm $ROBOT_HOME/$ROBOT_NAME.pid
+    while ps -fea | grep $pid | grep $ROBOT_NAME > /dev/null ; do
+      sleep 1      
+    done
+    echo 
+    start
+  else
+    echo "Unable to find $ROBOT_HOME/$ROBOT_NAME.pid"
+    start
+  fi
+}
+
+usage() {
+    printf "Usage: robot <option> <command>\n"
+    printf "options:\n"
+    printf "\t-d\tDaemonized option.\n"
+    printf "commands:\n"
+    printf "\tstart\tStarts $ROBOT_NAME servcie\n"
+    printf "\tstop\tStops $ROBOT_NAME service using $ROBOT_HOME/$ROBOT_NAME.pid\n"
+    printf "\trestart\tStops and Start $ROBOT_NAME service daemonized\n"
+    printf "example:\n"
+    printf "\trobot start\n\n"
+    exit 1
+}
+
+while getopts "c:dh" opt; do
+  case $opt in
+    c)
+      ROBOT_CONFIG=$OPTARG
+      ;;
+    d)
+      ROBOT_DAEMON=true
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+shift $(expr $OPTIND - 1 )
+case $1 in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    usage
+    ;;
+esac

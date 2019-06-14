@@ -1,0 +1,69 @@
+@input-border-color: #666666;
+@base-color: #4EA9C3;
+.config-tab {
+    .title {
+        color: #4EA9C3;
+        text-align: center !important;
+    }
+    .btn-container {
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .btn {
+        color: transparent !important;
+    }
+    .btn-undo {
+        .btn;
+          background: url(../images/icons/undo.png) no-repeat scroll;
+           
+    }
+    .btn-redo {
+        .btn;
+        background: url(../images/icons/redo.png) no-repeat scroll;
+    }
+    .input-container {
+    margin-left: auto;
+    margin-right: auto;
+     .mail-input {
+        border: 1px solid @input-border-color;
+        padding-right: 2.5em !important;
+        -webkit-box-shadow: initial;
+        box-shadow: initial;
+        font-size: 12px !important;
+        border-radius: 0px !important;
+        margin-bottom: 1em;
+    }
+    }
+    .btn-add-user {
+        .btn;
+        background: url(../images/icons/add.png) no-repeat scroll;
+    }
+    .btn-add-user :before {
+        .btn;
+    }
+    .user-row {
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 0.5rem;
+    }
+
+     .user {
+      border-bottom: 1px solid @base-color;
+      width: 100%;
+      font-size: 12px !important;
+      color: @base-color;
+    }
+    .password {
+      border-bottom: 1px solid @base-color;
+      width: 100%;
+       font-size: 12px !important;
+      color: @base-color;
+    }
+
+    .btn-remove {
+        .btn;
+        border: 0px;
+        background: url(../images/icons/trash.png) no-repeat scroll;
+    }
+
+}

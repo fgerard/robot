@@ -1,0 +1,402 @@
+@sub-color: #97D0E5;
+@base-color: #4EA9C3;
+.split-container {
+    margin:0px !important;
+    .toolbar-container {
+        border-bottom: 1px solid @sub-color;
+        .app-container {
+            width: 100vh;
+            .app-selector {
+                background-color: @sub-color;
+                a {
+                    height: 2rem;
+                    background-color: @sub-color;
+                    color: #FFFFFF;
+                    border: 1px solid @sub-color;
+                    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: 400;
+                    letter-spacing: 0.05em;
+                    b {
+                        background-position: center center;
+                        background-image: url('../images/icons/triangle.png');
+                    }
+                    span {
+                        margin-top: -3px;
+                    }
+                }
+            }
+        }
+        div {
+            .zmdi {
+                color: transparent !important;
+            }
+        }
+    }
+    .add-instance {
+        //padding: 5px;
+        .add-btn {
+            .btn;
+            background: url(../images/icons/add.png) no-repeat scroll;
+            margin-top: 0.25em;
+            margin-left: 0.50em;
+            cursor: pointer;
+        }
+        .add-btn :before {
+            .btn;
+        }
+        div {
+            .zmdi {
+                color: transparent !important;
+            }
+        }
+    }
+
+        .instance {
+            .instance-main {
+                height: 2rem;
+                padding: 5px 0px;
+            }
+            span {
+                color: @base-color;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 12px;
+                font-weight: 400;
+                letter-spacing: 0.05em;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            .zmdi {
+                font-size: 20px;
+            }
+        }
+
+    .app-param-panel {
+        padding: 5px;
+        .eraser-btn {
+            .btn;
+            background: url(../images/icons/eraser.png) no-repeat scroll;
+            margin-top: 0.25em;
+            margin-left: 0.35em;
+            cursor: pointer;
+
+        }
+        .eraser-btn :before {
+            .btn;
+        }
+        .add-btn {
+            .btn;
+            background: url(../images/icons/add.png) no-repeat scroll;
+            margin-top: 0.25em;
+            margin-left: 0.0em;
+            cursor: pointer;
+        }
+        .add-btn :before {
+            .btn;
+        }
+        .delete-btn {
+            .btn;
+            background: url(../images/icons/trash.png) no-repeat scroll;
+            margin-top: 0.25em;
+            margin-left: 0.35em;
+            cursor: pointer;
+        }
+        .delete-btn :before {
+            .btn;
+        }
+        .has-success {
+            .form-control:focus {
+                border-color: #00d500;
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(0, 0, 213, 0.6);
+            }
+        }
+        .has-error {
+            .form-control:focus {
+                border-color: #d50000;
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px rgba(213, 0, 0, 0.6);
+            }
+        }
+
+        .param-list {
+            .delete-btn {
+                .btn;
+                background: url(../images/icons/trash.png) no-repeat scroll;
+                margin-top: -1.50em;
+                margin-left: 0.35em;
+                cursor: pointer;
+            }
+            .rc-h-box:nth-of-type(even) {
+                background-color: #eeeeee;
+            }
+            .rc-h-box {
+                div:nth-child(2) {
+                    span {
+                        font-weight: 500;
+                    }
+                }
+            }
+            .display-inline-flex{
+                height: 1.3rem;
+                margin-top: 5px;
+            }
+            span {
+                color: @base-color;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 12px;
+                font-weight: 400;
+                letter-spacing: 0.05em;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+        }
+
+        div {
+            .zmdi {
+                color: transparent !important;
+            }
+        }
+    }
+    .form-control {
+        height: 2rem;
+        padding: 0px 5px;
+        border: 1px solid #848484;
+        border-radius: 0px;
+        box-shadow: none;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.05em;
+    }
+
+    .con-gap {
+        border-left: 1px solid @base-color;
+    }
+
+    .btn {
+        //
+        //background-position: center center !important;
+        //border-radius: 0px !important;
+        //height: 2rem;
+    }
+
+    .rc-button {
+
+    }
+
+    .btn-transparent {
+        color: transparent !important;
+    }
+
+    .new-app-btn {
+        .btn;
+        background: url(../images/icons/add.png) no-repeat scroll;
+        margin-top: 4px;
+        // border-right: 1px solid @base-color;
+    }
+
+    .delete-app-btn {
+        .btn;
+        background: url(../images/icons/trash.png) no-repeat scroll;
+        margin-top: 4px;
+    }
+    
+    .rc-h-split-splitter {
+        flex: 0 0 0px !important;
+        border-left: 3px solid @base-color;
+        div {
+            div {
+                border-right: 1px solid @base-color !important;
+            }
+        }
+    }
+
+    .internal-split {
+        margin: 0px !important;
+        .opr-container {
+            width: 100vh;
+            padding: 5px;
+            justify-content: flex-end !important;
+            width: 100%;
+            .opr-selector {
+                background-color: @sub-color;
+                a {
+                    height: 2rem;
+                    padding: 0px 5px;
+                    border: 1px solid #848484;
+                    border-radius: 0px;
+                    box-shadow: none;
+                    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: 400;
+                    letter-spacing: 0.05em;
+                    b {
+                        content: '\f2f2';
+                        color: black;
+                        margin-top: -3px;
+                    }
+                    span {
+                        margin-top: -5px;
+                    }
+                }
+            }
+            .add-btn {
+                .btn;
+                background: url(../images/icons/add.png) no-repeat scroll;
+                margin-top: 0.25em;
+                margin-left: -0.25em;
+                cursor: pointer;
+
+                .zmdi {
+                    color: transparent !important;
+                }
+
+            }
+            .add-btn :before {
+                .btn;
+            }
+        }
+
+            .rc-v-box {
+                .rc-title {
+                    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                    font-size: 12px;
+                    font-weight: 400;
+                    letter-spacing: 0.05em;
+                    margin-top: 1.0em !important;
+                    padding: 0px 5px;
+                }
+            }
+
+    }
+
+    .new-app-btn :before {
+        .btn;
+    }
+
+    .undo-btn {
+        .btn;
+         background: url(../images/icons/undo.png) no-repeat scroll;
+         margin-top: 4px;
+    }
+
+    .undo-btn :before {
+        .btn;
+    }
+
+    .redo-btn {
+        .btn;
+         background: url(../images/icons/redo.png) no-repeat scroll;
+         margin-top: 4px;
+         // border-right: 1px solid @base-color;
+    }
+
+    .redo-btn :before {
+        .btn;
+    }
+
+    .save-btn {
+        .btn;
+         background: url(../images/icons/save-on.png) no-repeat scroll;
+         margin-top: 4px;
+         // border-right: 1px solid @base-color;
+    }
+    .save-btn :before {
+        .btn;
+    }
+
+    .save-off-btn {
+        .btn;
+         background: url(../images/icons/save-off.png) no-repeat scroll;
+         margin-top: 4px;
+         // border-right: 1px solid @base-color;
+    }
+    .save-off-btn :before {
+        .btn;
+    }
+
+    .import-btn {
+        .btn;
+         background: url(../images/icons/import.png) no-repeat scroll;
+         margin-top: 4px;
+    }
+    .import-btn :before {
+        .btn;
+    }
+    .export-btn {
+        .btn;
+         background: url(../images/icons/export.png) no-repeat scroll;
+         margin-top: 4px;
+         // border-right: 1px solid @base-color;
+    }
+    .export-btn :before {
+        .btn;
+    }
+
+    .zmdi-eye {
+        .btn;
+        background: url(../images/icons/eye-on.png) no-repeat scroll;
+        margin-top: 2px;
+        color: transparent;
+    }
+    .zmdi-eye :before {
+        .btn;
+    }
+
+    .zmdi-eye-off {
+        .btn;
+        background: url(../images/icons/eye-off.png) no-repeat scroll;
+        margin-top: 2px;
+        color: transparent;
+    }
+    .zmdi-eye-off :before {
+        .btn;
+    }
+
+    .zmdi-caret-right {
+        color: #ff5a38;
+    }
+    .zmdi-caret-down {
+        color: #ff5a38;
+    }
+
+    .zmdi-settings {
+        .btn;
+        background: url(../images/icons/cog-on.png) no-repeat scroll;
+        font-size: 21px !important;
+        width: 18px;
+        height: 18px;
+        color: transparent;
+        margin-left: -10px;
+    }
+    .zmdi-settings :before {
+        .btn;
+    }
+
+    .zmdi-settings-off {
+        .btn;
+        background: url(../images/icons/cog-off.png) no-repeat scroll;
+        font-size: 21px !important;
+        width: 18px;
+        height: 18px;
+        color: transparent;
+        margin-left: -10px;
+    }
+    .zmdi-settings-off :before {
+        content: '\f1c6';
+    }
+
+    .instance-label {
+        margin-left: 5px;
+    }
+    .title {
+        color: @base-color;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        text-transform: uppercase;
+        justify-content: center;
+        letter-spacing: 0.1rem;
+    }
+}

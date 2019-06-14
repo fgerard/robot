@@ -1,0 +1,121 @@
+{
+ [:robot.core.operations/sleep-opr-factory :operations/sleep-opr-factory]
+ {:image "sleep-opr.png"
+  :fields [[:delay {:required true :default 3000 :re "[0-9]{1,7}" :tip "# millis to sleep"}]]}
+
+ [:robot.core.operations/socket-opr-factory :operations/socket-opr-factory]
+ {:image "socket-opr.png"
+  :fields [[:host {:required true :default "localhost" :re "[a-zA-Z0-9][a-zA-Z0-9\\-\\.]*" :tip "Host to monitor"}]
+           [:port {:required true :default 22 :re "[0-9]{1,4}" :tip "Port to monitor"}]
+           [:timeout {:required true :default 1000 :re "[0-9]{1,4}" :tip "Timeout"}]
+           [:retry-count {:required true :default 3 :re "[0-9]{1,4}" :tip "Max retries"}]
+           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]
+           ]}
+
+ [:robot.core.operations/date-time-opr-factory :operations/date-time-opr-factory]
+ {:image "date-time-opr.png"
+  :fields [[:format {:required true :default "localhost" :re "[a-zA-Z0-9\\-\\.:\\s']+" :tip "SimpleDateFormat format"}]]}
+
+  [:robot.core.operations/http-opr-factory :operations/http-opr-factory]
+ {:image "http-opr.png"
+  :fields [[:uri {:required true :default "http://localhost:8050" :re "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]" :tip "URI to get"}]
+           [:params {:require false :default {} :re ".*" :tip "Map with params to post"}]
+           [:timeout {:required true :default 1000 :re "[0-9]{1,4}" :tip "Timeout"}]
+           [:retry-count {:required true :default 3 :re "[0-9]{1,4}" :tip "Max retries"}]
+           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]
+           ]}
+ [:robot.core.operations/switch-good-opr-factory :operations/switch-good-opr-factory]
+ {:image "switch-good-opr.png"
+  :fields []}
+
+ [:robot.core.operations/switch-bad-opr-factory :operations/switch-bad-opr-factory]
+ {:image "switch-bad-opr.png"
+  :fields [[:minutes {:required true :default "15" :re "[1-9][0-9]*" :tip "Minutes to wait before resend"}]]}
+
+ [:robot.core.operations/js-opr-factory :operations/js-opr-factory]
+ {:image "js-opr.png"
+  :fields []}
+
+ [:robot.core.operations/clojure-opr-factory :operations/clojure-opr-factory]
+ {:image "clojure-opr.png"
+  :fields []}
+
+ [:robot.core.operations/browser-opr-factory :operations/browser-opr-factory]
+ {:image "browser-opr.png"
+  :fields []}
+
+ [:robot.core.operations/selenium-opr-factory :operations/selenium-opr-factory]
+ {:image "browser-opr.png"
+  ;:driver-type :chrome-driver
+  :fields []}
+
+ [:robot.core.operations/ldap-opr-factory :operations/ldap-opr-factory]
+ {:image "ldap-opr.png"
+  :fields []}
+
+ [:robot.core.operations/twitter-opr-factory :operations/twitter-opr-factory]
+ {:image "twitter-opr.png"
+  :fields []}
+
+ [:robot.core.operations/jagacy3270-opr-factory :operations/jagacy3270-opr-factory]
+ {:image "ibm3270-opr.png"
+  :fields []}
+
+ [:robot.core.operations/telegram-opr-factory :operations/telegram-opr-factory]
+ {:image "telegram-send-opr.png"
+  :fields []}
+
+ [:robot.core.operations/cmd-telegram-opr-factory :operations/cmd-telegram-opr-factory]
+ {:image "telegram-get-opr.png"
+  :fields []}
+
+ [:robot.core.operations/os-cmd-opr-factory :operations/os-cmd-opr-factory]
+ {:image "os-cmd-opr.png"
+  :fields []}
+
+ [:robot.core.operations/get-mail-opr-factory :operations/get-mail-opr-factory]
+ {:image "mail-get-opr.png"
+  :fields []}
+
+ [:robot.core.operations/sql-read-opr-factory :operations/sql-read-opr-factory]
+ {:image "sql-opr.png"
+  :fields []}
+
+ [:robot.core.operations/play-sound-opr-factory :operations/play-sound-opr-factory]
+ {:image "play-sound-opr.png"
+  :fields []}
+
+ [:robot.core.operations/selfie-opr-factory :operations/selfie-opr-factory]
+ {:image "selfie-opr.png"
+  :fields []}
+
+ [:robot.core.operations/slack-opr-factory :operations/slack-opr-factory]
+ {:image "slack-send-opr.png"
+  :fields []}
+
+ [:robot.core.operations/caudal-opr-factory :operations/caudal-opr-factory]
+ {:image "caudal-opr.png"
+  :fields []}
+
+ [:robot.core.operations/send-mail-opr-factory :operations/send-mail-opr-factory]
+ {:image "mail-send-opr.png"
+  :fields [[:host {:required true :default "smtp.gmail.com" :re ".*" :tip "Mail host"}]
+           [:user {:require true :default "robot@gmail.com" :re ".*" :tip "User that sends the mail"}]
+           [:pass {:required true :default 1000 :re ".*" :tip "Mail Password of user"}]
+           [:from {:required true :default "IWRobot" :re ".*" :tip "From txt"}]
+           [:to {:required true :default ["someone@gmail.com"] :re ".*" :tip "Vector of recipients"}]
+           [:subject {:required true :default "Subject" :re ".*" :tip "Mail subject"}]
+           [:body {:required true :default "Message body" :re ".*" :tip "Message body"}]
+           [:timeout {:required true :default 1000 :re "[0-9]{1,4}" :tip "Timeout"}]
+           [:retry-count {:required true :default 3 :re "[0-9]{1,4}" :tip "Max retries"}]
+           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]
+           ]}
+
+ [:robot.core.operations/mq-opr-factory :operations/mq-opr-factory]
+ {:image "mq-opr.png"
+  :fields []}
+
+ [:robot.core.operations/gsheet-appender-opr-factory :operations/gsheet-appender-opr-factory]
+ {:image "gsheet-send-opr.png"
+  :fields []}
+}
