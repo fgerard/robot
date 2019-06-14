@@ -99,7 +99,7 @@
 (defn execute-script [csv-lst address port ssl? protocol]
   "Función que crea la estructura de datos requerida por el reader a partir de un xml parseado mediante (clojure.xml/parse).
   nav-xml: xml parseado mediante (clojure.xml/parse).   "
-  (let [session (Session3270. "iwscrape" address port protocol ssl?)
+  (let [session (Session3270. "scrape" address port protocol ssl?)
         _ (.open session)
         result (reduce script-reducer
                        [session {}]

@@ -411,7 +411,7 @@
 
 (defmethod ws-event-handler :chsk/ws-ping [robot {:keys [id event uid client-id send-fn]}]
   (log/debug "Cliente dice ping! ")
-  (send-fn uid [:iwrobot/ws-pong]))
+  (send-fn uid [:robot/ws-pong]))
 
 
 (defmethod ig/init-key :robot.core.essentials/robot-controller

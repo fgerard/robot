@@ -60,7 +60,7 @@
                                {:caption text}
                                imagen)
                    (let [decoded (.decode (java.util.Base64/getDecoder) path)
-                         imagen (java.io.File/createTempFile "iwrobot" ".png")
+                         imagen (java.io.File/createTempFile "robot" ".png")
                          _ (log/debug "created:" imagen)]
                      (with-open [out (java.io.FileOutputStream. imagen)]
                        (.write out decoded))

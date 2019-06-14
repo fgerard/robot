@@ -102,7 +102,7 @@
   :fields [[:host {:required true :default "smtp.gmail.com" :re ".*" :tip "Mail host"}]
            [:user {:require true :default "robot@gmail.com" :re ".*" :tip "User that sends the mail"}]
            [:pass {:required true :default 1000 :re ".*" :tip "Mail Password of user"}]
-           [:from {:required true :default "IWRobot" :re ".*" :tip "From txt"}]
+           [:from {:required true :default "Robot" :re ".*" :tip "From txt"}]
            [:to {:required true :default ["someone@gmail.com"] :re ".*" :tip "Vector of recipients"}]
            [:subject {:required true :default "Subject" :re ".*" :tip "Mail subject"}]
            [:body {:required true :default "Message body" :re ".*" :tip "Message body"}]

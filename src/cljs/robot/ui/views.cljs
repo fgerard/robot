@@ -17,7 +17,7 @@
   (fn []
     [:img
      {:src "images/logo-header.png"
-      :alt "iwRobot"}]))
+      :alt "Robot"}]))
 
 (defn user []
   (let [uid (re-frame/subscribe [[:control :uid]])]

@@ -42,10 +42,10 @@
     (System/setProperty "webdriver.chrome.driver"
                         chrome-driver)
 
-    (System/setProperty "iwrobot.gecko.args" (pr-str firefox-args))
-    (System/setProperty "iwrobot.chrome.args" (pr-str chrome-args))
+    (System/setProperty "robot.gecko.args" (pr-str firefox-args))
+    (System/setProperty "robot.chrome.args" (pr-str chrome-args))
     
-    (System/setProperty "iwscrape.window" "true")))
+    (System/setProperty "scrape.window" "true")))
 
 (defmulti kill-port-pid
   (fn [port]

@@ -89,7 +89,7 @@
     ;(.log js/console (str id ":" event))
     (cond
       (= verb :chsk/ws-ping)
-      (send-fn [:iwrobot-client/ws-pong])
+      (send-fn [:robot-client/ws-pong])
 
       (= verb :robot/update)
       (re-frame/dispatch data))))

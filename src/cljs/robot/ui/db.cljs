@@ -43,7 +43,7 @@
 
 
 (def default-db
-  {:name "iwRobot 1.0.2"
+  {:name "Robot 1.0.2"
    :main-tab {:selected :designer}
    :users {"fgerard@interware.com.mx" {:roles []}
            }

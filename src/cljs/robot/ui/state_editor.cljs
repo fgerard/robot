@@ -408,7 +408,7 @@
                                   :flds  [{:kwd         :file
                                            :re          #"[a-zA-Z/\\0-9ñÑ].*"
                                            :label       "Url"
-                                           :info        "Please specify the url of the CSV file to be executed, it can be key from context, E.g. :file3270, /home/iwrobot/3270.csv"
+                                           :info        "Please specify the url of the CSV file to be executed, it can be key from context, E.g. :file3270, /home/robot/3270.csv"
                                            :placeholder "Enter the URL"}
                                           {:kwd         :address
                                            :re          #"[a-zA-Z/\\0-9ñÑ].*"
@@ -436,7 +436,7 @@
                                            :re          #"[a-zA-Z/\\0-9ñÑ].*"
                                            :label       "File URL"
                                            :placeholder "Enter URL"
-                                           :info        "Please specify the path of the sound file to be played (only WAV is supported), it can be a keyword E.g. :sound-alert, /home/iwrobot/alert.wav"}
+                                           :info        "Please specify the path of the sound file to be played (only WAV is supported), it can be a keyword E.g. :sound-alert, /home/robot/alert.wav"}
                                           ]
                                   }
                      :selfie {:title "Selfie operation"
@@ -444,7 +444,7 @@
                                       :re #"[a-zA-Z/\\0-9ñÑ].*"
                                       :label "File URL"
                                       :placeholder "Enter URL of file to hold image"
-                                      :info "Please specify the output path of the png screencapture to be taken, it can be a keyword, E.g. :selfie-path /home/iwrobot/screen.png"}
+                                      :info "Please specify the output path of the png screencapture to be taken, it can be a keyword, E.g. :selfie-path /home/robot/screen.png"}
                                      ]
                               }
                      :os-cmd {:title "OS cmd operation"
@@ -452,7 +452,7 @@
                                       :re #".*" ;[a-zA-Z/\\0-9ñÑ\.\:]
                                       :label "Cmd >"
                                       :placeholder "Enter OS command to execute!"
-                                      :info "Please specify the shell command or the sh, bat, bash filename to be executed, it can be a keyword E.g. :shell /home/iwrobot/start-server.sh"}
+                                      :info "Please specify the shell command or the sh, bat, bash filename to be executed, it can be a keyword E.g. :shell /home/robot/start-server.sh"}
                                      ]
                               }
                      :caudal {:title "Caudal operation"

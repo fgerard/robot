@@ -35,7 +35,7 @@
             (sheet-service []
               (let [credential (authorize)]
                 (-> (Sheets$Builder. httpTransport jsonFactory credential)
-                    (.setApplicationName "iwRobot")
+                    (.setApplicationName "Robot")
                     (.build))))
             (idx->col [n]
               (let [i (int (/ n 26))

@@ -552,19 +552,19 @@
                         (if (= driver-type "chrome")
                           (if profile
                             (-> (doto (ChromeOptions.)
-                                  (.addArguments (into-array String (into (read-string (System/getProperty "iwrobot.chrome.args"))
+                                  (.addArguments (into-array String (into (read-string (System/getProperty "robot.chrome.args"))
                                                                           [(str "user-data-dir=" profile)]))))
                                 (ChromeDriver.))
                             (-> (doto (ChromeOptions.)
-                                  (.addArguments (into-array String (read-string (System/getProperty "iwrobot.chrome.args")))))
+                                  (.addArguments (into-array String (read-string (System/getProperty "robot.chrome.args")))))
                                 (ChromeDriver.)))
                           (if profile
                             (-> (doto (FirefoxOptions.)
-                                  (.addArguments (into-array String (into (read-string (System/getProperty "iwrobot.gecko.args"))
+                                  (.addArguments (into-array String (into (read-string (System/getProperty "robot.gecko.args"))
                                                                           ["-profile" profile]))))
                                 (FirefoxDriver.))
                             (-> (doto (FirefoxOptions.)
-                                  (.addArguments (into-array String (read-string (System/getProperty "iwrobot.gecko.args")))))
+                                  (.addArguments (into-array String (read-string (System/getProperty "robot.gecko.args")))))
                                 (FirefoxDriver.))))
                         (catch Throwable e
                           (log/warn (str "Can't create driver retry:" i " >" (-> e class .getName) (.getMessage e)))
