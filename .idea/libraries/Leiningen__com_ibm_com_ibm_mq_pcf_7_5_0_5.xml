@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Leiningen: com.ibm/com.ibm.mq.pcf:7.5.0.5">
-    <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/ibm/com.ibm.mq.pcf/7.5.0.5/com.ibm.mq.pcf-7.5.0.5.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
