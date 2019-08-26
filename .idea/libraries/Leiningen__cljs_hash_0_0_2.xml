@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: cljs-hash:0.0.2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/cljs-hash/cljs-hash/0.0.2/cljs-hash-0.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

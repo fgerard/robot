@@ -432,7 +432,7 @@
      [{:keys [bot-token chat-tokens message path]
        :as   conf}] ;
      (fn telegram-opr [{app :robot/app instance :robot/instance :as context} you]
-       (log/debug "Operación Telegram")
+       (log/debug "Operación Telegram " you)
        (let [bot-token (U/contextualize context bot-token)
              chat-tokens (S/split
                           (S/trim
@@ -440,11 +440,14 @@
              message (U/contextualize context message)
              message (subs message 0 (min 1024 (count message)))
              path (U/contextualize context path)]
-         
+
          (telegram/start-server bot-token)
-         (if-let [response (telegram/send-message bot-token chat-tokens message path)]
-           (assoc context you "scheduled for sending")
-           (assoc context you "telegram unavailable")))))
+         (try
+           (if-let [response (telegram/send-message bot-token chat-tokens message path)]
+             (assoc context you "scheduled for sending")
+             (assoc context you "telegram unavailable"))
+         (catch Throwable e
+           (assoc context you (str e)))))))
    ui])
 
 (defmethod ig/init-key :robot.core.operations/cmd-telegram-opr-factory
@@ -452,7 +455,7 @@
   [(fn cmd-telegram-opr-factory
      [{:keys [bot-token chat-tokens]
        :as   conf}]
-     (fn cmd-telegram-opr [{app :robot/app instance :robot/instance :as context} you]
+     (retry-fn cmd-telegram-opr 2000 1 100 [{app :robot/app instance :robot/instance :as context} you]
        (log/debug "Operación Telegram")
        (let [bot-token (U/contextualize context bot-token)
              chat-tokens (S/split
@@ -483,7 +486,7 @@
     (recur))
 
   ;Operación para Telegram
-  
+
 
 )
 
@@ -649,7 +652,7 @@
          (assoc context you (javax.imageio.ImageIO/write image "png" output-stream)))))
    ui])
 
-(let [browsers-atm (agent {})]  
+(let [browsers-atm (agent {})]
   (defmethod ig/init-key :robot.core.operations/selenium-opr-factory
     [_ ui]
     [(fn selenium-opr-factory

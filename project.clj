@@ -1,4 +1,4 @@
-(defproject fgerard/robot "2.0.0"
+(defproject fgerard/robot "2.0.1"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -54,7 +54,7 @@
 
 
                  [org.fusesource.leveldbjni/leveldbjni-all "1.8"]
-                 [org.iq80.leveldb/leveldb-api "0.7"]
+                 [org.iq80.leveldb/leveldb-api "0.11"]      ;7
 
                  [org.seleniumhq.selenium/selenium-java "3.11.0" :exclusions [com.google.errorprone/error_prone_annotations]]
 

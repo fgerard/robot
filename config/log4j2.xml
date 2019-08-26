@@ -6,10 +6,10 @@
     <File name="FILE" fileName="./logs/strauz-xsd-validator.log" append="true">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [${hostName}] [%t] %c{2} - %m%n"/>
     </File>
-
+-->
     <RollingFile name="ROLLING-FILE"
-        fileName="./logs/strauz-xsd-validator.log"
-        filePattern="./logs/strauz-xsd-validator-%d{yyyy-MM-dd}.log"
+        fileName="./logs/robot.log"
+        filePattern="./logs/robot.log-%d{yyyy-MM-dd}"
         append="true">
       <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [${hostName}] [%t] %c{2} - %m%n"/>
       <Policies>
@@ -17,7 +17,7 @@
       </Policies>
       <DefaultRolloverStrategy max="7"/>
     </RollingFile>
--->
+
     <Console name="STDOUT" target="SYSTEM_OUT">
       <PatternLayout pattern=":robot %d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5p}{FATAL=magenta, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} [%t] %c{2} - %m%n"/>
     </Console>
@@ -31,9 +31,7 @@
   <Loggers>
     <Root level="DEBUG">
       <AppenderRef ref="STDOUT"/>
-<!--
       <AppenderRef ref="ROLLING-FILE"/>
--->
     </Root>
   </Loggers>
 

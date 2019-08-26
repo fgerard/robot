@@ -131,7 +131,7 @@
   (try
     (let [result @(http/request {:request-method "get" :url url :query-params params})
           body-str (slurp (:body result))]
-      (log/info "poler: body: " body-str)
+      (log/debug "poler: body: " body-str)
       (json/read-str body-str :key-fn keyword))
     (catch Throwable e
       (log/error e))))
@@ -157,18 +157,19 @@
   (log/debug "telegram start-server 1) " @started-bot token)
   (log/debug "telegram start-server 2) " (get @started-bot token))
 
-  (let [status (get @started-bot token)]
+  (let [status (get @started-bot token )]
     (if (and status (or (> status 0) (> 300000 (+ (System/currentTimeMillis) status))))
       (if (< status 0)
-        (log/info (format "Telegram with problems retrying in %d s, token: %s"  (- 300000 (+ (System/currentTimeMillis) status)) token))
-        (log/debug "Already running Telegram Bot Server, token: " token))
-      (let [_ (swap! started-bot update token (constantly (System/currentTimeMillis)))
+        (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 300000 (+ (System/currentTimeMillis) status)) token))
+        (log/debug "telegram already running Bot Server, token: " token))
+      ;else !!
+      (let [_ (swap! started-bot assoc token (System/currentTimeMillis))
             url (str base-url token "/getUpdates")]
-        (log/info "Starting Telegram Bot Server, token: " token)
+        (log/info "telegram starting Bot Server, token: " token)
         (go-loop [offset 0 limit 100]
                  (let [params {:timeout 1 :offset offset :limit limit}
                        {:keys [ok result] :as data} (poller url params)]
-                   (log/debug "start-telegram 3) " ok result)
+                   (log/debug "telegram start-serve 3) " ok result)
                    (if ok
                      (do
                        (dorun (map (fn [message]
@@ -184,4 +185,4 @@
                        (recur (new-offset result offset) limit))
                      (do
                        (log/error "start-server:" data)
-                       (swap! started-bot update token (fn [_] (- (System/currentTimeMillis))))))))))))
+                       (swap! started-bot update token (fn [ts] (- ts)))))))))))

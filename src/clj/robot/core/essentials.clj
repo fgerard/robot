@@ -9,7 +9,9 @@
     [manifold.stream :as s]
     [taoensso.sente :as sente]
     [robot.core.util :as U]
-    [keyval.leveldb :as db]))
+    [keyval.leveldb :as db])
+  (:import
+    (java.io File PrintWriter OutputStreamWriter FileOutputStream)))
 
 (defmethod ig/init-key :robot.core.essentials/operations
   [_ opers]
@@ -64,8 +66,8 @@
 (defn rotate-file-ver [f-name]
   (dorun
     (for [idx (reverse (range 0 9))]
-      (let [older (java.io.File. (str f-name "." (inc idx)))
-            newer (java.io.File. (if (> idx 0) (str f-name "." idx) f-name))]
+      (let [older (File. (str f-name "." (inc idx)))
+            newer (File.  ^String (if (> idx 0) (str f-name "." idx) f-name))]
         (.delete older)
         (.renameTo newer older)))))
 
@@ -117,9 +119,9 @@
     (let [f-name (format "app-log/%s.edn" app-id)
           app-conf (stringify-conf app-conf)]
       (rotate-file-ver f-name)
-      (with-open [ostream (java.io.PrintWriter.
-                            (java.io.OutputStreamWriter.
-                              (java.io.FileOutputStream. f-name) "UTF-8"))]
+      (with-open [ostream (PrintWriter.
+                            (OutputStreamWriter.
+                              (FileOutputStream. f-name) "UTF-8"))]
         (pp/pprint app-conf ostream))
       (db/put db [:apps app-id] app-conf)
       [:success])
