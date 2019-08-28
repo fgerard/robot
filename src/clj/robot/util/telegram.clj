@@ -158,6 +158,7 @@
   (log/debug "telegram start-server 2) " (get @started-bot token))
 
   (let [status (get @started-bot token )]
+    (log/debub "telegram status:" status)
     (if (and status (or (> status 0) (> 300000 (+ (System/currentTimeMillis) status))))
       (if (< status 0)
         (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 300000 (+ (System/currentTimeMillis) status)) token))
@@ -185,4 +186,4 @@
                        (recur (new-offset result offset) limit))
                      (do
                        (log/error "start-server:" data)
-                       (swap! started-bot update token (fn [ts] (- ts)))))))))))
+                       (swap! started-bot update token (fn [ts] (- (System/currentTimeMillis))))))))))))
