@@ -186,4 +186,4 @@
                        (recur (new-offset result offset) limit))
                      (do
                        (log/error "start-server:" data)
-                       (swap! started-bot update token (fn [ts] (- (System/currentTimeMillis))))))))))))
+                       (swap! started-bot update token (fn [ts] (- (Math/abs ^long ts))))))))))))
