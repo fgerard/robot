@@ -123,7 +123,7 @@
   (log/debug (pr-str @received-message-buffer))
   (reduce (fn [_ chat-id]
             (let [response (pull-message token chat-id app instance)]
-              (if-not (= response :empty)
+              (if (not= response :empty)
                 (reduced response))))
           nil chat-ids))
 
@@ -156,34 +156,40 @@
 (defn start-server [token]
   (log/debug "telegram start-server 1) " @started-bot token)
   (log/debug "telegram start-server 2) " (get @started-bot token))
-
-  (let [status (get @started-bot token )]
-    (log/debub "telegram status:" status)
-    (if (and status (or (> status 0) (> 300000 (+ (System/currentTimeMillis) status))))
-      (if (< status 0)
-        (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 300000 (+ (System/currentTimeMillis) status)) token))
-        (log/debug "telegram already running Bot Server, token: " token))
-      ;else !!
-      (let [_ (swap! started-bot assoc token (System/currentTimeMillis))
-            url (str base-url token "/getUpdates")]
-        (log/info "telegram starting Bot Server, token: " token)
-        (go-loop [offset 0 limit 100]
-                 (let [params {:timeout 1 :offset offset :limit limit}
-                       {:keys [ok result] :as data} (poller url params)]
-                   (log/debug "telegram start-serve 3) " ok result)
-                   (if ok
-                     (do
-                       (dorun (map (fn [message]
-                                     (log/debug "message: " message)
-                                     (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
-                                           chat-id (str (get-in message [:message :chat :id]))]
-                                       (log/debug "incomming message:" (pr-str [token chat-id app instance params]))
-                                       (if parsed
-                                         (push-message token chat-id app instance params)
-                                         (log/warn message))))
-                                   result))
-                       (<! (timeout 1000))
-                       (recur (new-offset result offset) limit))
-                     (do
-                       (log/error "start-server:" data)
-                       (swap! started-bot update token (fn [ts] (- (Math/abs ^long ts))))))))))))
+  (locking started-bot
+           (let [status (get @started-bot token )]
+             (log/debug "telegram status:" status)
+             (if (and status (or (> status 0) (> 300000 (+ (System/currentTimeMillis) status))))
+               (if (< status 0)
+                 (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 300000 (+ (System/currentTimeMillis) status)) token))
+                 (log/debug "telegram already running Bot Server, token: " token))
+               ;else !!
+               (let [_ (swap! started-bot assoc token (System/currentTimeMillis))
+                     url (str base-url token "/getUpdates")]
+                 (log/info "telegram starting Bot Server, token: " token)
+                 (go-loop [offset 0 limit 100]
+                          (log/debug "telegram start-server 3.0 ")
+                          (let [params {:timeout 1 :offset offset :limit limit}
+                                {:keys [ok result] :as data} (try
+                                                               (poller url params)
+                                                               (catch Exception e
+                                                                 (log/error "telegram start-server 3.1")
+                                                                 (log/error e))) ]
+                            (log/debug "telegram start-server 3.2) " ok result)
+                            (if ok
+                              (do
+                                (dorun (map (fn [message]
+                                              (log/debug "message: " message)
+                                              (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
+                                                    chat-id (str (get-in message [:message :chat :id]))]
+                                                (log/debug "incomming message:" (pr-str [token chat-id app instance params]))
+                                                (if parsed
+                                                  (push-message token chat-id app instance params)
+                                                  (log/warn message))))
+                                            result))
+                                (<! (timeout 1000))
+                                (recur (new-offset result offset) limit))
+                              (do
+                                (log/error "start-server:" data)
+                                (swap! started-bot assoc token (- (System/currentTimeMillis)))))))
+                 (log/debug "telegram start-server 4)"))))))
