@@ -176,19 +176,23 @@
                                                                  (log/error "telegram start-server 3.1")
                                                                  (log/error e))) ]
                             (log/debug "telegram start-server 3.2) " ok result)
-                            (if ok
-                              (do
-                                (dorun (map (fn [message]
-                                              (log/debug "message: " message)
-                                              (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
-                                                    chat-id (str (get-in message [:message :chat :id]))]
-                                                (log/debug "incomming message:" (pr-str [token chat-id app instance params]))
-                                                (if parsed
-                                                  (push-message token chat-id app instance params)
-                                                  (log/warn message))))
-                                            result))
-                                (<! (timeout 1000))
-                                (recur (new-offset result offset) limit))
+                            (if (and ok (try
+                                          (dorun (map (fn [message]
+                                                        (log/debug "message: " message)
+                                                        (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
+                                                              chat-id (str (get-in message [:message :chat :id]))]
+                                                          (log/debug "incomming message:" (pr-str [token chat-id app instance params]))
+                                                          (if parsed
+                                                            (push-message token chat-id app instance params)
+                                                            (log/warn message))))
+                                                      result))
+                                          (<! (timeout 1000))
+                                          true
+                                          (catch Throwable e
+                                            (log/error "start-server 4)")
+                                            (log/error e)
+                                            false)))
+                              (recur (new-offset result offset) limit)
                               (do
                                 (log/error "start-server:" data)
                                 (swap! started-bot assoc token (- (System/currentTimeMillis)))))))
