@@ -129,7 +129,7 @@
 
 (defn poller [url params]
   (try
-    (let [result @(http/request {:request-method "get" :url url :request-timeout 3000 :query-params params})
+    (let [result @(http/request {:request-method "get" :url url :request-timeout 15000 :query-params params})
           body-str (slurp (:body result))]
       (log/debug "poler: body: " body-str)
       (json/read-str body-str :key-fn keyword))
@@ -161,7 +161,7 @@
              (log/debug "telegram status:" status)
              (if (and status (or (> status 0) (> 300000 (+ (System/currentTimeMillis) status))))
                (if (< status 0)
-                 (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 300000 (+ (System/currentTimeMillis) status)) token))
+                 (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 120000 (+ (System/currentTimeMillis) status)) token))
                  (log/debug "telegram already running Bot Server, token: " token))
                ;else !!
                (let [_ (swap! started-bot assoc token (System/currentTimeMillis))
