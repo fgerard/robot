@@ -129,7 +129,7 @@
 
 (defn poller [url params]
   (try
-    (let [result @(http/request {:request-method "get" :url url :query-params params})
+    (let [result @(http/request {:request-method "get" :url url :request-timeout 3000 :query-params params})
           body-str (slurp (:body result))]
       (log/debug "poler: body: " body-str)
       (json/read-str body-str :key-fn keyword))
