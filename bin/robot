@@ -59,7 +59,9 @@ export ROBOT_NAME=robot
 export ROBOT_STARTER=robot.main.starter
 
 start() {
-  
+  echo
+  echo
+  echo Starting... 
   CURRENT=$(pwd)
   cd $ROBOT_HOME
 
@@ -96,8 +98,12 @@ start() {
 
   # Start: normal or daemon mode
   if [ -z "$ROBOT_DAEMON" ] ; then
+    echo starting2 ...
+    echo $JAVA_BIN -Xms$MININUM_MEMORY -Xmx$MAXIMUM_MEMORY -Duser.timezone=$TIMEZONE $ROBOT_JVM_OPTS -cp "$ROBOT_LIB" $ROBOT_STARTER
     $JAVA_BIN -Xms$MININUM_MEMORY -Xmx$MAXIMUM_MEMORY -Duser.timezone=$TIMEZONE $ROBOT_JVM_OPTS -cp "$ROBOT_LIB" $ROBOT_STARTER
   else
+    echo starting2 as daemon ...
+    echo $JAVA_BIN -Xms$MININUM_MEMORY -Xmx$MAXIMUM_MEMORY -Duser.timezone=$TIMEZONE $ROBOT_JVM_OPTS -cp "$ROBOT_LIB" -Djava.net.preferIPv4Stack=true $ROBOT_STARTER 2>&1 &
     $JAVA_BIN -Xms$MININUM_MEMORY -Xmx$MAXIMUM_MEMORY -Duser.timezone=$TIMEZONE $ROBOT_JVM_OPTS -cp "$ROBOT_LIB" -Djava.net.preferIPv4Stack=true $ROBOT_STARTER 2>&1 &
 
     retval=$?

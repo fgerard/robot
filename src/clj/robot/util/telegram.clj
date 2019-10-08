@@ -1,11 +1,12 @@
 (ns robot.util.telegram
   (:require [aleph.http :as http]
             [byte-streams :as bs]
+            [clojure.pprint :as pp]
             [clojure.data.json :as json]
             [clojure.java.io :as io]
             [clojure.tools.logging :as log]
             [clojure.string :as S]
-            [clojure.core.async :refer [go go-loop put! <!! >!!  >! <! chan timeout alts! close!] :as async]
+            [clojure.core.async :refer [go go-loop put! <!! >!!  >! <! chan timeout alts! poll! sliding-buffer close!] :as async]
             [robot.core.state :as state]))
 
 (def base-url "https://api.telegram.org/bot")
@@ -23,7 +24,8 @@
                                 :query-params body})]
        (-> resp :body))
      (catch Throwable e
-       (log/error e)))))
+       (log/error e)
+       (log/error "Problems in telegram post: " (str base-url token "/sendMessage "  (into {:chat_id chat-id :text text} options)))))))
 
 (defn send-file [token chat-id options file method field filename]
   "Helper function to send various kinds of files as multipart-encoded"
@@ -73,75 +75,32 @@
                (log/warn "Problem with chat-id: " chat-id))))
          chat-ids)))
 
-(comment
-  {"token" {"chat-id" {:buffer-size 5 :buffer []}}})
 
-(def started-bot (atom {}))
-(def received-message-buffer (atom {}))
+; Este atomo tiene la siguiente estructura ejemplo:
+{"token1" {:lease-ts 2331213123 ; este se refresca cada vez que un cmd-telegram-opr es ejecutado si nadie renuava esto en 5 min se apaga la maquinaria de lectura
+           "chat-id1" {"app1" {"instance1" {:channel "este es un chan de core.async con sliding buffer"
+                                            }
+                               }
+                       }
+           "chat-id2" {}
+           }
+ "token2" {
+           }
+ }
 
-(defn push-message [token chat-id app instance message]
-  (let [robot-info-fn (get state/system [:robot.core.essentials/robot-info :essentials/robot-info])
-        robot-info (robot-info-fn)
-        stored?    (contains? (into #{} (get robot-info :stored)) app)
-        running?   (not (nil? (get-in robot-info [:ready app instance])))]
-    (log/info {:app app :instance instance :stored? stored? :running? running?})
-    (if (and stored? running?)
-      (let [_ (send-text token chat-id (str "Processing " (pr-str message) " to " (pr-str [app instance])))]
-        (swap! received-message-buffer
-               update-in
-               [token chat-id app instance]
-               (fn [{:keys [buffer-size buffer] :as old}]
-                 (if old
-                   (let [length (count buffer)
-                         new-buffer (if (< length buffer-size)
-                                      (conj buffer message)
-                                      (conj (vec (take-last (dec buffer-size) buffer)) message))]
-                     {:buffer-size buffer-size :buffer new-buffer})
-                   {:buffer-size 5 :buffer [message]}))))
-      (if (and stored? (not running?))
-        (send-text token chat-id (str "I'm not running: " (pr-str [app instance]) "!"))
-        (send-text token chat-id (str "I don't find: " (pr-str [app instance]) "!"))))))
-
-(defn pull-message [token chat-id app instance]
-  (let [response (chan)]
-    (go
-      (swap! received-message-buffer
-             update-in
-             [token chat-id app instance]
-             (fn [{:keys [buffer-size buffer] :as old}]
-               (if old
-                 (let [return (first buffer)
-                       new-buffer (vec (rest buffer))]
-                   (>!! response (or return :empty))
-                   {:buffer-size buffer-size :buffer new-buffer})
-                 (do
-                   (>!! response :empty)
-                   {:buffer-size 5 :buffer []})))))
-    (<!! response)))
+(def telegram-bots (atom {}))
 
 (defn get-message [token chat-ids app instance]
-  (log/debug (pr-str @received-message-buffer))
-  (reduce (fn [_ chat-id]
-            (let [response (pull-message token chat-id app instance)]
-              (if (not= response :empty)
-                (reduced response))))
-          nil chat-ids))
-
-(defn poller [url params]
-  (try
-    (let [result @(http/request {:request-method "get" :url url :request-timeout 15000 :query-params params})
-          body-str (slurp (:body result))]
-      (log/debug "poler: body: " body-str)
-      (json/read-str body-str :key-fn keyword))
-    (catch Throwable e
-      (log/error e))))
-
-(defn new-offset
-  "Returns new offset for Telegram updates"
-  [result default]
-  (if (and result (< 0 (count result)))
-      (-> result last :update_id inc)
-      default))
+  (loop [[chat-id & remaining] chat-ids]
+    (when chat-id
+      (log/debug "get-message1: " chat-id app instance)
+      (let [d-chan  (get-in @telegram-bots [token chat-id app instance :channel])
+            _ (log/debug "get-message2 d-chan: " d-chan)
+            d-msg (if d-chan (poll! d-chan))]
+        (log/debug "get-message3: " d-msg)
+        (if (seq d-msg)
+          d-msg
+          (recur remaining))))))
 
 (defn parser-cmd [text]
   (try
@@ -153,47 +112,78 @@
     (log/warn "problema en parser-cmd: " text)
     (log/warn e))))
 
-(defn start-server [token]
-  (log/debug "telegram start-server 1) " @started-bot token)
-  (log/debug "telegram start-server 2) " (get @started-bot token))
-  (locking started-bot
-           (let [status (get @started-bot token )]
-             (log/debug "telegram status:" status)
-             (if (and status (or (> status 0) (> 300000 (+ (System/currentTimeMillis) status))))
-               (if (< status 0)
-                 (log/info (format "telegram with problems retrying in %d s, token: %s"  (- 120000 (+ (System/currentTimeMillis) status)) token))
-                 (log/debug "telegram already running Bot Server, token: " token))
-               ;else !!
-               (let [_ (swap! started-bot assoc token (System/currentTimeMillis))
-                     url (str base-url token "/getUpdates")]
-                 (log/info "telegram starting Bot Server, token: " token)
-                 (go-loop [offset 0 limit 100]
-                          (log/debug "telegram start-server 3.0 ")
-                          (let [params {:timeout 1 :offset offset :limit limit}
-                                {:keys [ok result] :as data} (try
-                                                               (poller url params)
-                                                               (catch Exception e
-                                                                 (log/error "telegram start-server 3.1")
-                                                                 (log/error e))) ]
-                            (log/debug "telegram start-server 3.2) " ok result)
-                            (if (and ok (try
-                                          (dorun (map (fn [message]
-                                                        (log/debug "message: " message)
-                                                        (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
-                                                              chat-id (str (get-in message [:message :chat :id]))]
-                                                          (log/debug "incomming message:" (pr-str [token chat-id app instance params]))
-                                                          (if parsed
-                                                            (push-message token chat-id app instance params)
-                                                            (log/warn message))))
-                                                      result))
-                                          (<! (timeout 1000))
-                                          true
-                                          (catch Throwable e
-                                            (log/error "start-server 4)")
-                                            (log/error e)
-                                            false)))
-                              (recur (new-offset result offset) limit)
-                              (do
-                                (log/error "start-server:" data)
-                                (swap! started-bot assoc token (- (System/currentTimeMillis)))))))
-                 (log/debug "telegram start-server 4)"))))))
+(defn telegram-poller [token params]
+  (let [URL (str base-url token "/getUpdates")]
+    (try
+      (let [_ (log/debug {:request-method "get" :url URL :request-timeout 15000 :query-params params})
+            result @(http/request {:request-method "get" :url URL :request-timeout 15000 :query-params params})
+            body-str (slurp (:body result))]
+        (json/read-str body-str :key-fn keyword))
+      (catch Throwable e
+        (log/error e)
+        (log/error "Past error on: " URL params)))))
+
+(defn get-or-create-channel-of [token chat-id app instance]
+  (let [bots (swap! telegram-bots
+                    update-in
+                    [token chat-id app instance :channel]
+                    #(or
+                      %
+                      (chan (sliding-buffer 5))))]
+    (get-in bots [token chat-id app instance :channel])))
+
+(defn should-recur? [bot-token]
+  (< (- (System/currentTimeMillis) (get-in @telegram-bots [bot-token :lease-ts])) 300000))
+
+(defn remove-bot [bots bot-token]
+  (log/info "Removing bot loop: " bot-token)
+  (dissoc bots bot-token))
+
+(defn calc-offset [messages]
+  (if (seq messages)
+    (-> messages last :update_id inc)
+    0))
+
+(defn start-bot-poll-server [bot-token]
+  (go-loop
+   [offset 0 limit 100]
+   (let [params {:timeout 10 :offset offset :limit limit}
+         {:keys [ok result] :as data} (telegram-poller bot-token params)]
+     (when-not ok
+       (log/warn "Problems comunicating with telegram, wait 2 min.")
+       (<! (timeout 120000)))
+     (if ok
+       (let [robot-info-fn (get state/system [:robot.core.essentials/robot-info :essentials/robot-info])
+             robot-info (robot-info-fn)]
+         (doseq [message result]
+           (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
+                 stored?    (contains? (into #{} (get robot-info :stored)) app)
+                 running?   (not (nil? (get-in robot-info [:ready app instance])))
+                 chat-id (str (get-in message [:message :chat :id]))]
+             (cond
+               (and stored? running? parsed)
+               (let [d-chan (get-or-create-channel-of bot-token chat-id app instance)]
+                 (send-text bot-token chat-id (str "Procesing /" app " " instance " "  params))
+                 (>!! d-chan params))
+
+               (and stored? running?)
+               (log/warn "Invalid message:" message)
+
+               (and stored? (not running?))
+               (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!"))
+
+               :OTHERWIZE
+               (send-text bot-token chat-id (str "I don't find: " (pr-str [app instance]) "!")))))))
+
+     (if (should-recur? bot-token)
+       (recur (calc-offset result) limit)
+       (swap! telegram-bots remove-bot bot-token)))))
+
+(defn startORrenew-bot [bots-data bot-token]
+  (when-not (get bots-data bot-token)
+    (start-bot-poll-server bot-token))
+  (assoc-in bots-data [bot-token :lease-ts] (System/currentTimeMillis)))
+
+(defn register-telegram-bot [bot-token]
+  (swap! telegram-bots startORrenew-bot bot-token)
+  (log/debug "Bot registrado: " bot-token))

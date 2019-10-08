@@ -441,7 +441,7 @@
              message (subs message 0 (min 1024 (count message)))
              path (U/contextualize context path)]
 
-         (telegram/start-server bot-token)
+         ;(telegram/start-server bot-token)
          (try
            (if-let [response (telegram/send-message bot-token chat-tokens message path)]
              (assoc context you "scheduled for sending")
@@ -461,7 +461,8 @@
              chat-tokens (S/split
                           (S/trim
                            (U/contextualize context chat-tokens)) #",")]
-         (telegram/start-server bot-token)
+         ;(telegram/start-server bot-token)
+         (telegram/register-telegram-bot bot-token)
          (if-let [response (telegram/get-message bot-token chat-tokens app instance)]
            (assoc context you (reduce str (interpose "," response)))
            (assoc context you "no cmd available")))))
