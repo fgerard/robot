@@ -5,8 +5,8 @@
  {:firefox {:driver "./resources/selenium_drivers/geckodriver" :arguments [] }
   :chrome {:driver "./resources/selenium_drivers/chromedriver" :arguments [] } }
 
- :keyval.leveldb/factory
- {:db-path "./leveldb"}
+ :keyval.konservedb/factory
+ {:db-path "./konservedb"}
 
   :robot.web/rest-server
   {:https-port 4050
@@ -36,13 +36,13 @@
   ]
 
  [:robot.web.rest-handle/login :rest-handle/login]
- {:db #ig/ref :keyval.leveldb/factory}
+ {:db #ig/ref :keyval.konservedb/factory}
 
  [:robot.web.rest-handle/load-users :users/get]
- {:db #ig/ref :keyval.leveldb/factory}
+ {:db #ig/ref :keyval.konservedb/factory}
 
  [:robot.web.rest-handle/save-users :users/put]
- {:db #ig/ref :keyval.leveldb/factory}
+ {:db #ig/ref :keyval.konservedb/factory}
 
  [:robot.web.rest-handle/get-operation :rest-handle/get-operation]
  {:operations #ig/ref :essentials/operations
@@ -117,7 +117,7 @@
  {:operations #ig/ref :essentials/operations
   :state-factory #ig/ref :essentials/state-factory
   :flow-factory #ig/ref :essentials/flow-factory
-  :db #ig/ref :keyval.leveldb/factory}
+  :db #ig/ref :keyval.konservedb/factory}
 
  [:robot.core.essentials/robot-controller :essentials/robot-controller]
  {:operations #ig/ref :essentials/operations
@@ -126,12 +126,12 @@
 
  [:robot.core.essentials/robot-info :essentials/robot-info]
  {:robot-controller #ig/ref :essentials/robot-controller
-  :db #ig/ref :keyval.leveldb/factory
+  :db #ig/ref :keyval.konservedb/factory
   }
 
  [:robot.core.essentials/app-info :essentials/app-info]
  {:robot-controller #ig/ref :essentials/robot-controller
-  :db #ig/ref :keyval.leveldb/factory
+  :db #ig/ref :keyval.konservedb/factory
   }
 
  }

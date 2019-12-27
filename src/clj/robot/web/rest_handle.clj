@@ -7,7 +7,7 @@
     ;[ring.util.response :refer [response]]
             [integrant.core :as ig]
             [ring.util.response :refer [response]]
-            [keyval.leveldb :as db]
+            [keyval.konservedb :as db]
             [ring.middleware.multipart-params :as multipart]
             [ring.middleware.nested-params :as nested]
             [ring.middleware.cors :as cors]

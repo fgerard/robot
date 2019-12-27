@@ -1,4 +1,4 @@
-(defproject fgerard/robot "2.0.3"
+(defproject fgerard/robot "3.0.0"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -53,8 +53,10 @@
                  [clj-tagsoup "0.3.0" :exclusions [org.clojure/clojure]] ;net.java.dev.stax-utils/stax-utils
 
 
-                 [org.fusesource.leveldbjni/leveldbjni-all "1.8"]
-                 [org.iq80.leveldb/leveldb-api "0.11"]      ;7
+                 ;[org.fusesource.leveldbjni/leveldbjni-all "1.8"]
+                 ;[org.iq80.leveldb/leveldb-api "0.11"]      ;7
+
+                 [io.replikativ/konserve "0.5.1"]
 
                  [org.seleniumhq.selenium/selenium-java "3.11.0" :exclusions [com.google.errorprone/error_prone_annotations]]
 
@@ -120,7 +122,7 @@
                  :init-ns robot.main.starter}
 
   :aot [robot.main.starter robot.util.selenium-direct]
- 
+
   :source-paths ["src/clj"]
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target" "robot-distro/" "robot-distro.tgz"]
 

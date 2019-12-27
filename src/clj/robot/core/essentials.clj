@@ -9,7 +9,7 @@
     [manifold.stream :as s]
     [taoensso.sente :as sente]
     [robot.core.util :as U]
-    [keyval.leveldb :as db])
+    [keyval.konservedb :as db])
   (:import
     (java.io File PrintWriter OutputStreamWriter FileOutputStream)))
 
@@ -427,14 +427,11 @@
       ([[cmd payload :as params]]
        (swap! robot robot-cmd app-controller operations params)))))
 
-(defn get-stored-apps [db]
-  (let [iter (db/iterator db)]))
-
 (defmethod ig/init-key :robot.core.essentials/robot-info
   [_ {:keys [robot-controller db]}]
   (letfn [(get-stored-apps
             []
-            (into [] (map second (db/get-key-range-starting db "[:apps "))))
+            (into [] (db/get-apps db)))
           (get-loaded-apps
             [robot-controller]
             (let [robot-data (robot-controller)]
@@ -464,6 +461,7 @@
                   loaded-apps (get-loaded-apps robot-controller)
                   ready-apps (get-ready-apps robot-controller)
                   editable-apps (get-editable-apps robot-controller)]
+              (log/debug :stored-apps (pr-str stored-apps))
               {:stored   stored-apps
                :loaded   loaded-apps
                :ready    ready-apps

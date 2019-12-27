@@ -14,7 +14,6 @@
    [twitter.callbacks]
    [twitter.callbacks.handlers]
    [twitter.api.restful :as tapi]
-   [keyval.leveldb :as db]
    [robot.core.util :as U]
    [robot.util.selenium :as selenium-util]
    [robot.util.selenium-direct :as selenium-direct]
