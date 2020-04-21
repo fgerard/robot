@@ -138,14 +138,25 @@
       (.printStackTrace e)
       [:error {:err-msg (format "%s -> %s" (str (class e)) (.getMessage e))}])))
 
-(defmethod app-cmd :remove [db state-factory flow-factory operations [cmd {:keys [app-id]}]]
-  (try
-    (log/info :remove (pr-str [cmd app-id]))
-    (db/delete db [:apps app-id])
-    [:success {:app-id app-id}]
-    (catch Exception e
-      (.printStackTrace e)
-      [:error {:err-msg (format "%s -> %s" (str (class e)) (.getMessage e))}])))
+(defmethod app-cmd :remove [db state-factory flow-factory operations [cmd {:keys [app-id inst-id]}]]
+  (if inst-id
+    (try
+      (log/info :remove-inst (pr-str [cmd app-id inst-id]))
+      (let [app-conf (-> (db/get db [:apps app-id])
+                         (update :instances dissoc inst-id))]
+        (if (= [:success]
+               (app-cmd db state-factory flow-factory operations [:store {:app-id app-id :app-conf app-conf}]))
+          [:success {:app-id app-id :app-conf app-conf}]))
+      (catch Exception e
+        (.printStackTrace e)
+        [:error {:err-msg (format "%s -> %s" (str (class e)) (.getMessage e))}]))
+    (try
+      (log/info :remove (pr-str [cmd app-id]))
+      (db/delete db [:apps app-id])
+      [:success {:app-id app-id}]
+      (catch Exception e
+        (.printStackTrace e)
+        [:error {:err-msg (format "%s -> %s" (str (class e)) (.getMessage e))}]))))
 
 (defmethod app-cmd :start [db state-factory flow-factory operations [cmd {:keys [app-id inst-id]}]]
   (try
@@ -323,20 +334,28 @@
            (if inst-agent
              (send inst-agent (partial change-executor-status publisher :stopped)))) instances)))
 
-(defmethod robot-cmd :remove [robot app-controller operations [cmd {:keys [app-id]}]]
-  (log/info :remove (pr-str [cmd app-id]))
-  (if-let [app (get-in robot [:ready-apps app-id])]
-    (let [instances (:instances app)
-          publisher (:publish robot)]
-      (stop-all instances publisher)
-      (app-controller :remove {:app-id app-id})
+(defmethod robot-cmd :remove [robot app-controller operations [cmd {:keys [app-id inst-id] :as params}]]
+  (log/info :remove (pr-str params))
+  (if inst-id
+    (let [robot (robot-cmd robot app-controller operations [:stop params])
+          [status {:keys [app-id app-conf]}] (app-controller :remove params)
+          new-robot (-> robot
+                        (assoc-in [:apps app-id] app-conf)
+                        (assoc :cmd-status :success)
+                        (dissoc :cmd-err))]
+      new-robot)
+    (if-let [app (get-in robot [:ready-apps app-id])]
+      (let [instances (:instances app)
+            publisher (:publish robot)]
+        (stop-all instances publisher)
+        (app-controller :remove params)
+        (-> robot
+            (update :ready-apps dissoc app-id)
+            (update :apps dissoc app-id)
+            (assoc :cmd-status :success)
+            (dissoc :cmd-err)))
       (-> robot
-          (update :ready-apps dissoc app-id)
-          (update :apps dissoc app-id)
-          (assoc :cmd-status :success)
-          (dissoc :cmd-err)))
-    (-> robot
-        (assoc :cmd-status :error :cmd-err (format "Application: %s not found" app-id)))))
+          (assoc :cmd-status :error :cmd-err (format "Application: %s not found" app-id))))))
 
 (defn robot-instance-error-handler [app-id inst-id ex]
   (log/error "robot error@" [app-id inst-id])

@@ -159,7 +159,7 @@
                 (if-let [app (get-in request [:params :application])]
                   {:status  200
                    :headers {:Content-Disposition (str "attachment; filename=" app ".edn")}
-                   :body    (with-out-str (clojure.pprint/pprint ((app-info) (get-in request [:params :application]))))}
+                   :body    (with-out-str (clojure.pprint/pprint ((app-info) app)))}
                   {:status 400 :body "Request has invalid parameters and or headers"}))))
 
 (defmulti do-cmd (fn [_ admin? {:keys [cmd]}] cmd) :default :default)
@@ -189,10 +189,11 @@
       {:status 204}
       {:status (if admin? 400 401) :body (format "Wrong format [%s]" cmd-err)})))
 
-(defmethod do-cmd "remove" [robot-controller admin? {:keys [cmd app-id]}]
+(defmethod do-cmd "remove" [robot-controller admin? {:keys [cmd app-id inst-id] :as params}]
+  (log/info (pr-str params))
   (let [{:keys [cmd-status cmd-err]
          :as   robot} (if admin?
-                        (robot-controller [:remove {:app-id app-id}])
+                        (robot-controller [:remove params])
                         {:cmd-status :fatal :cmd-err "Must be admin!"})]
     (if (= :success cmd-status)
       {:status 200 :body (get-in robot [:apps app-id])}

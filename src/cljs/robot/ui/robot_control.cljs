@@ -271,12 +271,12 @@
                                                                      :children (concat []
                                                                                        (app-ready app))]
                                                                     [re-com/gap :size "5px"]
-                                                                    [md-open-close-button 
-                                                                     "zmdi zmdi-caret-right btn-cursor" 
-                                                                     "zmdi zmdi-caret-down btn-cursor" 
-                                                                     insts 
-                                                                     open-instances-atm 
-                                                                     (fn [] 
+                                                                    [md-open-close-button
+                                                                     "zmdi zmdi-caret-right btn-cursor"
+                                                                     "zmdi zmdi-caret-down btn-cursor"
+                                                                     insts
+                                                                     open-instances-atm
+                                                                     (fn []
                                                                        (if (@app-open-fltr app)
                                                                          (swap! app-open-fltr disj app)
                                                                          (swap! app-open-fltr conj app))
@@ -287,7 +287,7 @@
                                                                     [re-com/label
                                                                      :label app
                                                                      :class "app-name"
-                                                                     :width "12em"]                                                                    
+                                                                     :width "12em"]
                                                                     [:div.separator-0]
                                                                     [:div.separator-1]
                                                                     [re-com/gap :size "7.5rem"]
@@ -766,7 +766,12 @@
                               :OTHERWIZE
                               (md-button "zmdi zmdi-more"))
                             [re-com/label :width "25%" :label current :class "instance-label"]
-
+                            [re-com/md-icon-button
+                             :md-icon-name "zmdi-close-circle-o"
+                             :class "eraser-btn"
+                             :size :regular
+                             :tooltip "Delete instance"
+                             :on-click (fn [] (re-frame/dispatch [:remove-inst app-id inst-id]))]
                             ]]
                 (if (@open-instances-atm inst-id)
                   [re-com/h-box
@@ -849,7 +854,7 @@
                                                                    ;(reset! new-app-atm :create)
                                                                    (re-frame/dispatch [:reset! [:designer :ctrl :new-app] :create])
                                                                    )]
-                                                      
+
                                                       #_[re-com/md-icon-button
                                                        :class "delete-app-btn"
                                                        :md-icon-name "zmdi-plus"
@@ -921,9 +926,20 @@
                                                :child
                                                [re-com/v-box
                                                 :style {:margin-bottom "20px"}
-                                                :children [[re-com/title
-                                                            :label "Application Parameters"
-                                                            :class "title"]
+                                                :children [[re-com/h-box
+                                                            :class "instance-main"
+                                                            :children [[re-com/title
+                                                                        :label "Application Parameters"
+                                                                        :class "title"]
+                                                                       [re-com/gap :size "5em"]
+                                                                       [re-com/label :width "25%" :label app :class "instance-label"]
+                                                                       [re-com/gap :size "0.5em"]
+                                                                       [re-com/md-icon-button
+                                                                        :md-icon-name "zmdi-close-circle-o"
+                                                                        :class "eraser-btn"
+                                                                        :size :regular
+                                                                        :tooltip "Delete application"
+                                                                        :on-click (fn [] (re-frame/dispatch [:remove-app app]))]]]
                                                            [edit-params (get-in editable [app :app-params]) [app :app-params] "100%"]
                                                            [re-com/title
                                                             :label "Application Instances"

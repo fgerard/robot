@@ -27,9 +27,11 @@
   [["applications"] {{:request-method :get} #ig/ref :rest-handle/get-applications}]
   [["application/" :application] {{:request-method :get} #ig/ref :rest-handle/get-application}]
   [[:cmd "/" :app-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+
   [["robot-client"] {{:request-method :get} #ig/ref :ws-handle/handshake}]
   [["robot-client"] {{:request-method :post} #ig/ref :ws-handle/post}]
   [[:cmd "/" :app-id "/" :inst-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+
   [["users"] {{:request-method :get} #ig/ref :users/get}]
   [["users"] {{:request-method :put} #ig/ref :users/put}]
   [true #ig/ref :rest-handle/default]

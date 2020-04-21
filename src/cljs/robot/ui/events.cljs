@@ -235,13 +235,33 @@
                                                   "Accept"       "application/edn"}}))]
         (if (#{200 204} status)
           (do
-            ;(re-frame/dispatch [:instantiate app-id])
-            ;(re-frame/dispatch [:pprint])
-            (re-frame/dispatch (create-log :info status(str "Removed app " app-id)))
+            (re-frame/dispatch-sync (create-log :info status(str "Removed app " app-id)))
+            (re-frame/dispatch-sync [:load-applications])
+            (re-frame/dispatch [:reset! [:designer :ctrl :app] nil])
             )
           (re-frame/dispatch (create-log :error status body)))
         ))
     (js/removeListener)
+    db))
+
+(re-frame/reg-event-db
+  :remove-inst
+  (fn [{:keys [url-base] :as db} [_ app-id inst-id]]
+    (println "Para eliminar!!: " app-id inst-id)
+    (go
+      (let [{:keys [status body]} (<! (http/post
+                                       (str url-base "remove/" app-id "/" inst-id)
+                                       {:headers {"content-type" "application/edn"
+                                                  "Accept"       "application/edn"}}))]
+        (if (#{200 204} status)
+          (do
+            ;(re-frame/dispatch [:instantiate app-id])
+            ;(re-frame/dispatch [:pprint])
+            (re-frame/dispatch-sync (create-log :info status(str "Removed app instance " (str app-id "/" inst-id))))
+            (re-frame/dispatch-sync [:load-applications])
+            )
+          (re-frame/dispatch (create-log :error status body)))
+        ))
     db))
 
 (re-frame/reg-event-db
@@ -415,8 +435,8 @@
             (re-frame/dispatch [:reset! [:designer :ctrl :import] nil]))
           (re-frame/dispatch (create-log :error status body))
           )))
-    db
-    ))
+    db))
+
 (re-frame/reg-event-db
   :change-opr-type
   (fn [db [_ app-id opr-id opr-type]]
