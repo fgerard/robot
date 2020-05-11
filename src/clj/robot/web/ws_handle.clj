@@ -20,11 +20,11 @@
 
             [util.io :refer [read-body]]
             [util.http :refer [smart-params
-                                            http-code-of
-                                            defhandler
-                                            middleware-query-params
-                                            make-handler
-                                            valid-post-request?]]
+                               http-code-of
+                               defhandler
+                               middleware-query-params
+                               make-handler
+                               valid-post-request?]]
             ))
 
 (defmethod ig/init-key :robot.web.ws-handle/manager

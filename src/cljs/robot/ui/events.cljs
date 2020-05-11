@@ -8,6 +8,7 @@
             [cljs-http.client :as http]
             [cljs-time.core :as time]
             [cljs-time.format :as t-fmt]
+            [cljs-time.coerce :as tc]
             [cljs-hash.goog :as gh]
             [taoensso.sente :as sente :refer (cb-success?)]
             [goog.string :as gstring]
@@ -42,11 +43,12 @@
                                           ))}))))))
 
 (defn now []
-  (str (js/Date.)) ;(time/time-now)
+  (js/goog.date.DateTime.) ;(str (js/Date.)) ;(time/time-now)
   )
 
 (defn create-log [level status msg]
-  [:log [(now) level status msg (.getTime (js/Date.))]])
+  (let [ts (now)]
+    [:log [(t-fmt/unparse (t-fmt/formatter "yyyy-MM-dd HH:mm:ss.SSS") ts) level status msg (pr-str ts)]]))
 
 (re-frame/reg-event-db
   :initialize-db
@@ -90,6 +92,9 @@
     (cond
       (= verb :chsk/ws-ping)
       (send-fn [:robot-client/ws-pong])
+
+      (= verb :robot/ws-pong)
+      (.log js/console "server says pong!")
 
       (= verb :robot/update)
       (re-frame/dispatch data))))

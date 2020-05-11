@@ -1,4 +1,4 @@
-(defproject fgerard/robot "3.0.1"
+(defproject fgerard/robot "3.0.2"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -127,6 +127,7 @@
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target" "robot-distro/" "robot-distro.tgz"]
 
   :figwheel {:css-dirs ["resources/public/css"]
+             :http-server-root "public"
              :server-port 3333}
 
 

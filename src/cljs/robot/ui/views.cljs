@@ -55,7 +55,7 @@
         main-tab-atm (reagent/atom :console)]
     (fn []
       [re-com/v-box
-       :height "100%"  
+       :height "100%"
        :width "100%"
        :children [[re-com/horizontal-tabs
                    :model @main-tab-atm
@@ -322,29 +322,30 @@
 (defn main-panel []
   (let [registered-uid (re-frame/subscribe [[:control :uid]])]
     (fn []
-      [re-com/v-box
+      #_[re-com/v-box
        :children [
-                  [re-com/v-split
-                   :width "100%"
-                   :height "100vh"
-                   :class "split-vertical"
-                   :style {:border "0px"
-                           :margin "0px"}
-                   :initial-split "80%"
-                   :panel-1
-                   (if-let [uid @registered-uid]
-                     [re-com/v-box
-                      :width "100%"
-                      :height "90%"
-                      :children [[title]
-                                 [work-area]
-                                 ]]
-                     [login-dialog])
-                   :panel-2 [re-com/v-box
+                  ]]
+      [re-com/v-split
+       :width "100%"
+       :height "100vh"
+       :class "split-vertical"
+       :style {:border "0px"
+               :margin "0px"}
+       :initial-split "80%"
+       :panel-1
+       [re-com/v-box
+        :width "100%"
+        ;:height "100vh"
+        :children (if @registered-uid
+                    [[title]
+                     [work-area]]
+                    [[login-dialog]])]
 
-                             :children [[logger]]
-                             :width "100%"
-                             :height "100%"
-                             ]
-                   ]
-                  ]])))
+       :panel-2 [re-com/v-box
+
+                 :children [[logger]]
+                 :width "100%"
+                 ;:height "100%"
+                 ]
+       ]
+      )))

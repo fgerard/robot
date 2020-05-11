@@ -81,7 +81,7 @@
                                               (log/debug (str "verify goog token: " ok))
                                               ok)) (get-google-keys)))
                     (let [email (get-in token-info [:claims :email])
-                          _ (log/debug "email: " (pr-str email))]
+                          _ (log/info "email: " (pr-str email))]
                       (if (re-matches #"^felipe.gerard.c@gmail.com$|^.*\@quantumlabs.ai" email) ;^.*\@interware.com.mx$|
                         (do
                           (log/debug "ES ADMIN!")

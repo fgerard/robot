@@ -990,15 +990,21 @@
                                          :children [[operations-ctrl app opr-choices opr-id-atm state-id-atm invalid-name?]
                                                     [svg/svg app @watch-instance-atm]]]
                                :panel-2 (if (and @watch-instance-atm (seq @watch-instance-atm))
-                                          [re-com/box
+                                          [re-com/scroller
+                                           :h-scroll :auto
+                                           :v-scroll :auto
+                                           :width "100%"
+                                           :child [edit-params (get-in ready [app @watch-instance-atm]) nil "100%" "30em" false]]
+                                          #_[re-com/box
                                            :width "100%"
                                            ;:height "30em"
                                            :style {:margin-bottom "20px"}
                                            :child
                                            [re-com/scroller
-                                            :h-scroll :off
-                                            :v-scroll :on
-                                            :child [edit-params (get-in ready [app @watch-instance-atm]) nil "50em" "30em" false]]]
+                                            :h-scroll :auto
+                                            :v-scroll :auto
+                                            :width "100%"
+                                            :child [edit-params (get-in ready [app @watch-instance-atm]) nil "100%" "30em" false]]]
                                           [re-com/title :label "Please select an instance to watch!"])
                                :initial-split "80%"]
                      :initial-split "25%"]
