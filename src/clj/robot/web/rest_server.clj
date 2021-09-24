@@ -6,8 +6,9 @@
   (:import (io.netty.handler.ssl SslContextBuilder)
            (io.netty.handler.ssl.util InsecureTrustManagerFactory)))
 
-(defmethod ig/init-key :robot.web/rest-server [_ {:keys [host http-host http-port https-host https-port server-key server-crt server-key-pass handler]
-                                                  :or   {http-host "localhost" http-port 8050 https-host "localhost" https-port 4050}}]
+(defmethod ig/init-key :robot.web/rest-server
+  [_ {:keys [host http-host http-port https-host https-port server-key server-crt server-key-pass handler]
+      :or   {http-host "localhost" http-port 8050 https-host "localhost" https-port 4050}}]
   (log/info :robot.web/https-rest-server)
   (try
     (let [http-host (or host http-host)

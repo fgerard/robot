@@ -96,6 +96,7 @@ start() {
     JAVA_VERSION=$("$JAVA_BIN" -version 2>&1 | awk -F '"' '/version/ {print $2}')
   fi
 
+  echo "Using java version: " $JAVA_VERSION
   # Start: normal or daemon mode
   if [ -z "$ROBOT_DAEMON" ] ; then
     echo starting2 ...

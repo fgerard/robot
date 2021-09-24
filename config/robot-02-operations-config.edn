@@ -118,4 +118,9 @@
  [:robot.core.operations/gsheet-appender-opr-factory :operations/gsheet-appender-opr-factory]
  {:image "gsheet-send-opr.png"
   :fields []}
+
+ [:robot.core.operations/topic-reader-opr-factory :operations/topic-reader-opr-factory]
+ {:image "topic-opr.png"
+  :topics #ig/ref :robot.core.essentials/topic-atom
+  :fields [[:topic {:required true :default "" :re "[A-Za-z0-9]+" :tip "Topic to listen"}]]}
 }

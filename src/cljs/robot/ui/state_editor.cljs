@@ -281,6 +281,12 @@
                                            :info        "Specifies the time in millis to sleep or a ctx key that cointains it, E.g. 1000, :delta"
                                            :placeholder "Enter delta"}]
                                   :title "Delta to wait"}
+                     :topic      {:flds  [{:kwd         :topic
+                                           :re          #"[A-Za-z0-9]+"
+                                           :label       "Topic"
+                                           :info        "Topic name to listen"
+                                           :placeholder "Enter topic"}]
+                                  :title "Delta to wait"}
                      :js         {:flds  [{:kwd   :code
                                            :re    #"(.|\n)*"
                                            :type  :code-editor
@@ -758,52 +764,52 @@
                                            :label       "Retry delay"
                                            :info        "Number of milliseconds to wait befor retrying"
                                            :placeholder "Milliseconds"}]}
-                :gsheet-send {:title "Google Spreadsheet Appender"
-                                  :flds  [{:kwd :client-secret-json
-                                           :re #"[a-zA-Z/\\0-9ñÑ].*"
-                                           :label "Google Secret File URL"
-                                           :placeholder "Enter URL of file with Google Oauth2 secrets"
-                                           :info "Please specify the client secrets JSON obtained via Google Console, E.g. /home/user/client_secrets.json"}
-                                          {:kwd :oauth-store
-                                           :re #"[a-zA-Z/\\0-9ñÑ].*"
-                                           :label "OAuth Store File URL"
-                                           :placeholder "Enter URL to save Cookie consent"
-                                           :info "Please specify the place to save your consent cookie, E.g. /home/user/.store/oauth2"}
-                                          {:kwd         :spreadsheet-id
-                                           :re          #".+"
-                                           :label       "SpreadSheetID"
-                                           :info        "Please specify your ID from URL: https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit"
-                                           :placeholder "SPREADSHEET_ID"}
-                                          {:kwd         :sheet-id
-                                           :re          #".+"
-                                           :label       "SheetID"
-                                           :info        "Please specify the sheet to append data"
-                                           :placeholder "Sheet 1"}
-                                          {:kwd         :as-row?
-                                           :re          #".+"
-                                           :label       "Append as Row (true) or as Column (false)"
-                                           :info        "true to append as Row"
-                                           :placeholder "true"}
+                     :gsheet-send {:title "Google Spreadsheet Appender"
+                                   :flds  [{:kwd :client-secret-json
+                                            :re #"[a-zA-Z/\\0-9ñÑ].*"
+                                            :label "Google Secret File URL"
+                                            :placeholder "Enter URL of file with Google Oauth2 secrets"
+                                            :info "Please specify the client secrets JSON obtained via Google Console, E.g. /home/user/client_secrets.json"}
+                                           {:kwd :oauth-store
+                                            :re #"[a-zA-Z/\\0-9ñÑ].*"
+                                            :label "OAuth Store File URL"
+                                            :placeholder "Enter URL to save Cookie consent"
+                                            :info "Please specify the place to save your consent cookie, E.g. /home/user/.store/oauth2"}
+                                           {:kwd         :spreadsheet-id
+                                            :re          #".+"
+                                            :label       "SpreadSheetID"
+                                            :info        "Please specify your ID from URL: https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit"
+                                            :placeholder "SPREADSHEET_ID"}
+                                           {:kwd         :sheet-id
+                                            :re          #".+"
+                                            :label       "SheetID"
+                                            :info        "Please specify the sheet to append data"
+                                            :placeholder "Sheet 1"}
+                                           {:kwd         :as-row?
+                                            :re          #".+"
+                                            :label       "Append as Row (true) or as Column (false)"
+                                            :info        "true to append as Row"
+                                            :placeholder "true"}
                                            {:kwd         :data
-                                           :re          #".+"
-                                           :label       "Text"
-                                           :info        "Entry your text or keywords, E.g. 1, 2, :hi"
-                                           :placeholder "value1, value2"}
-                                          {:kwd         :timeout
-                                           :re          #"[0-9]+"
-                                           :label       "Timeout"
-                                           :info        "Number of milliseconds to wait befor timeout"
-                                           :placeholder "Milliseconds"}
-                                          {:kwd         :retry-count
-                                           :re          #"[0-9]+"
-                                           :label       "Retry count"
-                                           :info        "Number of times to retry"
-                                           :placeholder "Count"}
-                                          {:kwd         :retry-delay
-                                           :re          #"[0-9]+"
-                                           :label       "Retry delay"
-                                           :info        "Number of milliseconds to wait befor retrying"
-                                           :placeholder "Milliseconds"}]}
+                                            :re          #".+"
+                                            :label       "Text"
+                                            :info        "Entry your text or keywords, E.g. 1, 2, :hi"
+                                            :placeholder "value1, value2"}
+                                           {:kwd         :timeout
+                                            :re          #"[0-9]+"
+                                            :label       "Timeout"
+                                            :info        "Number of milliseconds to wait befor timeout"
+                                            :placeholder "Milliseconds"}
+                                           {:kwd         :retry-count
+                                            :re          #"[0-9]+"
+                                            :label       "Retry count"
+                                            :info        "Number of times to retry"
+                                            :placeholder "Count"}
+                                           {:kwd         :retry-delay
+                                            :re          #"[0-9]+"
+                                            :label       "Retry delay"
+                                            :info        "Number of milliseconds to wait befor retrying"
+                                            :placeholder "Milliseconds"}]}
                      })
 
 (defmethod dialog-state :default

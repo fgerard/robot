@@ -26,14 +26,19 @@
 
   [["applications"] {{:request-method :get} #ig/ref :rest-handle/get-applications}]
   [["application/" :application] {{:request-method :get} #ig/ref :rest-handle/get-application}]
-  [[:cmd "/" :app-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+  [["topic/" :topic] {{:request-method :post} #ig/ref :rest-handle/post-event}]
+
 
   [["robot-client"] {{:request-method :get} #ig/ref :ws-handle/handshake}]
   [["robot-client"] {{:request-method :post} #ig/ref :ws-handle/post}]
-  [[:cmd "/" :app-id "/" :inst-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
 
   [["users"] {{:request-method :get} #ig/ref :users/get}]
   [["users"] {{:request-method :put} #ig/ref :users/put}]
+
+  [[:cmd "/" :app-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+  [[:cmd "/" :app-id "/" :inst-id] {{:request-method :post} #ig/ref :rest-handle/robot}]
+
+
   [true #ig/ref :rest-handle/default]
   ]
 
@@ -60,6 +65,10 @@
 
  [:robot.web.rest-handle/get-application :rest-handle/get-application]
  {:app-info #ig/ref :essentials/app-info
+  }
+
+ [:robot.web.rest-handle/post-event :rest-handle/post-event]
+ {:evt2topic #ig/ref :essentials/evt2topic
   }
 
  [:robot.web.ws-handle/manager :ws-handle/mananger]
@@ -106,7 +115,7 @@
   :ldap #ig/ref :operations/ldap-opr-factory
   :mq #ig/ref :operations/mq-opr-factory
   :gsheet-send #ig/ref :operations/gsheet-appender-opr-factory
-
+  :topic #ig/ref :operations/topic-reader-opr-factory
   }
 
  [:robot.core.essentials/flow-factory :essentials/flow-factory]
@@ -135,5 +144,12 @@
  {:robot-controller #ig/ref :essentials/robot-controller
   :db #ig/ref :keyval.konservedb/factory
   }
+
+ :robot.core.essentials/topic-atom
+ {:max-depth 3
+  :type :drop-oldest} ; :drop-newest
+
+ [:robot.core.essentials/evt2topic :essentials/evt2topic]
+ #ig/ref :robot.core.essentials/topic-atom
 
  }

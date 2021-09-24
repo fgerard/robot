@@ -1,6 +1,6 @@
 (ns robot.core.essentials
   (:require
-    [clojure.core.async :refer [go go-loop put! >! <! chan timeout alts!] :as async]
+    [clojure.core.async :refer [go go-loop put! >! <! chan timeout alts! sliding-buffer dropping-buffer put!] :as async]
     [clojure.pprint :as pp]
     [clojure.tools.logging :as log]
     [clojure.data :refer [diff]]
@@ -523,3 +523,25 @@
               editable-apps
               ))]
     robot-info-fn))
+
+(defmethod ig/init-key :robot.core.essentials/topic-atom
+  [_ {:keys [max-depth type] :or {max-depth 5 type :drop-oldest}}]
+  (if-not (#{:drop-oldest :drop-newest} type)
+    (throw (Exception. "type of topic atom must be :drop-oldest or :drop-newest")))
+  {:type type
+   :max-depth max-depth
+   :topics-atom (atom {})}) ; mapa topic --> core.async.chan
+
+(defn evt->topic [type max-depth topic-db topic evt]
+  (let [topic-chan (get topic-db topic (chan (if (= type :drop-oldest)
+                                               (sliding-buffer max-depth)
+                                               (dropping-buffer max-depth))))]
+    (put! topic-chan evt)
+    ;(log/info (format "putting %s on %s" (pr-str evt) topic))
+    (assoc topic-db topic topic-chan)))
+
+(defmethod ig/init-key :robot.core.essentials/evt2topic
+  [_ {:keys [type max-depth topics-atom]}]
+  (let [evt2topic (partial evt->topic type max-depth)]
+    (fn topic-poster [topic event]
+      (swap! topics-atom evt2topic topic event))))

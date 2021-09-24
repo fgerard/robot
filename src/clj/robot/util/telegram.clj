@@ -63,12 +63,13 @@
                                imagen)
                    (let [decoded (.decode (java.util.Base64/getDecoder) path)
                          imagen (java.io.File/createTempFile "robot" ".png")
-                         _ (log/debug "created:" imagen)]
+                         _ (log/debug "created:" imagen)
+                         ]
                      (with-open [out (java.io.FileOutputStream. imagen)]
                        (.write out decoded))
                      (send-photo bot-token chat-id
-                                     {:caption text}
-                                     imagen))))
+                                 {:caption text}
+                                 imagen))))
                (send-text bot-token chat-id text))
              (catch Throwable e
                (-> e .printStackTrace)

@@ -227,6 +227,14 @@
                 ;(pp/pprint request)
                 (do-cmd-controller (-> request :session :admin) (:params request)))))
 
+(defmethod ig/init-key :robot.web.rest-handle/post-event
+  [_ {:keys [evt2topic]}]
+  (defhandler post-event [request tx]
+    (log/debug "\npost-event:")
+    (let [{:keys [topic name score img]} (:params request)]
+      (evt2topic topic {:topic topic :name name :score score :img img})
+      {:status 204})))
+
 (defmethod ig/init-key :robot.web.rest-handle/default
   [_ _]
   (let []

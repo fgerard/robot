@@ -1,6 +1,6 @@
 (ns robot.core.operations
   (:require
-   [clojure.core.async :refer [go go-loop put! >! <! chan timeout alts!] :as async]
+   [clojure.core.async :refer [go go-loop put! >! <! chan timeout alts! poll!] :as async]
    [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
    [clojure.string :as S]
@@ -60,6 +60,25 @@
        (Thread/sleep (U/contextualize-integer context delay 1000))
        context))
    ui])
+
+(defmethod ig/init-key :robot.core.operations/topic-reader-opr-factory
+  [_ ui]
+  (let [topics-atom (get-in ui [:topics :topics-atom])
+        ui (dissoc ui :topics)]
+    [(fn topic-reader-opr-factory [{:keys [topic]}]
+       (log/debug :topic-factory topic)
+       (fn sleep-opr [context you]
+         (let [d-topic (U/contextualize context topic)
+               you-str (name you)
+               name-key (keyword (str you-str "-name"))
+               img-key (keyword (str you-str "-img"))]
+           ;(println "topic: " d-topic " " (keys @topics-atom))
+           (let [d-chan (get @topics-atom d-topic)]
+             (if-let [{:keys [score img name]} (and d-chan (poll! d-chan))]
+               (assoc context you score name-key name img-key img)
+               (-> (assoc context you "empty")
+                   (dissoc name-key img-key)))))))
+     ui]))
 
 (defmethod ig/init-key :robot.core.operations/date-time-opr-factory
   [_ ui]
@@ -431,7 +450,8 @@
      [{:keys [bot-token chat-tokens message path]
        :as   conf}] ;
      (fn telegram-opr [{app :robot/app instance :robot/instance :as context} you]
-       (log/debug "Operación Telegram " you)
+       ;(log/info "Operación Telegram " you " " path " " (keys context) " " (pr-str path) " " (if (get context path) "SIEXISTE" "NONONO"))
+       ;(log/info (U/contextualize context path))
        (let [bot-token (U/contextualize context bot-token)
              chat-tokens (S/split
                           (S/trim
