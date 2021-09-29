@@ -15,7 +15,7 @@
 
 (defn start []
   (println "Defining system ...")
-  (let [system-data (let [config-dir (get (System/getenv) "ROBOT_CONFIG" "./config"))
+  (let [system-data (let [config-dir (get (System/getenv) "ROBOT_CONFIG" "./config")
                           files-internal (find-files config-dir #"^robot-.*-config.edn$")
                           files-external (find-files (str config-dir "-ext/robot") #"^robot-.*-config.edn$")]
                       (log/info "Internal config files " (mapv #(.getName %) files-internal))
