@@ -18,10 +18,11 @@
 (defn -main [& args]
       ; startup
       (let [[name version] (name&version)
-            log4j (java.io.File. "./config/log4j2.xml")]
+            config-dir (get (System/getenv) "ROBOT_CONFIG" "./config"))
+            log4j (java.io.File. (str  config-dir "/log4j2.xml"))]
            (println "Configuring log4j2 form:" (.getCanonicalPath log4j))
            (-> (cast LoggerContext (LogManager/getContext false)) (.setConfigLocation (.toURI log4j)))
-           (println (str (slurp "./config/banner.txt")
+           (println (str (slurp (str config-dir "/banner.txt"))
                          "\n" name " " version "   Clojure: " (clojure-version) "\n"))
            (.addShutdownHook
              (Runtime/getRuntime)
