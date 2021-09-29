@@ -1,4 +1,4 @@
-(defproject fgerard/robot "3.0.2"
+(defproject fgerard/robot "3.0.4"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -9,7 +9,7 @@
                  [lein-less "1.7.5"]
                  [lein-asset-minifier "0.4.3"]]
 
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/clojurescript "1.10.520" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/core.async "0.4.500"]
 
@@ -26,7 +26,9 @@
 
                  [ring/ring-core "1.6.1"]
                  [org.clojure/java.jdbc "0.4.2"]
-                 [ring-middleware-format "0.7.2"]
+                 [org.flatland/ordered "1.5.9"] ; se pone esta versión para que no importe una anterior que no jala en clojure 1.10
+                                                ; el que usa esta dependencia es el ring-midleware-format
+                 [ring-middleware-format "0.7.4"]
                  [hiccup "1.0.5"]
                  [bidi "2.0.16"]
                  [com.taoensso/sente "1.11.0"]
@@ -43,9 +45,11 @@
                  [javax.servlet/javax.servlet-api "3.1.0"]
 
                  ;; Java 11
-                 [javax.xml.bind/jaxb-api "2.3.0"]
-                 [com.sun.xml.bind/jaxb-core "2.3.0"]
-                 [com.sun.xml.bind/jaxb-impl "2.3.0"]
+                 ;[javax.xml.bind/jaxb-api "2.4.0-b180830.0359"]
+
+		             ;[javax.xml.bind/jaxb-api "2.3.0"]
+                 ;[com.sun.xml.bind/jaxb-core "2.3.0"]
+                 ;[com.sun.xml.bind/jaxb-impl "2.3.0"]
 
                  [com.draines/postal "2.0.2"]
                  [twitter-api "1.8.0" :exclusions [org.bouncycastle/bcpkix-jdk15on io.netty/netty]]
@@ -89,9 +93,7 @@
                  [com.google.apis/google-api-services-sheets "v4-rev488-1.23.0"]
                  [com.google.http-client/google-http-client-jackson2 "1.23.0"]
                  [com.google.oauth-client/google-oauth-client-jetty "1.23.0"]
-                 [org.clojure/java.jmx "0.3.4"]
-
-                 ]
+                 [org.clojure/java.jmx "0.3.4"]]
 
   ;:certificates ["./ci.interware.mx.pem"]
 
@@ -108,11 +110,12 @@
                ; had a different version syntax where they contained '.' delimiters,
                ; from Java 9 onwards it has a simple versioning scheme based on one
                ; number.
-               (let [[mayor minor version] (clojure.string/split (System/getProperty "java.version") #"\.")
+               #_(let [[mayor minor version] (clojure.string/split (System/getProperty "java.version") #"\.")
                      mayor (Integer/parseInt mayor)]
                  (if (> mayor 1)
                    ["--add-modules" "java.xml.bind"]
-                   [])))
+                   []))
+              )
 
   :min-lein-version "2.5.3"
 

@@ -5,7 +5,7 @@
            (javax.crypto Cipher)
            (javax.crypto.spec IvParameterSpec SecretKeySpec)
            (java.util Arrays)
-           (javax.xml.bind DatatypeConverter)
+           ;(javax.xml.bind DatatypeConverter)
            (org.apache.commons.codec.digest DigestUtils)))
 
 (defn as-string [v] (->> v (map char) (apply str)))
@@ -38,10 +38,13 @@
                                          _      (.init result Cipher/DECRYPT_MODE secret-key)]
                                      result))
 
-(defn bytes->hex [data]
+#_(defn bytes->hex [data]
   (.toLowerCase (DatatypeConverter/printHexBinary data)))
 
-(defn hex-bytes [hex-string]
+(defn bytes->hex [data]
+  (format "%x" (new java.math.BigInteger data)))
+
+#_(defn hex-bytes [hex-string]
   (DatatypeConverter/parseHexBinary hex-string))
 
 (defn digest
