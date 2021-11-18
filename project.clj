@@ -1,4 +1,4 @@
-(defproject fgerard/robot "3.0.4"
+(defproject fgerard/robot "3.0.5"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -23,6 +23,8 @@
                  [commons-io/commons-io "2.5"]
                  [jagacy/jagacy "1.0.0"]
                  [clojure-csv/clojure-csv "2.0.1"]
+
+                 [clj-time "0.15.2"]
 
                  [ring/ring-core "1.6.1"]
                  [org.clojure/java.jdbc "0.4.2"]

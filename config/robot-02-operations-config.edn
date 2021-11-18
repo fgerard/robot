@@ -1,7 +1,10 @@
-{
- [:robot.core.operations/sleep-opr-factory :operations/sleep-opr-factory]
+{[:robot.core.operations/sleep-opr-factory :operations/sleep-opr-factory]
  {:image "sleep-opr.png"
   :fields [[:delay {:required true :default 3000 :re "[0-9]{1,7}" :tip "# millis to sleep"}]]}
+
+ [:robot.core.operations/wait-till-opr-factory :operations/wait-till-opr-factory]
+ {:image "wait-till-opr.png"
+  :fields [[:regex {:required true :default "..:..:00" :re ".*" :tip "HH:mm:ss re to wait"}]]}
 
  [:robot.core.operations/socket-opr-factory :operations/socket-opr-factory]
  {:image "socket-opr.png"
@@ -9,21 +12,19 @@
            [:port {:required true :default 22 :re "[0-9]{1,4}" :tip "Port to monitor"}]
            [:timeout {:required true :default 1000 :re "[0-9]{1,4}" :tip "Timeout"}]
            [:retry-count {:required true :default 3 :re "[0-9]{1,4}" :tip "Max retries"}]
-           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]
-           ]}
+           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]]}
 
  [:robot.core.operations/date-time-opr-factory :operations/date-time-opr-factory]
  {:image "date-time-opr.png"
   :fields [[:format {:required true :default "localhost" :re "[a-zA-Z0-9\\-\\.:\\s']+" :tip "SimpleDateFormat format"}]]}
 
-  [:robot.core.operations/http-opr-factory :operations/http-opr-factory]
+ [:robot.core.operations/http-opr-factory :operations/http-opr-factory]
  {:image "http-opr.png"
   :fields [[:uri {:required true :default "http://localhost:8050" :re "^(https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]" :tip "URI to get"}]
            [:params {:require false :default {} :re ".*" :tip "Map with params to post"}]
            [:timeout {:required true :default 1000 :re "[0-9]{1,4}" :tip "Timeout"}]
            [:retry-count {:required true :default 3 :re "[0-9]{1,4}" :tip "Max retries"}]
-           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]
-           ]}
+           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]]}
  [:robot.core.operations/switch-good-opr-factory :operations/switch-good-opr-factory]
  {:image "switch-good-opr.png"
   :fields []}
@@ -108,8 +109,7 @@
            [:body {:required true :default "Message body" :re ".*" :tip "Message body"}]
            [:timeout {:required true :default 1000 :re "[0-9]{1,4}" :tip "Timeout"}]
            [:retry-count {:required true :default 3 :re "[0-9]{1,4}" :tip "Max retries"}]
-           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]
-           ]}
+           [:retry-delay {:required true :default 1000 :re "[0-9]{1,4}" :tip "Inter retry delay"}]]}
 
  [:robot.core.operations/mq-opr-factory :operations/mq-opr-factory]
  {:image "mq-opr.png"
@@ -117,5 +117,4 @@
 
  [:robot.core.operations/gsheet-appender-opr-factory :operations/gsheet-appender-opr-factory]
  {:image "gsheet-send-opr.png"
-  :fields []}
-}
+  :fields []}}

@@ -23,7 +23,10 @@
    [robot.util.telegram :as telegram]
    [robot.util.basic :as basic]
    [robot.util.google-spreadsheet :as gsheet]
-   [clojure.java.jmx :as jmx])
+   [clojure.java.jmx :as jmx]
+   [clj-time.core :as t]
+   [clj-time.format :as tf]
+   [clj-time.coerce :as tc])
   (:import
     (org.mozilla.javascript Context)
     (org.mozilla.javascript.json JsonParser)))
@@ -59,6 +62,32 @@
        (log/debug :you you :sleep [delay])
        (Thread/sleep (U/contextualize-integer context delay 1000))
        context))
+   ui])
+
+(defmethod ig/init-key :robot.core.operations/wait-till-opr-factory
+  [_ ui]
+  [(fn wait-till-opr-factory [{:keys [regex]}]
+     (log/debug :wait-till-factory regex)
+     (fn wait-till-opr [context you]
+       (log/debug :you you :wait-till [regex])
+
+       (let [tz (t/time-zone-for-id "America/Mexico_City")
+             fmt (tf/formatter "HH:mm:ss")
+             fmt1 (tf/with-zone fmt tz)
+             now (* (int (/ (System/currentTimeMillis) 1000)) 1000)
+             regex (re-pattern (U/contextualize context regex))
+             delay (reduce
+                    (fn [_ delta]
+                      (let [t (+ now (* delta 1000))
+                            now (tc/from-long t)
+                            d (tf/unparse fmt1 now)]
+                        (if (re-matches regex d)
+                          (reduced delta)
+                          1)))
+                    nil
+                    (range (* 3600 24)))]
+         (Thread/sleep (- (* 1000 delay) 500))
+         (assoc context you delay))))
    ui])
 
 (defmethod ig/init-key :robot.core.operations/date-time-opr-factory

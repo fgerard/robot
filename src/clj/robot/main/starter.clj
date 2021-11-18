@@ -18,7 +18,7 @@
 (defn -main [& args]
       ; startup
       (let [[name version] (name&version)
-            config-dir (get (System/getenv) "ROBOT_CONFIG" "./config"))
+            config-dir (get (System/getenv) "ROBOT_CONFIG" "./config")
             log4j (java.io.File. (str  config-dir "/log4j2.xml"))]
            (println "Configuring log4j2 form:" (.getCanonicalPath log4j))
            (-> (cast LoggerContext (LogManager/getContext false)) (.setConfigLocation (.toURI log4j)))

@@ -281,6 +281,12 @@
                                            :info        "Specifies the time in millis to sleep or a ctx key that cointains it, E.g. 1000, :delta"
                                            :placeholder "Enter delta"}]
                                   :title "Delta to wait"}
+                     :wait-till  {:flds [{:kwd  :regex
+                                          :re #".*"
+                                          :label "Regex"
+                                          :info "Regex to match in the future (HH:mm:ss) or ctx key that contains it, E.g. ..:.[05]:00"
+                                          :placeholder "..:..:[03]0"}]
+                                  :title "Time regex"}
                      :js         {:flds  [{:kwd   :code
                                            :re    #"(.|\n)*"
                                            :type  :code-editor

@@ -83,6 +83,7 @@
 
  [:robot.core.essentials/operations :essentials/operations]
  {:sleep #ig/ref :operations/sleep-opr-factory
+  :wait-till #ig/ref :operations/wait-till-opr-factory
   :socket #ig/ref :operations/socket-opr-factory
   :date-time #ig/ref :operations/date-time-opr-factory
   :http #ig/ref :operations/http-opr-factory

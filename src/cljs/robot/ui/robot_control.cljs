@@ -679,7 +679,11 @@
                              [re-com/v-box
                               :class "param-list"
                               :children [(doall
-                                          (for [[k v] (sort (into [] view-params))]
+                                          (for [[k v] (sort (into [] (map (fn [[k v]]
+                                                                            (let [v-str (pr-str v)]
+                                                                              (if (and (> (count v-str) 100) (not (namespace k)))
+                                                                                [k (str (subs v-str 0 100) "...")]
+                                                                                [k v]))) view-params)))]
                                             ^{:key (str k)}
                                             [re-com/h-box
                                              :style {:cursor "pointer"}
