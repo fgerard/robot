@@ -820,6 +820,7 @@
         ;                           (:params conf {})))
         ]
     (fn [selected-app state-id init-state {:keys [operation conf diagram flow]}]
+      (.log js/console (str "Editing opr --> " operation))
       (dialog-body (opr-diag-confs operation)
                    conf-atm
                    selected-app

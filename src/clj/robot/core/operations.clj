@@ -69,8 +69,7 @@
   [(fn wait-till-opr-factory [{:keys [regex]}]
      (log/debug :wait-till-factory regex)
      (fn wait-till-opr [context you]
-       (log/debug :you you :wait-till [regex])
-
+       (log/info :you you :wait-till [regex])
        (let [tz (t/time-zone-for-id "America/Mexico_City")
              fmt (tf/formatter "HH:mm:ss")
              fmt1 (tf/with-zone fmt tz)
@@ -83,11 +82,18 @@
                             d (tf/unparse fmt1 now)]
                         (if (re-matches regex d)
                           (reduced delta)
-                          1)))
+                          -1)))
                     nil
-                    (range (* 3600 24)))]
-         (Thread/sleep (- (* 1000 delay) 500))
-         (assoc context you delay))))
+                    (range 1 (* 3600 24)))]
+         (log/info :wait-till-opr :delay delay)
+         (if (< delay 0)
+           (assoc context you (str regex " is invalid!"))
+           (let [sleep (- (* 1000 delay) 500)
+                 _ (Thread/sleep sleep)
+                 now (->> (System/currentTimeMillis)
+                          (tc/from-long)
+                          (tf/unparse fmt1))]
+             (assoc context you now))))))
    ui])
 
 (defmethod ig/init-key :robot.core.operations/date-time-opr-factory
