@@ -1,5 +1,5 @@
 (ns robot.ui.core
-    (:require [reagent.core :as reagent]
+    (:require [reagent.dom :as reagent] ;core upgrade-fgc
               [re-frame.core :as re-frame]
               [robot.ui.events]
               [robot.ui.subs]

@@ -3,10 +3,12 @@
             [re-frame.core :as re-frame]
             [re-com.core :as re-com]
             [reagent.core :as reagent :refer [atom create-class]]
+            [reagent.dom :refer [force-update-all]]
             [robot.ui.events :refer [create-log]]
             [robot.ui.robot-control :as ui-robot-control]))
 
-(reagent/force-update-all)
+;(reagent/force-update-all) ; upgrade-fgc
+(force-update-all) ; upgrade-fgc
 
 (defn app-title []
   (comment let [name (re-frame/subscribe [:name])]

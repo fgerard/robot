@@ -66,10 +66,13 @@
 
                  [org.seleniumhq.selenium/selenium-java "3.11.0" :exclusions [com.google.errorprone/error_prone_annotations]]
 
-                 [re-frame "0.9.4" :exclusions [com.google.guava/guava]]
-                 [re-com "2.1.0" :exclusions [com.google.guava/guava]]
+                 [cljsjs/react "17.0.2-0"]     ;upgrade-fgc
+                 [cljsjs/react-dom "17.0.2-0"] ;upgrade-fgc
+                 [reagent "1.1.0"]             ;upgrade-fgc
+                 [re-frame "1.2.0" :exclusions [com.google.guava/guava]] ;0.9.4
+                 [re-com "2.13.2" :exclusions [com.google.guava/guava]]   ;2.1.0
                  [fipp "0.6.8"]
-                 [cljs-http "0.1.43"]
+                 [cljs-http "0.1.46"]
                  [com.taoensso/sente "1.11.0"]
                  [com.andrewmcveigh/cljs-time "0.5.0"]
                  [cljsjs/codemirror "5.24.0-1"]
