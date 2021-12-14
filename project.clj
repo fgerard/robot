@@ -1,4 +1,4 @@
-(defproject fgerard/robot "3.0.6"
+(defproject fgerard/robot "3.1.0"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -41,8 +41,8 @@
                  [jumblerg/ring.middleware.cors "1.0.1"]
                  [integrant "0.4.0"]
                  [cheshire "5.5.0"]
-                 [org.apache.logging.log4j/log4j-core "2.8.1"]
-                 [org.apache.logging.log4j/log4j-slf4j-impl "2.8.1"]
+                 [org.apache.logging.log4j/log4j-core "2.16.0"]
+                 [org.apache.logging.log4j/log4j-slf4j-impl "2.16.0"]
 
                  [javax.servlet/javax.servlet-api "3.1.0"]
 
