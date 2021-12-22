@@ -31,6 +31,8 @@
     (org.mozilla.javascript Context)
     (org.mozilla.javascript.json JsonParser)))
 
+(def extra-code (atom false))
+
 (defmacro retry-fn [name timeout count delay & [params & fun-body :as body]]
   `(fn ~name [~@params]
      (let [[ctx# you#] [~@params]
@@ -289,7 +291,9 @@
         _ (log/debug "CODE: " (pr-str CODE))
         forms (count CODE)]
     (if (and (= forms 1) (= 'fn (ffirst CODE)))
-      (eval (first CODE))
+      (eval (if @extra-code
+              (do (require '[extra-code :as EC]) (first CODE))
+              (first CODE)))
       (fn [ctx]
         (log/warn "You clojure code: \n" code "\n is invalid!")
         "You clojure code MUST be ONE fn with ONE param ctx!"))))

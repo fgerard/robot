@@ -1,13 +1,26 @@
 (ns robot.main.starter
-    (:gen-class)
-    (:require [clojure.tools.logging :as log]
-      [clojure.pprint :as pp]
-      [robot.core.state :as state]
-      [robot.util.telegram :as telegram])
-    (:import (java.net Authenticator PasswordAuthentication)
-      (org.apache.logging.log4j LogManager)
-      (org.apache.logging.log4j.core LoggerContext)))
+  (:gen-class)
+  (:require
+   [clojure.tools.logging :as log]
+   [clojure.java.io :as io]
+   [clojure.pprint :as pp]
+   [robot.core.state :as state]
+   [robot.util.telegram :as telegram]
+   [robot.core.operations :as opr])
+  (:import (java.net Authenticator PasswordAuthentication)
+           (org.apache.logging.log4j LogManager)
+           (org.apache.logging.log4j.core LoggerContext)))
 
+(defn include-extra-code []
+  (let [extra-code-file (io/file "resources/extra_code.clj")]
+    (when (.exists extra-code-file)
+      (try
+        (load-file (.getCanonicalPath extra-code-file))
+        (reset! opr/extra-code true)
+        (log/info "Extra @" (.getCanonicalPath extra-code-file) " loaded. ")
+        (catch Exception e
+          (log/error e)
+          (log/error "Extra @" (.getCanonicalPath extra-code-file) " NOT loaded! "))))))
 
 (let [[_ name version] (-> "./project.clj" slurp read-string vec)]
      (defn name&version
@@ -24,6 +37,7 @@
            (-> (cast LoggerContext (LogManager/getContext false)) (.setConfigLocation (.toURI log4j)))
            (println (str (slurp (str config-dir "/banner.txt"))
                          "\n" name " " version "   Clojure: " (clojure-version) "\n"))
+           (include-extra-code)
            (.addShutdownHook
              (Runtime/getRuntime)
              (Thread. (fn []
