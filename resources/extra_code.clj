@@ -1,51 +1,52 @@
 (ns extra-code 
   (:require [clojure.pprint :as pp]
+            [clojure.data :refer [diff]]
             [test.new-ops :as NO]))
 
-(NO/wait-till #"..:..:.7")
+#_(defn date2local [t]
+  (if (inst? t)
+    (let [tz (java.util.TimeZone/getDefault)
+          tz-name (.getDisplayName tz true java.util.TimeZone/SHORT)
+          fd (java.text.SimpleDateFormat. (str "yyyy-MM-dd HH:mmz"))]
+      (.format fd t))
+    t))
 
-(defn cosa []
+#_(defn get-diffs [ant act]
+  (let [new-keys (-> (diff act ant)
+                     (first)
+                     (keys))
+        result (reduce (fn [r k]
+                         (conj r [k (date2local (k ant)) :-> (date2local (k act))]))
+                       []
+                       new-keys)]
+    result))
+
+#_(comment
+  (def local1-str (slurp "estado/obispo/data-local1.edn"))
+
+  (def local1 (read-string local1-str))
+
+  (pr-str (map name (keys local1)))
+
+  (reduce 
+   (fn [r [k v]]
+     (println [k v])
+     (let [v (get r k [])]
+       (update r k conj v)))
+   {}
+   (map #(reverse (re-find #"([A-Z]+[0-9]{2}).*" %)) (map name (keys local1))))
+  )
+
+
+
+
+#_(defn cosa []
   (NO/wait-till #"..:..:.7")
   (java.util.Date.))
 
-(defn fact2 [n]
+#_(defn fact2 [n]
   (reduce * 1N (range 1 (inc n))))
 
-(println "SIII")
-(println "SIII")
-(println "SIII")
+(println "Loading extra_code.clj")
 
 
-(comment
-
-  (require '[clojure.java.io :as io])
-
-  (def f (io/file "resources/extra_code.clj"))
-
-  (.getCanonicalPath f)
-
-  (def code-str (slurp f))
-  code-str
-  (def x (load-string code-str))
-
-  (require '[extra-code :as EC])
-
-  (EC/cosa)
-
-  (def S "(require '[test.new-ops :as NO])) (defn fact [n] (NO/wait-till #\"..:..:.7\") (reduce + 1N (range 1 (inc n))))")
-
-  (def S-frm (read-string S))
-
-  (eval S-frm)
-
-
-  (fact 23)
-
-  (fact 10)
-
-
-
-
-
-
-  )

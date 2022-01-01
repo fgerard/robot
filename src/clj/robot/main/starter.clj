@@ -13,14 +13,16 @@
 
 (defn include-extra-code []
   (let [extra-code-file (io/file "resources/extra_code.clj")]
-    (when (.exists extra-code-file)
+    (reset! opr/extra-code false)
+    (if (.exists extra-code-file)
       (try
         (load-file (.getCanonicalPath extra-code-file))
         (reset! opr/extra-code true)
         (log/info "Extra @" (.getCanonicalPath extra-code-file) " loaded. ")
         (catch Exception e
           (log/error e)
-          (log/error "Extra @" (.getCanonicalPath extra-code-file) " NOT loaded! "))))))
+          (log/error "Extra @" (.getCanonicalPath extra-code-file) " throws " e " NOT loaded! ")))
+      (log/info "Extra @" (.getCanonicalPath extra-code-file) "  does not exist, NOT loaded! "))))
 
 (let [[_ name version] (-> "./project.clj" slurp read-string vec)]
      (defn name&version
