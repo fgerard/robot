@@ -47,6 +47,6 @@
 #_(defn fact2 [n]
   (reduce * 1N (range 1 (inc n))))
 
-(println "Loading extra_code.clj")
+(println "Loading default (NO CODE) resources/extra_code.clj")
 
 
