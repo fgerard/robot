@@ -144,22 +144,35 @@
       (re-frame/dispatch (create-log :info "bye" (str (get-in db [:contro :uid]) " logged out")))
       (update db :control dissoc :uid :admin))))
 
+; este ajuste al reader es para que si en el estado del lado de clojure se pone algo como una funcion
+; de este lado solo se vea como un string chistoso
+(cljs.reader/register-tag-parser! 'object pr-str)
+
 (re-frame/reg-event-db
   :load-applications
   (fn [{:keys [url-base] :as db} _]
-    (.log js/console "Loading applications 1")
+    (.log js/console "loading applications 1.....")
     (go
-      (.log js/console "Loading applications 2")
-      (let [{:keys [status body]} (<! (http/get
-                                        (str url-base "applications")
-                                        {;query-params {}
-                                         :headers {"Accept" "application/edn"}}))]
-        (.log js/console "load-applications status:" status)
+      (.log js/console "Loading applications 2.....")
+      (try
+        (let [URL (str url-base "applications")
+              _ (.log js/console URL)
+              result (<! (http/get
+                          URL
+                          {;query-params {}
+                           :headers {"Accept" "application/edn"}
+                           }))
+              ;_ (.log js/console (pr-str [:load-applications-result result]))
+              {:keys [status body]} result]
+          (.log js/console "load-applications status:" status)
         ;(pprint body)
-        (if (#{200} status)
-          (do
-            (re-frame/dispatch [[:applications] body]))
-          (re-frame/dispatch [:status body]))))
+          (if (#{200} status)
+            (do
+              (re-frame/dispatch [[:applications] body]))
+            (re-frame/dispatch [:status body])))
+        (catch :default e
+          (.log js/console "Exception!!")
+          (.log js/console e))))
     db))
 
 (re-frame/reg-event-db

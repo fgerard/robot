@@ -1,0 +1,4 @@
+{:src ["src/clj"]
+ :deps {
+    org.clojure/core.async {:mvn/version "1.5.648"}
+    aleph/aleph {:mvn/version "0.4.3"}}}
