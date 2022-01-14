@@ -58,9 +58,9 @@
       new-flow)))
 
 (defn delete-state [states id]
+  (js/registerListener)
   (reduce
     (fn [new-states [state-id {:keys [flow] :as state-conf}]]
-      (js/registerListener)
       (if (not= state-id id)
         (assoc new-states state-id (assoc state-conf :flow (fix-flow flow id)))
         new-states))
@@ -83,7 +83,9 @@
   (fn [db [_ app-id type id]]
     (assoc-in db [:applications :editable app-id :svg-ctrl :hovered] [type id])))
 
-(defmulti process-move (fn [_ [type & _]] type) :default :default)
+(defmulti process-move (fn [_ [type & _ :as param]] 
+                         #_(.log js/console (pr-str param)) 
+                         type) :default :default)
 
 (defmethod process-move :default [db params]
   (.error js/console (str "No process-move for :" params))
@@ -117,7 +119,8 @@
     (assoc-in db [:applications :editable app-id :svg-ctrl :connecting] {:state-id  state-orig
                                                                          :mouse     [x y]
                                                                          :coords    coords
-                                                                         :old-state state-dest})))
+                                                                         :old-state state-dest})
+    db)) ;correccion
 
 (re-frame/reg-event-db
   :mouse-move
@@ -226,12 +229,23 @@
 (re-frame/reg-event-db
   :mouseout
   (fn [db [_ app-id]]
+    #_(.log js/console (pr-str [:mouseout app-id]))
     (update-in db [:applications :editable app-id :svg-ctrl] dissoc :hovered)))
 
 (re-frame/reg-event-db
   :mouseout-svg
   (fn [db [_ app-id]]
+    #_(.log js/console (pr-str [:mouseout-svg app-id]))
     db))
+
+(re-frame/reg-event-db
+ :mouseleave-svg
+ (fn [db [_ app-id]]
+   #_(.log js/console (pr-str [:mouseout-svg app-id]))
+   (-> db
+       (update-in [:applications :editable app-id :svg-ctrl] dissoc :target)
+       (update-in [:applications :editable app-id :svg-ctrl] dissoc :mouse-down)
+       (update-in [:applications :editable app-id :svg-ctrl] dissoc :connecting))))
 
 (re-frame/reg-event-db
   :update-re
@@ -630,7 +644,7 @@
 
 (defn show-robotito [robot-img-path animate-it x0 y0 x1 y1]
   (let []
-    (if animate-it (re-frame/dispatch [:move-robot "robotito" x0 y0 x1 y1 500]))
+    (when animate-it (re-frame/dispatch [:move-robot "robotito" x0 y0 x1 y1 500]))
     [:image {:id "robotito" :href robot-img-path  :x x0 :y y0
              :height "57" :width "57"}]))
 
@@ -653,6 +667,12 @@
   (let [native (.-nativeEvent e)]
     (.stopPropagation e) (.preventDefault e)
     (re-frame/dispatch [:mouseout-svg selected-app])))
+(defn svgOnMouseLeave [selected-app e]
+  (let [native (.-nativeEvent e)]
+    (.stopPropagation e) (.preventDefault e)
+    #_(.log js/console (pr-str [:onMouseLeave]))
+    (re-frame/dispatch [:mouseleave-svg selected-app])
+    ))
 
 (defn svg-comp [editables ready width height selected-app watch-instance]
   (let [states (get-in editables [selected-app :states])
@@ -693,13 +713,14 @@
            :onMouseMove (partial svgOnMouseMove selected-app)
            :onMouseUp   (partial svgOnMouseUp selected-app)
            :onMouseOut  (partial svgOnMouseOut selected-app)
+           :onMouseLeave (partial svgOnMouseLeave selected-app)
            ;:onMouseDown svgOnMouseDown
            ;:onWheel     svgOnWheel
            ;:onMouseMove svgOnMouseMove
            ;:onMouseUp   svgOnMouseUp
            ;:onMouseOut  svgOnMouseOut
            }
-     (if-let [{:keys [state-id mouse coords]} (:connecting svg-ctrl)]
+     (when-let [{:keys [state-id mouse coords]} (:connecting svg-ctrl)]
        (let [[x-m y-m] mouse
              [x-c y-c] coords
              [x y] (get-in states [state-id :diagram :corner])
@@ -730,7 +751,7 @@
               previous :robot/previous} (get-in ready [selected-app watch-instance])
              last-current (swap-current current)
              robot-img-path (if (= :running status) "images/robot-start.gif" "images/robot-waiting.gif")]
-         (if (and current)
+         (when (and current)
            (let [[x-p y-p] (get-in states [previous :diagram :corner])
                  x-p (+ 30 x-p)
                  [x y] (get-in states [current :diagram :corner])

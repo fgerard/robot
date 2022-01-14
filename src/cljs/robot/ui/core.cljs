@@ -6,6 +6,8 @@
               [robot.ui.views :as views]
               [robot.ui.config :as config]))
 
+(def BUILD 1)
+
 
 (defn dev-setup []
   (enable-console-print!)
@@ -19,6 +21,7 @@
 
 (defn ^:export init []
   (let [url-base (str (-> js/window .-location .-origin) "/")]
+    (.log js/console (str "build: " BUILD))
     (re-frame/dispatch-sync [:initialize-db url-base])
     ;(.log js/console "Mandando start-server-comm!")
     ;(re-frame/dispatch-sync [:start-server-comm])

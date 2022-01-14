@@ -464,7 +464,7 @@
  :move-robot
  (fn [db [_ id x0 y0 x1 y1 delta]] ;id,x0,y0,x1,y1,delta
    (js/SVGAnimate id x0 y0 x1 y1 delta)
-   (println "YA")
+   #_(println "YA")
    db))
 
 ;(re-frame/reg-event-db

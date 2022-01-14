@@ -1,12 +1,12 @@
 (ns robot.core.essentials
   (:require
-    [clojure.core.async :refer [go go-loop put! >! <! chan timeout alts!] :as async]
+    [clojure.core.async :refer [go-loop put! <! chan] :as async]
     [clojure.pprint :as pp]
     [clojure.tools.logging :as log]
-    [clojure.data :refer [diff]]
+    ;[clojure.data :refer [diff]]
     [clojure.walk :as walk]
     [integrant.core :as ig]
-    [manifold.stream :as s]
+    ;[manifold.stream :as s]
     [taoensso.sente :as sente]
     [robot.core.util :as U]
     [keyval.konservedb :as db])
@@ -29,7 +29,7 @@
                          (filter
                            (fn [[next re]]
                              (let [re (and re (U/contextualize context re))]
-                               (if (or (not re) (re-find (re-pattern re) (name (str current-val))))
+                               (when (or (not re) (re-find (re-pattern re) (name (str current-val))))
                                  next)))
                            arrows))]
         (if next-state
@@ -54,11 +54,11 @@
         (flow opr-result you)))))
 
 (defmulti app-cmd
-          (fn [db state-factory flow-factory operations [cmd _]]
+          (fn [_ _ _ _ [cmd _]] ;db state-factory flow-factory operations
             cmd)
           :default :default)
 
-(defmethod app-cmd :default [db state-factory flow-factory operations [cmd _]]
+(defmethod app-cmd :default [_ _ _ _ [cmd _]] ;db state-factory flow-factory operations
   (let [msg (str "Command: " cmd " unknown")]
     (log/error msg)
     [:error {:err-msg msg}]))
@@ -78,16 +78,13 @@
     {}
     m))
 
-
-(comment
-
-
-  (defn stringify-map-of-maps [m]
-    (reduce-kv
-      (fn [result k map-v]
-        (assoc k (stringify-map map-v)))
-      {}
-      m)))
+  #_(defn stringify-map-of-maps [m]
+      (reduce-kv
+       (fn [result k map-v]
+         (assoc k (stringify-map map-v)))
+       {}
+       m))
+  
 
 (defn remove-robot-keys [m]
   (into {} (remove
