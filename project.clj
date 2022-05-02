@@ -5,18 +5,18 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
   :plugins      [[lein-libdir "0.1.1"]
-                 [lein-cljsbuild "1.1.4"]
+                 [lein-cljsbuild "1.1.8"]
                  [lein-less "1.7.5"]
-                 [lein-asset-minifier "0.4.3"]]
+                 [lein-asset-minifier "0.4.6"]]
 
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/clojurescript "1.10.520" :exclusions [com.fasterxml.jackson.core/jackson-core]]
-                 [org.clojure/core.async "0.4.500"]
+                 [org.clojure/core.async "1.5.648"]
 
-                 [org.clojure/core.cache "0.6.5"]
-                 [org.clojure/data.json "0.2.6"]
+                 [org.clojure/core.cache "1.0.225"]
+                 [org.clojure/data.json "2.4.0"]
                  [org.clojure/data.xml "0.0.8"]
-                 [org.clojure/data.codec "0.1.0"]
+                 [org.clojure/data.codec "0.1.1"]
 
                  [commons-net/commons-net "3.6"]
                  [commons-codec/commons-codec "1.10"]
@@ -27,20 +27,22 @@
                  [clj-time "0.15.2"]
 
                  [ring/ring-core "1.6.1"]
-                 [org.clojure/java.jdbc "0.4.2"]
-                 [org.flatland/ordered "1.5.9"] ; se pone esta versión para que no importe una anterior que no jala en clojure 1.10
+                 [org.clojure/java.jdbc "0.7.12"]
+                 [org.flatland/ordered "1.15.10"] ; se pone esta versión para que no importe una anterior que no jala en clojure 1.10
                                                 ; el que usa esta dependencia es el ring-midleware-format
                  [ring-middleware-format "0.7.4"]
                  [hiccup "1.0.5"]
-                 [bidi "2.0.16"]
+                 [bidi "2.1.6"]
+                 ;[com.taoensso/sente "1.16.2"] con este ya no jala
                  [com.taoensso/sente "1.11.0"]
-                 [org.clojure/tools.logging "0.3.1"]
+                 [ring/ring-anti-forgery "1.3.0"]
+                 [org.clojure/tools.logging "1.2.4"]
                  [proto-repl "0.3.1"]
-                 [riddley "0.1.14"]
+                 [riddley "0.2.0"]
                  [aleph "0.4.6" :exclusions [org.clojure/tools.logging]]
                  [jumblerg/ring.middleware.cors "1.0.1"]
-                 [integrant "0.4.0"]
-                 [cheshire "5.5.0"]
+                 [integrant "0.8.0"]
+                 [cheshire "5.10.1"]
                  [org.apache.logging.log4j/log4j-core "2.16.0"]
                  [org.apache.logging.log4j/log4j-slf4j-impl "2.16.0"]
 
@@ -53,7 +55,7 @@
                  ;[com.sun.xml.bind/jaxb-core "2.3.0"]
                  ;[com.sun.xml.bind/jaxb-impl "2.3.0"]
 
-                 [com.draines/postal "2.0.2"]
+                 [com.draines/postal "2.0.5"]
                  [twitter-api "1.8.0" :exclusions [org.bouncycastle/bcpkix-jdk15on io.netty/netty]]
 
                  [clj-tagsoup "0.3.0" :exclusions [org.clojure/clojure]] ;net.java.dev.stax-utils/stax-utils
@@ -70,10 +72,10 @@
                  [cljsjs/react-dom "17.0.2-0"] ;upgrade-fgc
                  [reagent "1.1.0"]             ;upgrade-fgc
                  [re-frame "1.2.0" :exclusions [com.google.guava/guava]] ;0.9.4
+                 ;[re-frame "1.3.0-rc2"] con este NO jala
                  [re-com "2.13.2" :exclusions [com.google.guava/guava]]   ;2.1.0
                  [fipp "0.6.8"]
                  [cljs-http "0.1.46"]
-                 [com.taoensso/sente "1.11.0"]
                  [com.andrewmcveigh/cljs-time "0.5.0"]
                  [cljsjs/codemirror "5.24.0-1"]
                  [javax.mail/mail "1.4.7", :exclusions [javax.activation/activation]]

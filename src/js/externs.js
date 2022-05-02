@@ -29,7 +29,10 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
     window.gapi.auth2.getAuthInstance().signOut()
   },
   handler = this.handler = function(b) {
-    return b.returnValue = "Do you really want to quit? changes will not be stored"
+    b.preventDefault();
+    console.log("pasando por aca...2");
+    console.log(b);
+    return b.returnValue = "Do you really want to quit? changes will not be stored";
   },
   registerListener = this.registerListener = function() {
     window.addEventListener("beforeunload", handler)

@@ -1,7 +1,7 @@
 (ns extra-code 
   (:require [clojure.pprint :as pp]
             [clojure.data :refer [diff]]
-            [test.new-ops :as NO]))
+            #_[test.new-ops :as NO]))
 
 #_(defn date2local [t]
   (if (inst? t)

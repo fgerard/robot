@@ -668,10 +668,13 @@
     (.stopPropagation e) (.preventDefault e)
     (re-frame/dispatch [:mouseout-svg selected-app])))
 (defn svgOnMouseLeave [selected-app e]
-  (let [native (.-nativeEvent e)]
+  (let [native (.-nativeEvent e)
+        tag (-> e .-target .-tagName)]
     (.stopPropagation e) (.preventDefault e)
-    #_(.log js/console (pr-str [:onMouseLeave]))
-    (re-frame/dispatch [:mouseleave-svg selected-app])
+    (.log js/console (pr-str [:onMouseLeave (-> e .-target .-tagName)]))
+    #_(.log js/console e)
+    (when (#{"svg" "path"} tag)
+      (re-frame/dispatch [:mouseleave-svg selected-app]))
     ))
 
 (defn svg-comp [editables ready width height selected-app watch-instance]

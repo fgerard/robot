@@ -681,8 +681,8 @@
                               :children [(doall
                                           (for [[k v] (sort (into [] (map (fn [[k v]]
                                                                             (let [v-str (pr-str v)]
-                                                                              (if (and (> (count v-str) 100) (not (namespace k)))
-                                                                                [k (str (subs v-str 0 100) "...")]
+                                                                              (if (and (> (count v-str) 500) (not (namespace k)))
+                                                                                [k (str (subs v-str 0 500) "...")]
                                                                                 [k v]))) view-params)))]
                                             ^{:key (str k)}
                                             [re-com/h-box
