@@ -78,15 +78,15 @@
 
 ; Este atomo tiene la siguiente estructura ejemplo:
 {"token1" {:lease-ts 2331213123 ; este se refresca cada vez que un cmd-telegram-opr es ejecutado si nadie renuava esto en 5 min se apaga la maquinaria de lectura
-           "chat-id1" {"app1" {"instance1" {:channel "este es un chan de core.async con sliding buffer"
-                                            }
-                               }
-                       }
-           "chat-id2" {}
-           }
- "token2" {
-           }
- }
+           "chat-id1" {"app1" {"instance1" {:channel "este es un chan de core.async con sliding buffer"}}}
+                                            
+                               
+                       
+           "chat-id2" {}}
+           
+ "token2" {}}
+           
+ 
 
 (def telegram-bots (atom {}))
 
@@ -108,9 +108,9 @@
       (if (S/starts-with? text "/")
         (let [[app instance & params] (S/split text #"\s+")]
           {:app (subs app 1) :instance instance :params params})))
-  (catch Exception e
-    (log/warn "problema en parser-cmd: " text)
-    (log/warn e))))
+   (catch Exception e
+     (log/warn "problema en parser-cmd: " text)
+     (log/warn e))))
 
 (defn telegram-poller [token params]
   (let [URL (str base-url token "/getUpdates")]
@@ -133,7 +133,9 @@
     (get-in bots [token chat-id app instance :channel])))
 
 (defn should-recur? [bot-token]
-  (< (- (System/currentTimeMillis) (get-in @telegram-bots [bot-token :lease-ts])) 300000))
+  (if-let [lease-ts (get-in @telegram-bots [bot-token :lease-ts])]
+    (< (- (System/currentTimeMillis) lease-ts) 300000)
+    false))
 
 (defn remove-bot [bots bot-token]
   (log/info "Removing bot loop: " bot-token)
@@ -152,28 +154,35 @@
      (when-not ok
        (log/warn "Problems comunicating with telegram, wait 2 min.")
        (<! (timeout 120000)))
-     (if ok
-       (let [robot-info-fn (get state/system [:robot.core.essentials/robot-info :essentials/robot-info])
-             robot-info (robot-info-fn)]
-         (doseq [message result]
-           (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
-                 stored?    (contains? (into #{} (get robot-info :stored)) app)
-                 running?   (not (nil? (get-in robot-info [:ready app instance])))
-                 chat-id (str (get-in message [:message :chat :id]))]
-             (cond
-               (and stored? running? parsed)
-               (let [d-chan (get-or-create-channel-of bot-token chat-id app instance)]
-                 (send-text bot-token chat-id (str "Procesing /" app " " instance " "  params))
-                 (>!! d-chan params))
+     (try
+       (when ok
+         (let [robot-info-fn (get state/system [:robot.core.essentials/robot-info :essentials/robot-info])
+               robot-info (robot-info-fn)]
+           (doseq [message result]
+             (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
+                   stored?    (contains? (into #{} (get robot-info :stored)) app)
+                   running?   (not (nil? (get-in robot-info [:ready app instance])))
+                   chat-id (str (get-in message [:message :chat :id]))]
+               (cond
+                 (and stored? running? parsed)
+                 (let [d-chan (get-or-create-channel-of bot-token chat-id app instance)]
+                   (send-text bot-token chat-id (str "Procesing /" app " " instance " "  params))
+                   (if params 
+                     (>!! d-chan params)
+                     (log/warn "No params to send")))
 
-               (and stored? running?)
-               (log/warn "Invalid message:" message)
+                 (and stored? running?)
+                 (log/warn "Invalid message:" message)
 
-               (and stored? (not running?))
-               (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!"))
+                 (and stored? (not running?))
+                 (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!"))
 
-               :OTHERWIZE
-               (send-text bot-token chat-id (str "I don't find: " (pr-str [app instance]) "!")))))))
+                 :OTHERWIZE
+                 (send-text bot-token chat-id (str "I don't find: " (pr-str [app instance]) "!")))))))
+
+       (catch Exception e
+         (swap! telegram-bots remove-bot bot-token)
+         (log/error e)))
 
      (if (should-recur? bot-token)
        (recur (calc-offset result) limit)
