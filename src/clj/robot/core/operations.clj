@@ -28,8 +28,10 @@
    [clj-time.format :as tf]
    [clj-time.coerce :as tc])
   (:import
-    (org.mozilla.javascript Context)
-    (org.mozilla.javascript.json JsonParser)))
+   (org.mozilla.javascript Context)
+   (org.mozilla.javascript.json JsonParser)
+   (java.time ZonedDateTime ZoneId)
+   (java.time.format DateTimeFormatter)))
 
 (def extra-code (atom false))
 
@@ -72,16 +74,23 @@
      (log/debug :wait-till-factory regex)
      (fn wait-till-opr [context you]
        (log/info :you you :wait-till [regex])
-       (let [tz (t/time-zone-for-id "America/Mexico_City")
-             fmt (tf/formatter "HH:mm:ss")
-             fmt1 (tf/with-zone fmt tz)
-             now (* (int (/ (System/currentTimeMillis) 1000)) 1000)
+       (let [tz (ZoneId/of "America/Mexico_City")
+             ct (ZonedDateTime/now tz)
+             fmt (DateTimeFormatter/ofPattern "HH:mm:ss")
+             
+             ;tz (t/time-zone-for-id "America/Mexico_City")
+             ;fmt (tf/formatter "HH:mm:ss")
+             ;fmt1 (tf/with-zone fmt tz)
+             ;now (* (int (/ (System/currentTimeMillis) 1000)) 1000)
              regex (re-pattern (U/contextualize context regex))
              delay (reduce
                     (fn [_ delta]
-                      (let [t (+ now (* delta 1000))
-                            now (tc/from-long t)
-                            d (tf/unparse fmt1 now)]
+                      (let [t (.plusSeconds ct delta)
+                            d (.format fmt t)
+                            ;t (+ now (* delta 1000))
+                            ;now (tc/from-long t)
+                            ;d (tf/unparse fmt1 now)
+                            ]
                         (if (re-matches regex d)
                           (reduced delta)
                           -1)))
@@ -92,9 +101,8 @@
            (assoc context you (str regex " is invalid!"))
            (let [sleep (- (* 1000 delay) 500)
                  _ (Thread/sleep sleep)
-                 now (->> (System/currentTimeMillis)
-                          (tc/from-long)
-                          (tf/unparse fmt1))]
+                 now (->> (ZonedDateTime/now tz)
+                          (.format fmt))]
              (assoc context you now))))))
    ui])
 
