@@ -134,7 +134,8 @@
   :aot [robot.main.starter robot.util.selenium-direct]
 
   :source-paths ["src/clj"]
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target" "robot-distro/" "robot-distro.tgz"]
+  ;:clean-targets ^{:protect false} ["resources/public/js/compiled" "target" "robot-distro/" "robot-distro.tgz"]
+  :clean-targets ^{:protect false} ["target" "robot-distro/" "robot-distro.tgz"]
 
   :figwheel {:css-dirs ["resources/public/css"]
              :http-server-root "public"

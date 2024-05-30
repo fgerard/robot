@@ -104,10 +104,11 @@
 
 (defn parser-cmd [text]
   (try
-    (if text
+    (when text
       (if (S/starts-with? text "/")
         (let [[app instance & params] (S/split text #"\s+")]
-          {:app (subs app 1) :instance instance :params params})))
+          {:app (subs app 1) :instance instance :params params})
+        (log/info (pr-str [:skip :telegram text]))))
    (catch Exception e
      (log/warn "problema en parser-cmd: " text)
      (log/warn e))))
@@ -146,11 +147,33 @@
     (-> messages last :update_id inc)
     0))
 
+(defn inst-running [m]
+  (reduce (fn [R [k v]]
+            (assoc R k (if v true false)))
+          (sorted-map)
+          m))
+
+(defn create-apps-instances-menu [{:keys [ready]}]
+  (reduce (fn [R [k v]]
+            (assoc R k (inst-running v)))
+          (sorted-map)
+          ready))
+
+(defn create-apps-msg-str [robot-info]
+  (let [m (create-apps-instances-menu robot-info)]
+    (with-out-str
+      (doseq [[app insts] m]
+        (println app)
+        (doseq [[inst stat] insts]
+          (println (if stat "  ! " "  x ") inst ))
+        (println)))))
+
 (defn start-bot-poll-server [bot-token]
   (go-loop
    [offset 0 limit 100]
    (let [params {:timeout 10 :offset offset :limit limit}
          {:keys [ok result] :as data} (telegram-poller bot-token params)]
+     (log/debug (pr-str data))
      (when-not ok
        (log/warn "Problems comunicating with telegram, wait 2 min.")
        (<! (timeout 120000)))
@@ -159,26 +182,30 @@
          (let [robot-info-fn (get state/system [:robot.core.essentials/robot-info :essentials/robot-info])
                robot-info (robot-info-fn)]
            (doseq [message result]
+             (log/debug (pr-str [:start-bot-poll message]))
              (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
-                   stored?    (contains? (into #{} (get robot-info :stored)) app)
+                   stored? (contains? (into #{} (:stored robot-info)) app)
                    running?   (not (nil? (get-in robot-info [:ready app instance])))
                    chat-id (str (get-in message [:message :chat :id]))]
                (cond
+                 (= app "help")
+                 (send-text bot-token chat-id (create-apps-msg-str robot-info))
+
                  (and stored? running? parsed)
                  (let [d-chan (get-or-create-channel-of bot-token chat-id app instance)]
                    (send-text bot-token chat-id (str "Procesing /" app " " instance " "  params))
                    (if params 
                      (>!! d-chan params)
-                     (log/warn "No params to send")))
+                     (send-text bot-token chat-id  "Add params to send!")))
 
                  (and stored? running?)
                  (log/warn "Invalid message:" message)
 
                  (and stored? (not running?))
-                 (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!"))
+                 (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!, try /help"))
 
                  :OTHERWIZE
-                 (send-text bot-token chat-id (str "I don't find: " (pr-str [app instance]) "!")))))))
+                 (send-text bot-token chat-id (str "I don't find: " (pr-str [app instance]) "!, try /help")))))))
 
        (catch Exception e
          (swap! telegram-bots remove-bot bot-token)

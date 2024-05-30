@@ -63,9 +63,14 @@
   [(fn sleep-opr-factory [{:keys [delay]}]
      (log/debug :sleep-factory delay)
      (fn sleep-opr [context you]
-       (log/debug :you you :sleep [delay])
-       (Thread/sleep (U/contextualize-integer context delay 1000))
-       context))
+       (let [delta (U/contextualize-integer context delay 1000)]
+         (log/debug :you you :sleep [delay] :->> (pr-str [delta]))
+         (try
+           (Thread/sleep delta)
+           (catch Exception e
+             (log/error e)))
+         (log/info :sleep-ended)
+         context)))
    ui])
 
 (defmethod ig/init-key :robot.core.operations/wait-till-opr-factory
