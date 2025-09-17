@@ -17,7 +17,7 @@
   ([token chat-id options text]
    (try
      (let [url  (str base-url token "/sendMessage")
-           body (into {:chat_id chat-id :text text} options)
+           body (into {:chat_id chat-id :parse_mode "MarkdownV2" :text text} options)
            resp @(http/request {:request-method "post"
                                 :url url
                                 :headers {"Content-Type" "application/json"}
