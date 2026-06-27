@@ -5,6 +5,7 @@
 .cpcache/
 .lein-repl-history
 .lsp/
+.vscode/
 app-log/
 estado/
 konservedb/
