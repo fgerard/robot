@@ -1,0 +1,517 @@
+;; Catalogo de tipos de operacion del disenador de diagramas.
+;;
+;; Antes (robot.ui.state-editor/opr-diag-confs) esto era un literal de 500+
+;; lineas embebido en el mismo archivo que el render del dialogo de edicion.
+;; Ahora es un dato puro, versionable por separado, y se carga UNA vez en
+;; runtime via GET /edn/operations-schema.edn (ver robot2.operations.registry)
+;; en vez de quedar compilado dentro del bundle de JS.
+{:sleep {:flds [{:kwd :delay
+                 :re #"[0-9]+"
+                 :label "Delta"
+                 :info "Specifies the time in millis to sleep or a ctx key that cointains it, E.g. 1000, :delta"
+                 :placeholder "Enter delta"}]
+         :title "Delta to wait"}
+ :wait-till {:flds [{:kwd :regex
+                     :re #".*"
+                     :label "Regex"
+                     :info "Regex to match in the future (HH:mm:ss) or ctx key that contains it, E.g. ..:.[05]:00"
+                     :placeholder "..:..:[03]0"}]
+             :title "Time regex"}
+ :js {:flds [{:kwd :code
+              :re #"(.|\n)*"
+              :type :code-editor
+              :mode "javascript"
+              :label "Code"
+              :info "Specifies a javascript function to execute, the function must return an object with a result key in order to save the result in context E.g. function (ctx) {\n  return true;\n}"}]
+      :title "Javascript code"}
+ :clojure {:flds [{:kwd :code
+                    :re #"(.|\n)*"
+                    :type :code-editor
+                    :mode "clojure"
+                    :label "Code"
+                    :info "Specifies a clojure function to execute, the function must return an object with a result key in order to save the result in context E.g. (fn [ctx]\n \"ok\"}"}]
+           :title "Clojure code"}
+ :browser {:title "Selenium operation"
+           :flds [{:kwd :file
+                   :re #"[a-zA-Z/\\0-9ñÑ].*"
+                   :label "File URL"
+                   :placeholder "Enter edn file URL"
+                   :info "Please specify the location of the edn configuration file"}
+                  {:kwd :driver-type
+                   :re #"chrome|firefox"
+                   :label "Type of driver (chrome|firefox)"
+                   :placeholder "Enter the type of driver"
+                   :info "Please specify type of driver (chrome|firefox)"}
+                  {:kwd :profile
+                   :re #"[a-zA-Z/\\0-9ñÑ\.\-\_]?.*"
+                   :label "Driver profile"
+                   :placeholder "Enter the path of the driver profile"
+                   :info "Please specify the location driver profile"}
+                  {:kwd :new-browser?
+                   :re #"true|false"
+                   :label "New browser?"
+                   :info "Specify if a new browser is required E.g. true|false"
+                   :placeholder "New browser?"}
+                  {:kwd :close-it?
+                   :re #"true|false"
+                   :label "Close it?"
+                   :info "Specify if the browser sould be closed at finish E.g. true|false"
+                   :placeholder "Close it?"}]}
+ :ldap {:title "LDAP operation"
+        :flds [{:kwd :host
+                :re #"[a-zA-Z/\\0-9ñÑ].*"
+                :label "Host name or ip"
+                :placeholder "Enter host name/ip"
+                :info "Please specify the name or ip od ladap server"}
+               {:kwd :port
+                :re #"[0-9]{1,4}"
+                :label "Port"
+                :info "Please specify where LDAP server is listening E.g. 389"
+                :placeholder "Enter the LDAP port"}
+               {:kwd :bind-dn
+                :re #"[a-zA-Z].*"
+                :label "bind-dn"
+                :info "Please specify the bind-dn log log into LDAP server"
+                :placeholder "Enter the bind-dn"}
+               {:kwd :password
+                :re #".*"
+                :label "Password"
+                :info "Please specify the password to log in the LDAP"
+                :placeholder "Enter the password"}]}
+ :mq {:title "IBM-MQ operation"
+      :flds [{:kwd :host
+              :re #"[a-zA-Z/\\0-9ñÑ].*"
+              :label "Host name or ip"
+              :placeholder "Enter host name/ip"
+              :info "Please specify the name or ip od ladap server"}
+             {:kwd :port
+              :re #"[0-9]{1,4}"
+              :label "Port"
+              :info "Please specify where MQ server is listening E.g. 1429"
+              :placeholder "Enter the MQ port"}
+             {:kwd :qmanager
+              :re #"[a-zA-Z].*"
+              :label "qmanager"
+              :info "Please specify the qmanager E.g. QM.TESTING.ONE"
+              :placeholder "Enter the qmanager"}
+             {:kwd :channel
+              :re #".*"
+              :label "channel"
+              :info "Please specify the MQ channel E.g. SYSTEM.DEF.SVRCONN"
+              :placeholder "Enter channel"}
+             {:kwd :queues
+              :label "Queue -> Max depth"
+              :info "Please specify the table queue -> max depth"
+              :type :params}]}
+ :telegram-send {:title "Telegram operation"
+                  :flds [{:kwd :bot-token
+                          :re #"[a-zA-Z/\\0-9ñÑ].*"
+                          :label "Bot token"
+                          :info "Please specify your telegram bot token, E.g. 428918969:\nAAHVs7iVQlWpoqyELJ_\nbacv3a7rosx4PWW1, you can get one sending a message to @BotFather in telegram"
+                          :placeholder "Enter Telegram Bot Token"}
+                         {:kwd :chat-tokens
+                          :re #"^(\-?\d+[\, ]?)+$"
+                          :label "Chat Tokens"
+                          :info "Please specify the Telegram chat tokens to send message,must be comma separated E.g. 309085949, 309382943"
+                          :placeholder "Enter Chat Tokens"}
+                         {:kwd :path
+                          :re #".*"
+                          :label "Image (Optional)"
+                          :info "Please specify the image to be send with the message, this field is optional and can be a value stored in context, E.g. Hello, :context-key"
+                          :placeholder "Enter image path"}
+                         {:kwd :message
+                          :re #".*"
+                          :label "Message"
+                          :info "Please specify the Telegram message to be send, it can be a value stored in context, E.g. Hello, :context-key"
+                          :placeholder "Enter Message"}]}
+ :telegram-get {:title "CMD Telegram operation"
+                :flds [{:kwd :bot-token
+                        :re #"[a-zA-Z/\\0-9ñÑ].*"
+                        :label "Bot token"
+                        :info "Please specify your telegram bot token, E.g. 428918969:\nAAHVs7iVQlWpoqyELJ_\nbacv3a7rosx4PWW1, you can get one sending a message to @BotFather in telegram"
+                        :placeholder "Enter Telegram Bot Token"}
+                       {:kwd :chat-tokens
+                        :re #"^\-?\d+([\, ]\d+)*$"
+                        :label "Chat Tokens"
+                        :info "Please specify the Telegram chat tokens to send message,must be comma separated E.g. 309085949, 309382943"
+                        :placeholder "Enter Chat Tokens"}]}
+ :ibm3270 {:title "3270 operation"
+           :flds [{:kwd :file
+                   :re #"[a-zA-Z/\\0-9ñÑ].*"
+                   :label "Url"
+                   :info "Please specify the url of the CSV file to be executed, it can be key from context, E.g. :file3270, /home/robot/3270.csv"
+                   :placeholder "Enter the URL"}
+                  {:kwd :address
+                   :re #"[a-zA-Z/\\0-9ñÑ].*"
+                   :label "Host"
+                   :info "Please specify the host to be checked, it can be a key from context E.g. :host3270, 172.168.1.1, myserver"
+                   :placeholder "Enter the host address"}
+                  {:kwd :port
+                   :re #"[0-9]{1,4}"
+                   :label "Port"
+                   :info "Please specify where 3270 server is listening E.g. 80, 22"
+                   :placeholder "Enter the 3270 port"}
+                  {:kwd :ssl?
+                   :re #"true|false"
+                   :label "SSL"
+                   :info "Specify if the port is expecting an SSL connection E.g. true|false"
+                   :placeholder "Is SSL?"}
+                  {:kwd :protocol
+                   :re #"[a-zA-Z/\\0-9ñÑ].*"
+                   :label "Protocol"
+                   :info "Please specify the type of procotol to be used for comunicating with 3270 server, E.g. IBM-3278-2"
+                   :placeholder "Enter the 3270 protocol"}]}
+ :play-sound {:title "Play sound operation"
+              :flds [{:kwd :path
+                      :re #"[a-zA-Z/\\0-9ñÑ].*"
+                      :label "File URL"
+                      :placeholder "Enter URL"
+                      :info "Please specify the path of the sound file to be played (only WAV is supported), it can be a keyword E.g. :sound-alert, /home/robot/alert.wav"}]}
+ :selfie {:title "Selfie operation"
+          :flds [{:kwd :path
+                  :re #"[a-zA-Z/\\0-9ñÑ].*"
+                  :label "File URL"
+                  :placeholder "Enter URL of file to hold image"
+                  :info "Please specify the output path of the png screencapture to be taken, it can be a keyword, E.g. :selfie-path /home/robot/screen.png"}]}
+ :os-cmd {:title "OS cmd operation"
+          :flds [{:kwd :shell
+                  :re #".*"
+                  :label "Cmd >"
+                  :placeholder "Enter OS command to execute!"
+                  :info "Please specify the shell command or the sh, bat, bash filename to be executed, it can be a keyword E.g. :shell /home/robot/start-server.sh"}]}
+ :caudal {:title "Caudal operation"
+          :flds [{:kwd :host
+                  :re #"[a-zA-Z0-9][a-zA-Z0-9\.]*"
+                  :label "Caudal host "
+                  :placeholder "Enter caudal host or ip"
+                  :info "Please specify Host name or ip of caudal server"}
+                 {:kwd :port
+                  :re #"[0-9]{1,4}"
+                  :label "Caudal port "
+                  :placeholder "Enter caudal port"
+                  :info "Please specify the port where caudal is listening"}]}
+ :switch-good {:title "Switch good operation"
+               :flds [{:kwd :id
+                       :re #"[a-zA-ZñÑ0-9\-_\.]+"
+                       :label "Id"
+                       :placeholder "Enter id"
+                       :info "Please specify the id of this mood change"}]}
+ :switch-bad {:title "Switch bad operation"
+              :flds [{:kwd :id
+                      :re #"[a-zA-ZñÑ0-9\-_\.]+"
+                      :label "Id"
+                      :placeholder "Enter id"
+                      :info "Please specify the id of this mood change"}
+                     {:kwd :minutes
+                      :re #"[0-9]{1,4}"
+                      :label "Minutes"
+                      :placeholder "Enter minutes"
+                      :info "Please specify the number of minutes to wait before resending, it can be a keyword E.g. :minutes 30"}]}
+ :socket {:title "Socket operaation"
+          :flds [{:kwd :host
+                  :re #"[a-zA-Z/\\0-9ñÑ].*"
+                  :label "Host"
+                  :info "Host name or ip address to monitor"
+                  :placeholder "Host name/ ip"}
+                 {:kwd :port
+                  :re #"[0-9]{1,4}"
+                  :label "Port"
+                  :info "Port number on host to monitor"
+                  :placeholder "Port"}
+                 {:kwd :timeout
+                  :re #"[0-9]+"
+                  :label "Timeout"
+                  :info "Number of milliseconds to wait befor timeout"
+                  :placeholder "Milliseconds"}
+                 {:kwd :retry-count
+                  :re #"[0-9]+"
+                  :label "Retry count"
+                  :info "Number of times to retry"
+                  :placeholder "Count"}
+                 {:kwd :retry-delay
+                  :re #"[0-9]+"
+                  :label "Retry delay"
+                  :info "Number of milliseconds to wait befor retrying"
+                  :placeholder "Milliseconds"}]}
+ :sql {:title "SQL read operation"
+       :flds [{:kwd :classname
+               :re #"[a-zA-Z].*"
+               :label "Driver"
+               :info "Please specify the DB driver classname, it can be a keyword, E.g. :driver, com.mysql.jdbc.Driver"
+               :placeholder "Enter the driver classname"}
+              {:kwd :subprotocol
+               :re #"[a-zA-Z].*"
+               :label "Subprotocol"
+               :info "Please specify the subprotocol of the database, it can be a keyword, E.g. :subprotocol, mysql, sqlserver"
+               :placeholder "Enter the driver subbprotocol"}
+              {:kwd :subname
+               :re #".*"
+               :label "Subname"
+               :info "Please specify the subname of the database, it can be a keyword, E.g. :subname, //localhost:3306/strauzbatchdb"
+               :placeholder "Enter the driver subname"}
+              {:kwd :user
+               :re #"[a-zA-Z].*"
+               :label "User"
+               :info "Please specify the username to log in the database, it can be a keyword, E.g. :username, root"
+               :placeholder "Enter the username"}
+              {:kwd :password
+               :re #".*"
+               :label "Password"
+               :info "Please specify the password of the username to log in the database, it can be a keyword, E.g. :dbpassword, 123456"
+               :placeholder "Enter the password"}
+              {:kwd :query
+               :re #"[a-zA-Z].*"
+               :label "Query"
+               :info "Please specify the query to be executed on the database, it can be a keyword, E.g. :query, SELECT * FROM mytable;"
+               :placeholder "Enter the query"}
+              {:kwd :timeout
+               :re #"[0-9]+"
+               :label "Timeout"
+               :info "Number of milliseconds to wait befor timeout"
+               :placeholder "Milliseconds"}
+              {:kwd :retry-count
+               :re #"[0-9]+"
+               :label "Retry count"
+               :info "Number of times to retry"
+               :placeholder "Count"}
+              {:kwd :retry-delay
+               :re #"[0-9]+"
+               :label "Retry delay"
+               :info "Number of milliseconds to wait befor retrying"
+               :placeholder "Milliseconds"}]}
+ :twitter {:title "Twitter operation"
+           :flds [{:kwd :app-consumer-key
+                   :re #"[a-zA-Z/\\0-9ñÑ:-_@].*"
+                   :label "App consumer key"
+                   :info "Please specify the Consumer Key provided from Twitter, it can be a keyword, E.g. :ckey CIIAre8SjFkS8c3PYlri17a0E"
+                   :placeholder "Enter the consumer-key"}
+                  {:kwd :app-consumer-secret
+                   :re #"[a-zA-Z/\\0-9ñÑ:-_@].*"
+                   :label "App consumer secret"
+                   :info "Please specify the app-consumer-secret provided from Twitter, it can be a keyword, E.g. :app-secret 9BdSqpxEZlbItOQas0IrOpv0pGaJohVvovUNugtok5lr0SwLCH"
+                   :placeholder "Enter the consumer-secret"}
+                  {:kwd :access-token
+                   :re #"[a-zA-Z/\\0-9ñÑ:-_@].*"
+                   :label "Access token"
+                   :info "Please specify the access-token of the Twitter Application, it can be a keyword, E.g. :access-token 831926785675780097"
+                   :placeholder "Enter the access-token"}
+                  {:kwd :access-token-secret
+                   :re #"[a-zA-Z/\\0-9ñÑ:-_@].*"
+                   :label "Access token secret"
+                   :info "Please specify the Twitter application's access-token-secret , it can be a keyword, E.g. :access-token-secret, 79KvvV7Lss50i8hTaRNDL0YGf884uqÑvSTqElxocDKdfT"
+                   :placeholder "Enter the access-token-secret"}
+                  {:kwd :message
+                   :re #".*"
+                   :label "Message"
+                   :info "Please specify the message to tweet, it can be a conformed by keyword, E.g. Host :host is :alive"
+                   :placeholder "Enter the message"}]}
+ :mail-send {:title "Send mail operation"
+             :flds [{:kwd :from
+                     :re #".+"
+                     :label "From"
+                     :info "Please specify the mail remittent, it can be a keyword, E.g. :mail, myuser@mymail.com"
+                     :placeholder "Enter the mail from"}
+                    {:kwd :to
+                     :re #".+"
+                     :label "To"
+                     :info "Please specify the mail that will receive the notification, it can be a keyword, E.g. :email, myuser@mymail.com"
+                     :placeholder "Enter the mail to"}
+                    {:kwd :subject
+                     :re #".+"
+                     :label "Subject"
+                     :info "Please specify the mail's subject, it can be a keyword, E.g. :error, Ocurrio un error"
+                     :placeholder "Enter subject"}
+                    {:kwd :body
+                     :re #".+"
+                     :label "Body"
+                     :info "Please specify the username to log in the database, it can be a keyword, E.g. :username, root"
+                     :placeholder "Enter body"}
+                    {:kwd :host
+                     :re #".+"
+                     :label "Host"
+                     :info "Please specify the host name/ip of mail server"
+                     :placeholder "Host name / ip"}
+                    {:kwd :port
+                     :re #"[0-9]*"
+                     :label "Port"
+                     :info "Please specify the port of the mail server"
+                     :placeholder "Port"}
+                    {:kwd :user
+                     :re #"[a-zA-Z].*"
+                     :label "User"
+                     :info "Please specify the username to connect to mail server"
+                     :placeholder "Enter the username"}
+                    {:kwd :pass
+                     :re #".*"
+                     :label "Password"
+                     :info "Please specify the password to connecto to mail server"
+                     :placeholder "Enter the password"}
+                    {:kwd :ssl
+                     :re #"true|false"
+                     :label "SSL"
+                     :info "Specify if the port is expecting an SSL connection E.g. true|false"
+                     :placeholder "Is SSL?"}
+                    {:kwd :timeout
+                     :re #"[0-9]+"
+                     :label "Timeout"
+                     :info "Number of milliseconds to wait befor timeout"
+                     :placeholder "Milliseconds"}
+                    {:kwd :retry-count
+                     :re #"[0-9]+"
+                     :label "Retry count"
+                     :info "Number of times to retry"
+                     :placeholder "Count"}
+                    {:kwd :retry-delay
+                     :re #"[0-9]+"
+                     :label "Retry delay"
+                     :info "Number of milliseconds to wait befor retrying"
+                     :placeholder "Milliseconds"}]}
+ :mail-get {:title "Get-Mail operation"
+            :flds [{:kwd :host
+                    :re #".+"
+                    :label "Host"
+                    :info "Please specify the POP3 mail server host"
+                    :placeholder "Enter host"}
+                   {:kwd :port
+                    :re #"[0-9]+"
+                    :label "Port"
+                    :info "Please specify the POP3 mail server's port"
+                    :placeholder "Enter Port"}
+                   {:kwd :protocol
+                    :re #"pop3(s)?|imap(s)?"
+                    :label "Protocol"
+                    :info "Please specify the mail server protocol"
+                    :placeholder "Enter protocol"}
+                   {:kwd :ssl
+                    :re #"^true|false$"
+                    :label "SSL"
+                    :info "Please specify mail server uses SSL"
+                    :placeholder "Enter SSL"}
+                   {:kwd :email
+                    :re #".+"
+                    :label "Mail Address"
+                    :info "Please specify the Mail address to log in to mail server"
+                    :placeholder "Enter Mail Address"}
+                   {:kwd :password
+                    :re #".+"
+                    :label "Password"
+                    :info "Please specify the mail address password to log in to mail server"
+                    :placeholder "Enter the mail address password"}
+                   {:kwd :subject-re
+                    :re #".+"
+                    :label "Subject RE"
+                    :info "Please specify the regular expression for filtering Mails"
+                    :placeholder "Enter Regular Expression"}
+                   {:kwd :from-re
+                    :re #".+"
+                    :label "From RE"
+                    :info "Please specify the regular expression for filtering MailAddresses"
+                    :placeholder "Enter Regular Expression"}
+                   {:kwd :timeout
+                    :re #"[0-9]+"
+                    :label "Timeout"
+                    :info "Number of milliseconds to wait befor timeout"
+                    :placeholder "Milliseconds"}
+                   {:kwd :retry-count
+                    :re #"[0-9]+"
+                    :label "Retry count"
+                    :info "Number of times to retry"
+                    :placeholder "Count"}
+                   {:kwd :retry-delay
+                    :re #"[0-9]+"
+                    :label "Retry delay"
+                    :info "Number of milliseconds to wait befor retrying"
+                    :placeholder "Milliseconds"}]}
+ :date-time {:title "Date time operation"
+             :flds [{:kwd :format
+                     :re #".+"
+                     :label "Format"
+                     :info "Please specify the format time for storing the date, see java.text.SimpleDateFormat docs"
+                     :placeholder "yyyy-MM-dd'T'HH:mm:ss,SSS"}]}
+ :slack-send {:title "Slack Operation"
+              :flds [{:kwd :webhook
+                      :re #".+"
+                      :label "Webhook URL"
+                      :info "Please specify the Webhook URL provided by Slack, it can be a keyword E.g :slack-webhook, https://hooks.slack.com/services/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"
+                      :placeholder "Enter the URL"}
+                     {:kwd :message
+                      :re #".+"
+                      :label "Message"
+                      :info "Please specify the message to be send, it can be a keyword E.g :slack-message, Hello world"
+                      :placeholder "Enter the message"}]}
+ :http {:title "Http Operations"
+        :flds [{:kwd :uri
+                :re #".+"
+                :label "URI"
+                :info "Please specify the uri to send the HTTP petition"
+                :placeholder "Enter the URI"}
+               {:kwd :method
+                :re #"^GET|POST|PUT|DELETE$"
+                :label "Method"
+                :info "Please specify the request method (GET, PUT, POST, DELETE)"
+                :placeholder "Enter request method"}
+               {:kwd :params
+                :label "Params"
+                :info "Please specify the parameters for the http request"
+                :type :params}
+               {:kwd :timeout
+                :re #"[0-9]+"
+                :label "Timeout"
+                :info "Number of milliseconds to wait befor timeout"
+                :placeholder "Milliseconds"}
+               {:kwd :retry-count
+                :re #"[0-9]+"
+                :label "Retry count"
+                :info "Number of times to retry"
+                :placeholder "Count"}
+               {:kwd :retry-delay
+                :re #"[0-9]+"
+                :label "Retry delay"
+                :info "Number of milliseconds to wait befor retrying"
+                :placeholder "Milliseconds"}]}
+ :gsheet-send {:title "Google Spreadsheet Appender"
+               :flds [{:kwd :client-secret-json
+                       :re #"[a-zA-Z/\\0-9ñÑ].*"
+                       :label "Google Secret File URL"
+                       :placeholder "Enter URL of file with Google Oauth2 secrets"
+                       :info "Please specify the client secrets JSON obtained via Google Console, E.g. /home/user/client_secrets.json"}
+                      {:kwd :oauth-store
+                       :re #"[a-zA-Z/\\0-9ñÑ].*"
+                       :label "OAuth Store File URL"
+                       :placeholder "Enter URL to save Cookie consent"
+                       :info "Please specify the place to save your consent cookie, E.g. /home/user/.store/oauth2"}
+                      {:kwd :spreadsheet-id
+                       :re #".+"
+                       :label "SpreadSheetID"
+                       :info "Please specify your ID from URL: https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit"
+                       :placeholder "SPREADSHEET_ID"}
+                      {:kwd :sheet-id
+                       :re #".+"
+                       :label "SheetID"
+                       :info "Please specify the sheet to append data"
+                       :placeholder "Sheet 1"}
+                      {:kwd :as-row?
+                       :re #".+"
+                       :label "Append as Row (true) or as Column (false)"
+                       :info "true to append as Row"
+                       :placeholder "true"}
+                      {:kwd :data
+                       :re #".+"
+                       :label "Text"
+                       :info "Entry your text or keywords, E.g. 1, 2, :hi"
+                       :placeholder "value1, value2"}
+                      {:kwd :timeout
+                       :re #"[0-9]+"
+                       :label "Timeout"
+                       :info "Number of milliseconds to wait befor timeout"
+                       :placeholder "Milliseconds"}
+                      {:kwd :retry-count
+                       :re #"[0-9]+"
+                       :label "Retry count"
+                       :info "Number of times to retry"
+                       :placeholder "Count"}
+                      {:kwd :retry-delay
+                       :re #"[0-9]+"
+                       :label "Retry delay"
+                       :info "Number of milliseconds to wait befor retrying"
+                       :placeholder "Milliseconds"}]}}
