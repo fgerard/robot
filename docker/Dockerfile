@@ -33,7 +33,7 @@ RUN apt-get update && \
     chmod 0755 $LEIN_INSTALL/lein && \
     wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.jar && \
     wget -q https://github.com/technomancy/leiningen/releases/download/$LEIN_VERSION/leiningen-$LEIN_VERSION-standalone.jar.asc && \
-    gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-key 20242BACBBE95ADA22D0AFD7808A33D379C806C3 && \
+    gpg --batch --keyserver hkps://keyserver.ubuntu.com --recv-key 9D13D9426A0814B3373CF5E3D8A8243577A7859F && \
     echo "Verifying file PGP signature..." && \
     gpg --batch --verify leiningen-$LEIN_VERSION-standalone.jar.asc leiningen-$LEIN_VERSION-standalone.jar && \
     rm leiningen-$LEIN_VERSION-standalone.jar.asc && \
