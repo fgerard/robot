@@ -1,0 +1,11 @@
+.git
+docker/execution-template
+llm/
+.idea
+.vscode
+.calva
+.clj-kondo
+.lsp
+.cpcache
+*.tgz
+robot-*/

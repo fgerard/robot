@@ -1,6 +1,10 @@
 #!/bin/bash
-
-DIRS_CUSTOM=( )
+#
+# Compila el uberjar y el cljs de robot (v1) y robot2 (v2), y construye
+# (y sube) la imagen docker quantumlabs/robot:$VERSION, con VERSION tomada
+# de project.clj -- unica fuente de verdad para la version.
+#
+set -e
 
 check_os() {
   UNAME=$( uname -s )
@@ -14,62 +18,22 @@ check_os() {
   echo $OS
 }
 
-remove_env() {
-  printf "Removing current environment ... \t"
-  for TARGET in ${DIRS_FROM_BOT[@]}; do
-    rm -rf $SRC_DIR/$TARGET;
-  done
-  for TARGET in ${DIRS_CUSTOM[@]}; do
-    rm -rf $SRC_DIR/$TARGET;
-  done
+build_project() {
+  printf "Compilando CSS/JS externs ... \t\t"
+  lein minify-assets && lein less once
   echo "OK"
+
+  printf "Compilando uberjar (incluye cljs robot v1 optimizado) ... \n"
+  lein with-profile prod uberjar
+
+  printf "Compilando cljs robot2 v2 optimizado ... \n"
+  lein cljsbuild once robot2-min
 }
 
-pull_submodule() {
-  printf "Pulling submodule changes ... \t\t"
-  X=$( ls -A $BOT_DIR 2>&1 )
-  if test "$?" = 0; then
-    ARGS="--recursive --remote" 
-  else
-    ARGS="--recursive --remote --init"
-  fi
-  X=$( git submodule update $ARGS )
-  if test "$?" != 0; then
-    echo "ERROR"
-    echo "Failed pulling submodule"
-    exit 1
-  fi
+stage_execution_template() {
+  printf "Copiando project.clj a execution-template (para que start.sh lea VERSION) ... \t"
+  cp $ROOT_DIR/project.clj $ROOT_DIR/docker/execution-template/project.clj
   echo "OK"
-}
-
-make_env() {
-  printf "Making environment ... \t\t\t"
-  for TARGET in ${DIRS_FROM_BOT[@]}; do
-    X=$( cp -r $BOT_DIR/$TARGET $SRC_DIR/$TARGET 2>&1 );
-    if test "$?" != 0; then
-      echo "ERROR"
-      echo "Failed copying $BOT_DIR/$TARGET"
-      exit 1
-    fi
-  done
-  for TARGET in ${DIRS_CUSTOM[@]}; do
-    mkdir $SRC_DIR/$TARGET;
-    if test "$TARGET" = 'src'; then
-      X=$( cp -r $BOT_DIR/$TARGET/py $SRC_DIR/$TARGET 2>&1 );
-      if test "$?" != 0; then
-        echo "ERROR"
-        echo "Failed copying $BOT_DIR/$TARGET/py"
-        exit 1
-      fi
-    fi
-  done
-  echo "OK"
-}
-
-download_jar() {
-  rm -rf $SRC_DIR/lib
-  mkdir  $SRC_DIR/lib
-  aws s3 cp s3://quantum-dataset/DISTRO_robot/robot-$VERSION-standalone.jar $SRC_DIR/lib/
 }
 
 build_docker_image() {
@@ -101,31 +65,26 @@ build_docker_image() {
     echo "Your OS $OS is not supported by this script"
     echo "Try to execute the following commands to create the image:"
     echo ""
-    echo "cd $SRC_DIR"
-    echo "docker buildx build -t quantumlabs/$NAME:$VERSION --platform linux/arm64,linux/amd64 --push ."
+    echo "cd $ROOT_DIR"
+    echo "docker buildx build -f docker/Dockerfile -t quantumlabs/$NAME:$VERSION --platform linux/arm64,linux/amd64 --push ."
   else
-    cd $SRC_DIR
-    $DOCKER buildx build -t quantumlabs/$NAME:$VERSION --platform linux/arm64,linux/amd64 --push .
+    cd $ROOT_DIR
+    $DOCKER buildx build -f docker/Dockerfile -t quantumlabs/$NAME:$VERSION --platform linux/arm64,linux/amd64 --push .
   fi
 }
 
-remove_env
-pull_submodule
-
-BIN_DIR=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
-SRC_DIR=$( dirname $BIN_DIR )/src
-BOT_DIR=$( dirname $BIN_DIR )/robot
-PROJECT=$( grep "defproject" $BOT_DIR/project.clj )
+DOCKER_DIR=$( cd $( dirname ${BASH_SOURCE[0]} ) && pwd )
+ROOT_DIR=$( dirname $DOCKER_DIR )
+PROJECT=$( grep "defproject" $ROOT_DIR/project.clj )
 NAME=$( echo $PROJECT | awk '{split($2,t0,"/"); print(t0[2])}' )
 VERSION=$( echo $PROJECT | awk '{print(substr($3,2,length($3)-2))}' )
 
-echo "BIN_DIR=$BIN_DIR"
-echo "SRC_DIR=$SRC_DIR"
-echo "BOT_DIR=$BOT_DIR"
-echo "PROJECT=$PROJECT"
+echo "ROOT_DIR=$ROOT_DIR"
 echo "NAME=$NAME"
 echo "VERSION=$VERSION"
 
-make_env
-download_jar
+cd $ROOT_DIR
+lein clean
+build_project
+stage_execution_template
 build_docker_image
