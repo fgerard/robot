@@ -7141,7 +7141,7 @@ span.CodeMirror-selectedtext {
   transition: background-color 0.218s, border-color 0.218s, box-shadow 0.218s;
   -webkit-user-select: none;
   -webkit-appearance: none;
-  background-color: #7B3FA0;
+  background-color: #4EA9C3;
   background-image: none;
   color: #262626;
   cursor: pointer;
@@ -7165,7 +7165,7 @@ span.CodeMirror-selectedtext {
   background-color: #3367d6;
 }
 .googleButtonLightBlue {
-  background-color: #7B3FA0;
+  background-color: #4ea9c3;
   color: #ffffff;
 }
 .googleButtonLightBlue:active {
@@ -7340,7 +7340,7 @@ span.CodeMirror-selectedtext {
   height: 80%;
 }
 .login-dialog-container .login-dialog-box {
-  border: 1px solid #7B3FA0 !important;
+  border: 1px solid #4ea9c3 !important;
   border-radius: 10px;
   padding-top: 2em;
   padding-bottom: 3em;
@@ -7367,7 +7367,7 @@ span.CodeMirror-selectedtext {
   padding-right: 2.5em !important;
   -webkit-box-shadow: initial;
   box-shadow: initial;
-  border-bottom: 1px solid #7B3FA0;
+  border-bottom: 1px solid #4ea9c3;
   border-radius: 0px !important;
   margin-bottom: 1em;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -7379,21 +7379,24 @@ span.CodeMirror-selectedtext {
   border-top: 0px;
   border-right: 0px;
   border-left: 0px;
-  background: none;
+  background: url(../images/icons/correo.png) no-repeat scroll 19px 14px;
+  background-position: 95% 50%;
   padding-right: 2.5em !important;
   -webkit-box-shadow: initial;
   box-shadow: initial;
-  border-bottom: 1px solid #7B3FA0;
+  border-bottom: 1px solid #4ea9c3;
   border-radius: 0px !important;
   margin-bottom: 1em;
+  background-position: 95% 50% !important;
+  background: url(../images/icons/ojo.png) no-repeat scroll 19px 14px;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 400;
   letter-spacing: 0.05em;
 }
 .login-dialog-container .login-dialog-box .login-dialog-v-box button {
-  background-color: #7B3FA0;
-  border: 1px solid #7B3FA0;
+  background-color: #4ea9c3;
+  border: 1px solid #4ea9c3;
   border-radius: 2px;
   margin-bottom: 3em;
 }
@@ -7419,7 +7422,7 @@ span.CodeMirror-selectedtext {
   padding-bottom: 1.5em;
 }
 .header .user-info {
-  background-color: #7B3FA0;
+  background-color: #4ea9c3;
   position: absolute;
   right: 2em;
   flex: initial;
@@ -7452,24 +7455,24 @@ span.CodeMirror-selectedtext {
   font-size: 14px;
   font-weight: 400;
   letter-spacing: 0.03em;
-  border-bottom: 2px solid #7B3FA0;
+  border-bottom: 2px solid #4ea9c3;
   padding-left: 2em;
 }
 .nav-tabs li {
   border: 0px;
 }
 .nav-tabs li a {
-  color: #7B3FA0 !important;
+  color: #4ea9c3 !important;
   padding-left: 2em;
   padding-right: 2em;
 }
 .nav-tabs li a:hover {
-  border-color: #eeeeee #eeeeee #7B3FA0;
+  border-color: #eeeeee #eeeeee #4ea9c3;
 }
 .nav-tabs .active a {
-  background-color: #7B3FA0 !important;
+  background-color: #4ea9c3 !important;
   color: #ffffff !important;
-  border: 1px solid #7B3FA0 !important;
+  border: 1px solid #4ea9c3 !important;
   padding-left: 2em;
   padding-right: 2em;
 }
@@ -7482,110 +7485,110 @@ span.CodeMirror-selectedtext {
   font-family: 'Roboto Mono', monospace;
   font-size: 11px !important;
   font-weight: 100;
-  color: #7B3FA0 !important;
+  color: #4ea9c3 !important;
   height: 2rem !important;
-  border-bottom: 1px #7B3FA0 solid !important;
-  border-top: 1px #7B3FA0 solid !important;
+  border-bottom: 1px #4ea9c3 solid !important;
+  border-top: 1px #4ea9c3 solid !important;
   border-right: 0px !important;
-  border-left: 1px #7B3FA0 solid !important;
+  border-left: 1px #4ea9c3 solid !important;
 }
 .logger .filter::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
   opacity: 1;
 }
 .logger .filter:-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .filter::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .filter ::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .filter :-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .filter ::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .filter :-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .filter :-o-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter {
   font-family: 'Roboto Mono', monospace;
   font-size: 11px !important;
   font-weight: 100;
-  color: #7B3FA0 !important;
+  color: #4ea9c3 !important;
   height: 2rem !important;
-  border-bottom: 1px #7B3FA0 solid !important;
-  border-top: 1px #7B3FA0 solid !important;
+  border-bottom: 1px #4ea9c3 solid !important;
+  border-top: 1px #4ea9c3 solid !important;
   border-right: 0px !important;
-  border-left: 1px #7B3FA0 solid !important;
+  border-left: 1px #4ea9c3 solid !important;
 }
 .logger .transaction-filter::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
   opacity: 1;
 }
 .logger .transaction-filter:-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter ::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter :-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter ::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter :-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .transaction-filter :-o-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a {
   font-family: 'Roboto Mono', monospace;
   font-size: 11px !important;
   font-weight: 100;
-  color: #7B3FA0 !important;
+  color: #4ea9c3 !important;
   height: 2rem !important;
-  border-bottom: 1px #7B3FA0 solid !important;
-  border-top: 1px #7B3FA0 solid !important;
+  border-bottom: 1px #4ea9c3 solid !important;
+  border-top: 1px #4ea9c3 solid !important;
   border-right: 0px !important;
-  border-left: 1px #7B3FA0 solid !important;
+  border-left: 1px #4ea9c3 solid !important;
   border-radius: 0px;
 }
 .logger .level-filter a::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
   opacity: 1;
 }
 .logger .level-filter a:-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a ::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a :-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a ::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a :-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a :-o-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .level-filter a span {
   font-family: 'Roboto Mono', monospace;
@@ -7600,82 +7603,82 @@ span.CodeMirror-selectedtext {
   font-family: 'Roboto Mono', monospace;
   font-size: 11px !important;
   font-weight: 100;
-  color: #7B3FA0 !important;
+  color: #4ea9c3 !important;
   height: 2rem !important;
-  border-bottom: 1px #7B3FA0 solid !important;
-  border-top: 1px #7B3FA0 solid !important;
+  border-bottom: 1px #4ea9c3 solid !important;
+  border-top: 1px #4ea9c3 solid !important;
   border-right: 0px !important;
-  border-left: 1px #7B3FA0 solid !important;
+  border-left: 1px #4ea9c3 solid !important;
 }
 .logger .status-code-filter::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
   opacity: 1;
 }
 .logger .status-code-filter:-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .status-code-filter::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .status-code-filter ::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .status-code-filter :-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .status-code-filter ::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .status-code-filter :-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .status-code-filter :-o-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter {
   font-family: 'Roboto Mono', monospace;
   font-size: 11px !important;
   font-weight: 100;
-  color: #7B3FA0 !important;
+  color: #4ea9c3 !important;
   height: 2rem !important;
-  border-bottom: 1px #7B3FA0 solid !important;
-  border-top: 1px #7B3FA0 solid !important;
+  border-bottom: 1px #4ea9c3 solid !important;
+  border-top: 1px #4ea9c3 solid !important;
   border-right: 0px !important;
-  border-left: 1px #7B3FA0 solid !important;
+  border-left: 1px #4ea9c3 solid !important;
 }
 .logger .text-filter::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
   opacity: 1;
 }
 .logger .text-filter:-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter ::-webkit-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter :-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter ::-moz-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter :-ms-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .logger .text-filter :-o-input-placeholder {
-  color: #B07FC8;
+  color: #97d0e5;
 }
 .split-vertical .re-v-split-splitter {
-  border-top: 3px solid #7B3FA0;
+  border-top: 3px solid #4ea9c3;
 }
 .split-vertical .re-v-split-splitter div div {
-  border-botom: 1px solid #7B3FA0 !important;
+  border-botom: 1px solid #4ea9c3 !important;
 }
 .config-tab .title {
-  color: #7B3FA0;
+  color: #4EA9C3;
   text-align: center !important;
 }
 .config-tab .btn-container {
@@ -7719,16 +7722,16 @@ span.CodeMirror-selectedtext {
   margin-bottom: 0.5rem;
 }
 .config-tab .user {
-  border-bottom: 1px solid #7B3FA0;
+  border-bottom: 1px solid #4ea9c3;
   width: 100%;
   font-size: 12px !important;
-  color: #7B3FA0;
+  color: #4ea9c3;
 }
 .config-tab .password {
-  border-bottom: 1px solid #7B3FA0;
+  border-bottom: 1px solid #4ea9c3;
   width: 100%;
   font-size: 12px !important;
-  color: #7B3FA0;
+  color: #4ea9c3;
 }
 .config-tab .btn-remove {
   color: transparent !important;
@@ -7739,19 +7742,19 @@ span.CodeMirror-selectedtext {
   margin: 0px !important;
 }
 .split-container .toolbar-container {
-  border-bottom: 1px solid #B07FC8;
+  border-bottom: 1px solid #97d0e5;
 }
 .split-container .toolbar-container .app-container {
   width: 100vh;
 }
 .split-container .toolbar-container .app-container .app-selector {
-  background-color: #B07FC8;
+  background-color: #97d0e5;
 }
 .split-container .toolbar-container .app-container .app-selector a {
   height: 2rem;
-  background-color: #B07FC8;
+  background-color: #97d0e5;
   color: #FFFFFF;
-  border: 1px solid #B07FC8;
+  border: 1px solid #97d0e5;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -7781,7 +7784,7 @@ span.CodeMirror-selectedtext {
   padding: 5px 0px;
 }
 .split-container .instance span {
-  color: #7B3FA0;
+  color: #4ea9c3;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -7840,7 +7843,7 @@ span.CodeMirror-selectedtext {
   margin-top: 5px;
 }
 .split-container .app-param-panel .param-list span {
-  color: #7B3FA0;
+  color: #4ea9c3;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
   font-weight: 400;
@@ -7864,7 +7867,7 @@ span.CodeMirror-selectedtext {
   letter-spacing: 0.05em;
 }
 .split-container .con-gap {
-  border-left: 1px solid #7B3FA0;
+  border-left: 1px solid #4ea9c3;
 }
 .split-container .btn-transparent {
   color: transparent !important;
@@ -7879,10 +7882,10 @@ span.CodeMirror-selectedtext {
 }
 .split-container .rc-h-split-splitter {
   flex: 0 0 0px !important;
-  border-left: 3px solid #7B3FA0;
+  border-left: 3px solid #4ea9c3;
 }
 .split-container .rc-h-split-splitter div div {
-  border-right: 1px solid #7B3FA0 !important;
+  border-right: 1px solid #4ea9c3 !important;
 }
 .split-container .internal-split {
   margin: 0px !important;
@@ -7894,7 +7897,7 @@ span.CodeMirror-selectedtext {
   width: 100%;
 }
 .split-container .internal-split .opr-container .opr-selector {
-  background-color: #B07FC8;
+  background-color: #97d0e5;
 }
 .split-container .internal-split .opr-container .opr-selector a {
   height: 2rem;
@@ -7967,10 +7970,10 @@ span.CodeMirror-selectedtext {
   color: transparent;
 }
 .split-container .zmdi-caret-right {
-  color: #F7941D;
+  color: #ff5a38;
 }
 .split-container .zmdi-caret-down {
-  color: #F7941D;
+  color: #ff5a38;
 }
 .split-container .zmdi-settings {
   background: url(../images/icons/cog-on.png) no-repeat scroll;
@@ -7995,7 +7998,7 @@ span.CodeMirror-selectedtext {
   margin-left: 5px;
 }
 .split-container .title {
-  color: #7B3FA0;
+  color: #4ea9c3;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   text-transform: uppercase;
   justify-content: center;
@@ -8011,7 +8014,7 @@ span.CodeMirror-selectedtext {
   height: 2em;
   color: #ffffff;
   margin-right: 0.1em;
-  background-color: #B07FC8;
+  background-color: #97d0e5;
   letter-spacing: 0.05em;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 12px;
@@ -8043,19 +8046,19 @@ span.CodeMirror-selectedtext {
   width: 4.8em;
   margin-right: 0px;
   background-color: #ffffff;
-  border-bottom: 1px solid #7B3FA0;
+  border-bottom: 1px solid #4ea9c3;
   height: 1.7rem;
   color: #000000;
 }
 .console-container .header-bar .state {
   justify-content: center;
   text-align: center;
-  border-left: 1px solid #7B3FA0;
-  border-bottom: 1px solid #7B3FA0;
-  border-right: 1px solid #7B3FA0;
+  border-left: 1px solid #4ea9c3;
+  border-bottom: 1px solid #4ea9c3;
+  border-right: 1px solid #4ea9c3;
   width: 9.8em;
   background-color: #ffffff;
-  color: #7B3FA0;
+  color: #4ea9c3;
   height: 1.7rem;
   padding-top: 0.5em;
   padding-bottom: 0.5em;
@@ -8065,12 +8068,12 @@ span.CodeMirror-selectedtext {
 }
 .console-container .apps-container .zmdi-caret-right {
   margin-top: 7px;
-  color: #F7941D;
+  color: #ff5a38;
   width: 9px !important;
 }
 .console-container .apps-container .zmdi-caret-down {
   margin-top: 7px;
-  color: #F7941D;
+  color: #ff5a38;
   width: 9px !important;
 }
 .console-container .apps-container .app-container .separator-0 {
@@ -8078,8 +8081,8 @@ span.CodeMirror-selectedtext {
 }
 .console-container .apps-container .app-container .separator-1 {
   width: 60px;
-  border-left: 1px solid #7B3FA0;
-  border-right: 1px solid #7B3FA0;
+  border-left: 1px solid #4ea9c3;
+  border-right: 1px solid #4ea9c3;
 }
 .console-container .app-name-filter {
   height: 2em;
@@ -8089,7 +8092,7 @@ span.CodeMirror-selectedtext {
   font-weight: 400;
   color: #848484;
   width: 180px;
-  border: 1px solid #7B3FA0;
+  border: 1px solid #4ea9c3;
   border-radius: 0px;
   padding: 5px;
 }
@@ -8101,13 +8104,13 @@ span.CodeMirror-selectedtext {
   font-weight: 400;
   color: #848484;
   width: 180px;
-  border: 1px solid #7B3FA0;
+  border: 1px solid #4ea9c3;
   border-radius: 0px;
   padding: 5px;
 }
 .console-container .apps-container {
   margin-top: 2em;
-  border: 1px solid #7B3FA0;
+  border: 1px solid #4ea9c3;
 }
 .console-container .apps-container-bad {
   margin-top: 2em;
@@ -8146,16 +8149,16 @@ span.CodeMirror-selectedtext {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   font-weight: 400;
-  color: #7B3FA0;
+  color: #4ea9c3;
   width: 11.5em;
   padding-left: 10px;
   padding-right: 5px;
   padding-top: 0.5rem;
 }
 .console-container .instance-dots {
-  color: #7B3FA0;
+  color: #4ea9c3;
   width: 11.5rem;
-  border-right: 1px solid #7B3FA0;
+  border-right: 1px solid #4ea9c3;
   font-weight: bold;
   text-align: center;
   font-size: 1.5em;
@@ -8164,19 +8167,19 @@ span.CodeMirror-selectedtext {
   padding-top: 0.5rem;
 }
 .console-container .instance-name-container {
-  border-right: 1px solid #7B3FA0;
+  border-right: 1px solid #4ea9c3;
   width: 176px;
 }
 .console-container .instance-name-container .rc-box {
   width: 100%;
 }
 .console-container .instance-name {
-  color: #7B3FA0;
+  color: #4ea9c3;
   width: 100%;
   margin-bottom: 0.5rem;
 }
 .console-container .instance-name-container-bad {
-  border-right: 1px solid #7B3FA0;
+  border-right: 1px solid #4ea9c3;
   width: 176px;
 }
 .console-container .instance-name-bad {
@@ -8435,381 +8438,16 @@ fieldset[disabled] a.console-container .btn-container .zmdi-settings-off :before
   margin-left: 0.5rem;
 }
 .console-container .current-state {
-  border-left: 1px solid #7B3FA0;
+  border-left: 1px solid #4ea9c3;
   text-align: center;
-  color: #7B3FA0;
+  color: #4ea9c3;
   padding-bottom: 0.5rem;
   width: 7.5rem;
 }
 .console-container .current-state-bad {
-  border-left: 1px solid #7B3FA0;
+  border-left: 1px solid #4ea9c3;
   text-align: center;
   color: #fa0000;
   padding-bottom: 0.5rem;
   width: 7.5rem;
-}
-/* ============================================================
-   QuantumLabs brand override: btn-primary -> naranja QuantumLabs
-   Sobreescribe el azul Bootstrap (#337ab7) solo para botones
-   primarios, sin afectar los colores de enlaces generales.
-   ============================================================ */
-.btn-primary {
-  background-color: #F7941D;
-  border-color: #D97E10;
-  color: #ffffff;
-}
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary.focus {
-  background-color: #D97E10;
-  border-color: #C4700E;
-  color: #ffffff;
-}
-.btn-primary:active,
-.btn-primary.active,
-.open > .dropdown-toggle.btn-primary {
-  background-color: #D97E10;
-  border-color: #C4700E;
-  color: #ffffff;
-}
-.btn-primary.disabled:hover,
-.btn-primary[disabled]:hover,
-fieldset[disabled] .btn-primary:hover,
-.btn-primary.disabled:focus,
-.btn-primary[disabled]:focus {
-  background-color: #F7941D;
-  border-color: #D97E10;
-}
-.btn-primary .badge {
-  color: #F7941D;
-  background-color: #ffffff;
-}
-
-/* ============================================================
-   DARK THEME — QuantumLabs palette sobre fondo oscuro
-   Todos los overrides van aqui al final para maxima especificidad
-   sin tocar el Bootstrap base.
-   Paleta:
-     Fondo principal:  #121212
-     Superficie:       #1C1C1C / #252525 / #2D2D2D
-     Texto:            #E0E0E0 / #A0A0A0
-     Morado marca:     #7B3FA0 (bordes/acentos) / #9B5CC4 (hover/activo)
-     Naranja marca:    #F7941D (botones/accion)
-     Bordes:           #3A2A4A (sutil morado oscuro)
-   ============================================================ */
-
-/* --- Base --- */
-body, html {
-  background-color: #121212 !important;
-  color: #E0E0E0 !important;
-}
-
-/* --- Chosen (dropdowns) --- */
-.chosen-container-single .chosen-single,
-.chosen-container-active .chosen-single,
-.chosen-drop,
-.chosen-results li {
-  background: #252525 !important;
-  background-image: none !important;
-  color: #E0E0E0 !important;
-  border-color: #3A2A4A !important;
-}
-.chosen-results li.highlighted,
-.chosen-results li:hover {
-  background: #7B3FA0 !important;
-  color: #ffffff !important;
-}
-.chosen-container-single .chosen-single span {
-  color: #E0E0E0 !important;
-}
-.chosen-container-single .chosen-single b {
-  background-color: transparent !important;
-}
-.chosen-search input {
-  background: #2D2D2D !important;
-  color: #E0E0E0 !important;
-  border-color: #3A2A4A !important;
-}
-
-/* --- Inputs y form controls --- */
-input, textarea, select,
-.form-control,
-.re-com-input-text input {
-  background-color: #2D2D2D !important;
-  color: #E0E0E0 !important;
-  border-color: #3A2A4A !important;
-}
-input::placeholder, textarea::placeholder,
-.form-control::placeholder {
-  color: #707070 !important;
-}
-input:focus, textarea:focus, .form-control:focus {
-  background-color: #333333 !important;
-  border-color: #7B3FA0 !important;
-  color: #E0E0E0 !important;
-  box-shadow: 0 0 0 2px rgba(123,63,160,0.3) !important;
-}
-
-/* --- Login dialog --- */
-.login-dialog-container .login-dialog-box {
-  background: #1C1C1C !important;
-  border-color: #7B3FA0 !important;
-}
-.login-dialog-container .login-dialog-box .login-dialog-v-box .email,
-.login-dialog-container .login-dialog-box .login-dialog-v-box .password {
-  background: none !important;
-  color: #E0E0E0 !important;
-  border-bottom-color: #7B3FA0 !important;
-}
-.login-dialog-container .login-dialog-box .login-dialog-v-box .email::placeholder,
-.login-dialog-container .login-dialog-box .login-dialog-v-box .password::placeholder {
-  color: #666666 !important;
-}
-
-/* --- Header --- */
-.header {
-  background-color: #0E0E0E !important;
-  border-bottom: 1px solid #2A2A2A;
-}
-.header .user-info {
-  background-color: #7B3FA0 !important;
-}
-
-/* --- Tabs nav --- */
-.nav-tabs {
-  border-bottom-color: #7B3FA0 !important;
-  background-color: #0E0E0E !important;
-}
-.nav-tabs li a {
-  color: #B07FC8 !important;
-  background-color: transparent !important;
-}
-.nav-tabs li a:hover {
-  background-color: #252525 !important;
-  border-color: #3A2A4A #3A2A4A #7B3FA0 !important;
-}
-.nav-tabs .active a, .nav-tabs .active a:hover {
-  background-color: #7B3FA0 !important;
-  color: #ffffff !important;
-  border-color: #7B3FA0 !important;
-}
-
-/* --- Split containers y paneles --- */
-.split-container,
-.vertical-box,
-.rc-h-split,
-.rc-v-split,
-.rc-h-split-top,
-.rc-h-split-left,
-.rc-h-split-right {
-  background-color: #121212 !important;
-}
-.split-container .rc-h-split-splitter,
-.split-container .rc-h-split-splitter div div {
-  background-color: #1C1C1C !important;
-}
-.split-vertical .re-v-split-splitter {
-  border-top-color: #7B3FA0 !important;
-  background-color: #1C1C1C !important;
-}
-
-/* --- Toolbar --- */
-.split-container .toolbar-container {
-  background-color: #1C1C1C !important;
-  border-bottom-color: #3A2A4A !important;
-}
-.split-container .toolbar-container .app-container .app-selector a,
-.split-container .toolbar-container .app-container .app-selector {
-  background-color: #252525 !important;
-  border-color: #3A2A4A !important;
-  color: #E0E0E0 !important;
-}
-
-/* --- App params panel --- */
-.split-container .app-param-panel,
-.split-container .app-param-panel .param-list .rc-h-box {
-  background-color: #1C1C1C !important;
-}
-.split-container .app-param-panel .param-list .rc-h-box:nth-of-type(even) {
-  background-color: #252525 !important;
-}
-.split-container .app-param-panel span,
-.split-container .instance span,
-.split-container .title {
-  color: #B07FC8 !important;
-}
-.split-container .con-gap {
-  border-left-color: #3A2A4A !important;
-}
-.split-container .form-control {
-  background-color: #2D2D2D !important;
-  color: #E0E0E0 !important;
-  border-color: #3A2A4A !important;
-}
-.split-container .instance-label {
-  color: #B07FC8 !important;
-}
-
-/* --- Instancias (add-instance, opr container) --- */
-.split-container .add-instance,
-.split-container .internal-split .opr-container .opr-selector,
-.split-container .internal-split .opr-container .opr-selector a {
-  background-color: #252525 !important;
-  border-color: #3A2A4A !important;
-  color: #E0E0E0 !important;
-}
-.split-container .internal-split .rc-v-box .rc-title {
-  color: #B07FC8 !important;
-}
-
-/* --- Titles generales (APPLICATION PARAMETERS, etc.) --- */
-.rc-title, h1, h2, h3, h4, h5, h6 {
-  color: #E0E0E0 !important;
-}
-
-/* --- Labels re-com --- */
-.rc-label span {
-  color: #E0E0E0;
-}
-
-/* --- Canvas SVG area --- */
-.rc-h-split-right,
-.rc-box {
-  background-color: #121212 !important;
-}
-#canvas1 {
-  background-color: #181818 !important;
-  background-image:
-    linear-gradient(to right, #2A2A2A 1px, transparent 1px),
-    linear-gradient(to bottom, #2A2A2A 1px, transparent 1px) !important;
-}
-
-/* --- Console --- */
-.console-container {
-  background-color: #121212 !important;
-}
-.console-container .header-bar .console-header {
-  background-color: #7B3FA0 !important;
-  color: #ffffff !important;
-}
-.console-container .header-bar .icons {
-  background-color: #1C1C1C !important;
-  border-bottom-color: #7B3FA0 !important;
-  color: #E0E0E0 !important;
-}
-.console-container .header-bar .state {
-  background-color: #1C1C1C !important;
-  color: #B07FC8 !important;
-  border-color: #7B3FA0 !important;
-}
-.console-container .apps-container {
-  border-color: #3A2A4A !important;
-  background-color: #1C1C1C !important;
-}
-.console-container .apps-container-bad {
-  background-color: #2A1010 !important;
-}
-.console-container .app-name {
-  color: #B07FC8 !important;
-}
-.console-container .instance-dots,
-.console-container .instance-name,
-.console-container .current-state {
-  color: #B07FC8 !important;
-  border-color: #3A2A4A !important;
-}
-.console-container .instance-name-container {
-  border-color: #3A2A4A !important;
-}
-.console-container .separator-1 {
-  border-color: #3A2A4A !important;
-}
-.console-container .app-name-filter,
-.console-container .app-instance-filter {
-  background-color: #2D2D2D !important;
-  color: #E0E0E0 !important;
-  border-color: #7B3FA0 !important;
-}
-
-/* --- Logger --- */
-.logger, .rc-v-split-bottom {
-  background-color: #0E0E0E !important;
-}
-.logger .filter,
-.logger .transaction-filter,
-.logger .status-code-filter,
-.logger .text-filter {
-  background-color: #1A1A1A !important;
-  color: #B07FC8 !important;
-}
-
-/* --- Modales / Dialogs --- */
-.rc-modal-panel-backdrop {
-  background-color: rgba(0, 0, 0, 0.75) !important;
-}
-.rc-modal-panel > div:last-child {
-  background-color: #1E1E1E !important;
-}
-
-/* --- Config tab --- */
-.config-tab .title {
-  color: #B07FC8 !important;
-}
-.config-tab .user,
-.config-tab .password {
-  background-color: #2D2D2D !important;
-  color: #E0E0E0 !important;
-  border-bottom-color: #7B3FA0 !important;
-}
-.config-tab .input-container .mail-input {
-  background-color: #2D2D2D !important;
-  color: #E0E0E0 !important;
-  border-color: #3A2A4A !important;
-}
-
-/* --- Scrollbars webkit --- */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #1C1C1C;
-}
-::-webkit-scrollbar-thumb {
-  background: #7B3FA0;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #9B5CC4;
-}
-
-/* --- rc-border (bordes de secciones) --- */
-.rc-border {
-  background-color: #1C1C1C !important;
-}
-
-/* --- Scroller re-com --- */
-.rc-scroller {
-  background-color: #1C1C1C !important;
-}
-
-/* --- Selection list (apps Ready) --- */
-.rc-selection-list {
-  background-color: #252525 !important;
-  border-color: #3A2A4A !important;
-}
-.rc-selection-list li {
-  color: #E0E0E0 !important;
-}
-.rc-selection-list li.rc-selected {
-  background-color: #7B3FA0 !important;
-  color: #ffffff !important;
-}
-
-/* --- stored-selector / loaded-selector dropdowns ya cubiertos por .chosen --- */
-
-/* Bolitas de conteo en la Console: texto oscuro para que el numero sea
-   legible sobre el fondo blanco (cero) en el tema dark. */
-.console-container .console-status .summary-container .summary {
-  color: #1A1A1A !important;
 }

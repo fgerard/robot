@@ -8,7 +8,12 @@
                  [lein-cljsbuild "1.1.8"]
                  [lein-less "1.7.5"]
                  [lein-asset-minifier "0.4.6"]
-                 [lein-doo "0.1.11"]]
+                 [lein-doo "0.1.11"]
+                 ;; Nashorn fue removido del JDK desde la version 15 (JEP 372);
+                 ;; lein-less lo necesita (via javax.script) para correr less.js.
+                 ;; Va en :plugins (no en :dependencies) porque las tareas de
+                 ;; plugins corren con el classpath de :plugins, no el del proyecto.
+                 [org.openjdk.nashorn/nashorn-core "15.4"]]
 
   :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/clojurescript "1.10.520" :exclusions [com.fasterxml.jackson.core/jackson-core]]
@@ -109,6 +114,11 @@
                  ["clojars" "https://repo.clojars.org/"]
                  ;["interware-3rdparty" {:url      "https://ci.interware.mx/nexus/repository/interware-3rdparty"
                  ;                       :releases {:checksum :fail :update :always}}]
+                 ;; jars propietarios que no existen en central/clojars (IBM MQ, jagacy,
+                 ;; com.sun.connector), vendorizados en el propio repo para que
+                 ;; "lein deps" resuelva en cualquier maquina sin depender de un ~/.m2
+                 ;; pre-poblado a mano.
+                 ["project" {:url "file:local-repo" :releases {:checksum :ignore} :snapshots {:checksum :ignore}}]
                  ]
 
   :jvm-opts ~(concat

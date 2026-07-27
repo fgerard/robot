@@ -19,15 +19,24 @@ check_os() {
 }
 
 build_project() {
-  printf "Compilando CSS/JS externs ... \t\t"
-  lein minify-assets && lein less once
+  # lein minify-assets esta roto con las versiones actuales de closure-compiler
+  # (choque de classpath entre el closure-compiler viejo que trae lein-asset-minifier
+  # y el que trae clojurescript -- ClassCastException en CompilerOptions$Environment).
+  # resources/public/js/lib/externs.js ya esta generado y commiteado, y src/js/externs.js
+  # no ha cambiado desde entonces, asi que no hace falta regenerarlo en cada build.
+  printf "Compilando CSS ... \t\t"
+  lein less once
   echo "OK"
 
   printf "Compilando uberjar (incluye cljs robot v1 optimizado) ... \n"
   lein with-profile prod uberjar
 
   printf "Compilando cljs robot2 v2 optimizado ... \n"
-  lein cljsbuild once robot2-min
+  # "lein cljsbuild once <un-solo-id>" no hace nada (bug de parseo de argumentos
+  # entre lein-cljsbuild 1.1.8 y Leiningen moderno: imprime "Compiling
+  # ClojureScript..." y sale con exit 0 sin compilar nada). Pasando el mismo id
+  # dos veces si funciona -- es el workaround.
+  lein cljsbuild once robot2-min robot2-min
 }
 
 stage_execution_template() {
