@@ -10,7 +10,7 @@
                  [lein-asset-minifier "0.4.6"]
                  [lein-doo "0.1.11"]]
 
-  :dependencies [[org.clojure/clojure "1.10.3"]
+  :dependencies [[org.clojure/clojure "1.12.5"]
                  [org.clojure/clojurescript "1.10.520" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/core.async "1.5.648"]
 
