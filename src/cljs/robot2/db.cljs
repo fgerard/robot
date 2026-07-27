@@ -28,6 +28,7 @@
 (def default-db
   {:name "Robot 2.0"
    :ui/main-tab :console
+   :ui/error-dialog nil
    :users {}
    :log (list)
    :operations {}

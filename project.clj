@@ -7,7 +7,8 @@
   :plugins      [[lein-libdir "0.1.1"]
                  [lein-cljsbuild "1.1.8"]
                  [lein-less "1.7.5"]
-                 [lein-asset-minifier "0.4.6"]]
+                 [lein-asset-minifier "0.4.6"]
+                 [lein-doo "0.1.11"]]
 
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.clojure/clojurescript "1.10.520" :exclusions [com.fasterxml.jackson.core/jackson-core]]
@@ -181,6 +182,39 @@
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
 
+    ;; build de desarrollo para la reimplementacion en src/cljs/robot2 --
+    ;; salida separada de la del build "dev" de arriba, no toca robot.ui.*
+    {:id           "robot2"
+     :source-paths ["src/cljs"]
+     :figwheel     {:on-jsload "robot2.core/mount-root"}
+     :compiler     {:main                 robot2.core
+                    :output-to            "resources/public/js/compiled/robot2-ui.js"
+                    :output-dir           "resources/public/js/compiled/robot2-out"
+                    :asset-path           "js/compiled/robot2-out"
+                    :source-map-timestamp true}}
+
+    ;; build optimizado (analogo a "min") para robot2 -- genera un unico
+    ;; robot2-ui.js minificado, sin depender de robot2-out/:
+    ;;   lein cljsbuild once robot2-min
+    {:id           "robot2-min"
+     :source-paths ["src/cljs"]
+     :jar true
+     :compiler     {:main            robot2.core
+                    :output-to       "resources/public/js/compiled/robot2-ui.js"
+                    :optimizations   :advanced
+                    :closure-defines {goog.DEBUG false}
+                    :pretty-print    false}}
+
+    ;; pruebas unitarias (cljs.test) de la logica pura de robot2 (canvas
+    ;; geometry/flow, etc.), corridas con node via lein-doo:
+    ;;   lein doo node robot2-test once
+    {:id           "robot2-test"
+     :source-paths ["src/cljs" "test/cljs"]
+     :compiler     {:main          robot2.test-runner
+                    :output-to     "target/robot2-test/robot2-test.js"
+                    :output-dir    "target/robot2-test/out"
+                    :optimizations :none
+                    :target        :nodejs}}
     ]}
 
   )

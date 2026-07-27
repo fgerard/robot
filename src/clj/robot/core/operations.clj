@@ -54,7 +54,7 @@
            ;(println "NO va a salir:" err# i# count# " -- " (and err# (< i# count#)))
            (if (and err# (< i# count#))
              (do
-               (Thread/sleep delay#)
+               (Thread/sleep (long delay#))
                (recur (inc i#)))
              (or val# err#)))))))
 
@@ -66,7 +66,7 @@
        (let [delta (U/contextualize-integer context delay 1000)]
          (log/debug :you you :sleep [delay] :->> (pr-str [delta]))
          (try
-           (Thread/sleep delta)
+           (Thread/sleep (long delta))
            (catch Exception e
              (log/error e)))
          (log/info :sleep-ended)
@@ -105,7 +105,7 @@
          (if (< delay 0)
            (assoc context you (str regex " is invalid!"))
            (let [sleep (- (* 1000 delay) 500)
-                 _ (Thread/sleep sleep)
+                 _ (Thread/sleep (long sleep))
                  now (->> (ZonedDateTime/now tz)
                           (.format fmt))]
              (assoc context you now))))))

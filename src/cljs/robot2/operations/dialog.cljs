@@ -7,6 +7,7 @@
    encarga del render del formulario."
   (:require [clojure.string :as string]
             [reagent.core :as reagent]
+            [reagent.dom :as reagent.dom]
             [re-frame.core :as re-frame]
             [re-com.core :as re-com]
             [cljs.reader :as reader]
@@ -65,7 +66,7 @@
     {:display-name "code-editor"
      :component-did-mount
      (fn [this]
-       (let [dom (reagent/dom-node this)
+       (let [dom (reagent.dom/dom-node this)
              cm (js/CodeMirror dom (clj->js {:value value :mode mode :tabMode "indent"
                                               :autoCloseBrackets true :matchBrackets true
                                               :lineNumbers true}))]
@@ -174,10 +175,10 @@
          :backdrop-color "grey" :backdrop-opacity 0.4 :wrap-nicely? false
          :child
          [re-com/border
-          :border "5px solid #559" :radius "15px"
+          :border "5px solid #7B3FA0" :radius "15px"
           :child
           [re-com/v-box
-           :width "740px" :style {:background-color "#d4e3f7" :border-radius "15px" :padding "1em"}
+           :width "740px" :style {:background-color "#F3EDF7" :border-radius "15px" :padding "1em"}
            :children
            [[re-com/title :label (str (string/capitalize (name operation)) " operation") :level :level2]
             [re-com/title :label (str "(" state-id ")") :style {:font-weight "bold"} :level :level3]
@@ -245,10 +246,10 @@
        :backdrop-color "grey" :backdrop-opacity 0.4 :wrap-nicely? false
        :child
        [re-com/border
-        :border "5px solid #559" :radius "25px"
+        :border "5px solid #7B3FA0" :radius "25px"
         :child
         [re-com/v-box
-         :padding "10px" :style {:background-color "#d4e3f7" :border-radius "19px"}
+         :padding "10px" :style {:background-color "#F3EDF7" :border-radius "19px"}
          :children
          [[re-com/title :label "Transition" :level :level2]
           [re-com/title :label (str "Rule for transition from " orig-state " to " other-state) :level :level3]

@@ -17,10 +17,22 @@
             :on-success [:operations/schema-loaded]
             :on-failure [:api/log-error]}}))
 
+;; cljs.reader/read-string (el reader liviano que se usa en runtime, distinto
+;; del que usa el compilador sobre el codigo fuente) NO soporta el literal de
+;; regex #"..." -- el .edn guarda cada :re como string plano y aqui se
+;; convierte a RegExp real con re-pattern, una sola vez al cargar.
+(defn compile-schema [raw]
+  (letfn [(compile-fld [fld]
+            (cond-> fld
+              (string? (:re fld)) (update :re re-pattern)))
+          (compile-entry [entry]
+            (update entry :flds (fn [flds] (mapv compile-fld flds))))]
+    (into {} (map (fn [[k v]] [k (compile-entry v)])) raw)))
+
 (re-frame/reg-event-db
   :operations/schema-loaded
   (fn [db [_ _status body]]
-    (assoc db :operations/schema (reader/read-string body))))
+    (assoc db :operations/schema (compile-schema (reader/read-string body)))))
 
 (re-frame/reg-sub
   :operations/schema

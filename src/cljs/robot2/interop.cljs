@@ -29,6 +29,18 @@
   (when (.hasPointerCapture dom-el pointer-id)
     (.releasePointerCapture dom-el pointer-id)))
 
+;; --- Wheel no-pasivo ----------------------------------------------------------
+;; React adjunta su listener sintetico de "wheel" como passive, asi que
+;; preventDefault no funciona ahi (el navegador solo lo ignora con un warning
+;; en consola) -- para evitar que un Ctrl+wheel (pellizco de trackpad) tambien
+;; zoomee la pagina completa ademas del canvas, hace falta un listener nativo
+;; explicitamente no-pasivo.
+(defn add-wheel-listener! [dom-el handler]
+  (.addEventListener dom-el "wheel" handler #js {:passive false}))
+
+(defn remove-wheel-listener! [dom-el handler]
+  (.removeEventListener dom-el "wheel" handler))
+
 ;; --- Animacion del robotito --------------------------------------------------
 (defn animate-translate!
   "Anima el elemento dom-id de (x0,y0) a (x1,y1) en duration-ms usando la

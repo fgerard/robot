@@ -54,11 +54,12 @@
     [:span.googleButtonContents {:style {:font-size "13px" :line-height "34px"}} [:span "Sign in with Google"]]]])
 
 (defn- login-dialog []
-  (let [form-data (reagent/atom {:email "" :pass ""})
-        process-ok (fn [event]
-                     (.preventDefault event)
-                     (re-frame/dispatch [:api/login {:uid (:email @form-data) :pass (:pass @form-data)}])
-                     false)]
+  (let [form-data   (reagent/atom {:email "" :pass ""})
+        show-pass?  (reagent/atom false)
+        process-ok  (fn [event]
+                      (.preventDefault event)
+                      (re-frame/dispatch [:api/login {:uid (:email @form-data) :pass (:pass @form-data)}])
+                      false)]
     (fn []
       [re-com/box
        :align :center :justify :center :class "login-dialog-container"
@@ -85,11 +86,21 @@
                           :on-change #(swap! form-data assoc :email %)]]]
              [re-com/v-box
               :class "form-group"
-              :children [[re-com/input-text
-                          :model (:pass @form-data) :placeholder "Enter password" :class "form-control password"
-                          :change-on-blur? false
-                          :attr {:id "pf-password" :type "password" :max-length "20" :required "required"}
-                          :on-change #(swap! form-data assoc :pass %)]]]
+              :children [[re-com/h-box
+                          :align :center :style {:position "relative"}
+                          :children [[re-com/input-text
+                                      :model (:pass @form-data) :placeholder "Enter password"
+                                      :class "form-control password" :width "100%"
+                                      :change-on-blur? false
+                                      :attr {:id "pf-password"
+                                             :type (if @show-pass? "text" "password")
+                                             :max-length "20" :required "required"}
+                                      :on-change #(swap! form-data assoc :pass %)]
+                                     [:i {:class (if @show-pass? "zmdi zmdi-eye" "zmdi zmdi-eye-off")
+                                          :title (if @show-pass? "Ocultar contraseña" "Ver contraseña")
+                                          :on-click #(swap! show-pass? not)
+                                          :style {:position "absolute" :right "10px" :cursor "pointer"
+                                                  :color "#888" :font-size "18px" :user-select "none"}}]]]]]
              [re-com/v-box
               :children
               [[re-com/h-box
@@ -171,13 +182,41 @@
             :users [users/users-tab]
             [re-com/title :label (str "Unknown tab: " @active-tab)])]]))))
 
+(defn- error-dialog []
+  (let [err (re-frame/subscribe [:ui/error-dialog])]
+    (fn []
+      (when-let [{:keys [status body]} @err]
+        [re-com/modal-panel
+         :child
+         [re-com/v-box
+          :width "480px" :padding "1.5em" :gap "1em"
+          :style {:background "white" :border-radius "6px"}
+          :children
+          [[re-com/h-box
+            :align :center :gap "0.6em"
+            :children [[:span {:style {:color "#c0392b" :font-size "22px"}} "⚠"]
+                       [re-com/title :label (str "Error " status) :level :level3
+                        :style {:color "#c0392b" :margin "0"}]]]
+           [re-com/label :label body
+            :style {:white-space "pre-wrap" :font-family "monospace"
+                    :background "#fef0f0" :padding "0.8em" :border-radius "4px"
+                    :color "#333" :max-height "300px" :overflow-y "auto"}]
+           [re-com/h-box :justify :end
+            :children [[re-com/button
+                        :label "Cerrar"
+                        :class "btn-danger"
+                        :on-click (fn [] (re-frame/dispatch [:reset! [:ui/error-dialog] nil]))]]]]]
+         :backdrop-on-click (fn [] (re-frame/dispatch [:reset! [:ui/error-dialog] nil]))]))))
+
 (defn main-panel []
   (let [registered-uid (re-frame/subscribe [:control/uid])]
     (fn []
-      [re-com/v-split
-       :width "100%" :height "100vh" :class "split-vertical" :style {:border "0px" :margin "0px"}
-       :initial-split "80%"
-       :panel-1 [re-com/v-box
-                 :width "100%"
-                 :children (if @registered-uid [[title] [work-area]] [[login-dialog]])]
-       :panel-2 [re-com/v-box :width "100%" :children [[logger]]]])))
+      [:<>
+       [re-com/v-split
+        :width "100%" :height "100vh" :class "split-vertical" :style {:border "0px" :margin "0px"}
+        :initial-split "80%"
+        :panel-1 [re-com/v-box
+                  :width "100%"
+                  :children (if @registered-uid [[title] [work-area]] [[login-dialog]])]
+        :panel-2 [re-com/v-box :width "100%" :children [[logger]]]]
+       [error-dialog]])))

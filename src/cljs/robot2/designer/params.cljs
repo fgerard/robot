@@ -39,7 +39,7 @@
         [re-com/h-box
          :width "100%"
          :children [[re-com/gap :size "2em"]
-                    [widgets/edit-params inst-params [app-id :instances inst-id] "92%"]]])]]))
+                    [widgets/edit-params inst-params [app-id :instances inst-id] "92%" true]]])]]))
 
 (defn get-running-instances [ready app-name]
   (filter #(= :running (:robot/status %)) (vals (get ready app-name))))
@@ -62,7 +62,7 @@
                     :md-icon-name "zmdi-close-circle-o" :class "eraser-btn"
                     :tooltip "Delete application"
                     :on-click (fn [] (re-frame/dispatch [:api/remove-app app]))]]]
-       [widgets/edit-params (get-in editable [app :app-params]) [app :app-params] "100%"]
+       [widgets/edit-params (get-in editable [app :app-params]) [app :app-params] "100%" true]
        [re-com/title :label "Application Instances" :class "title"]
        [re-com/h-box
         :class "add-instance"

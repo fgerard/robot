@@ -91,6 +91,27 @@
       (let [[ox oy] origin [sx sy] start [px py] pointer]
         [(+ ox (- sx px)) (+ oy (- sy py))]))))
 
+(defn update-connector-hover!
+  "Durante un drag de :connector o :arrow, calcula a mano que estado esta
+   bajo el puntero usando geometria (bounds-fn: state-id -> [x y w h]), en
+   vez de depender de onPointerOver/onPointerOut de cada caja: mientras el
+   puntero esta capturado (ver begin-drag!) la spec de Pointer Events NO
+   dispara esos eventos en ningun elemento que no sea el que tiene la
+   captura, asi que el hover por DOM simplemente no llega durante el drag."
+  [state states bounds-fn]
+  (let [{:keys [type id pointer]} (:drag @state)]
+    (when (and pointer (#{:connector :arrow} type))
+      (let [[px py] pointer
+            hit (some (fn [[sid _]]
+                        (when (not= sid id)
+                          (let [[bx by bw bh] (bounds-fn sid)]
+                            (when (and (<= bx px (+ bx bw)) (<= by py (+ by bh)))
+                              sid))))
+                      states)]
+        (if hit
+          (set-hovered! state :state hit)
+          (clear-hovered! state))))))
+
 (defn connecting-point
   "Punto suelto donde esta el cursor mientras se arrastra una conexion nueva o
    se reconecta una existente (:type :connector o :arrow)."
@@ -127,7 +148,7 @@
           :disconnect (re-frame/dispatch [:canvas/disconnect! app-id id origin])
           :do-nothing nil))
       nil)
-    (swap! state assoc :drag nil)))
+    (swap! state assoc :drag nil :hovered nil)))
 
 ;; --- zoom con la rueda del mouse ------------------------------------------------
 ;; Es discreto (un evento por "tick" de rueda, no un stream continuo de
@@ -138,13 +159,35 @@
 (defn- clamp [v lo hi default]
   (if (and (< v hi) (> v lo)) v default))
 
-(defn wheel->zoom [{:keys [x y w h] :or {x 0 y 0 w 1342 h 600}} wheel-delta]
-  (let [{:keys [min-w max-w min-h max-h]} zoom-bounds
-        new-w (- w (/ wheel-delta 12))
-        new-h (- h (/ wheel-delta 12))]
-    {:x x :y y
-     :w (clamp new-w min-w max-w w)
-     :h (clamp new-h min-h max-h h)}))
+(defn wheel->zoom
+  "anchor: punto [ax ay] en coordenadas SVG que debe quedar fijo bajo el
+   cursor/centro del pellizco despues de aplicar el zoom (si no se da, usa el
+   centro del viewBox actual).
+
+   Usa escala multiplicativa (exp) en vez de lineal:
+   - La formula anterior (w - delta/12) era invisible con el pellizco de
+     trackpad porque ahi deltaY es 1-10 por evento (en lugar de ~120 de
+     la rueda del mouse), produciendo cambios sub-pixel que el usuario
+     no percibia. Con exp cada evento cambia el viewBox en un % fijo
+     (0.1% por unidad de delta), igual de sensible para ambos dispositivos.
+   - Tambien preserva las proporciones: antes w y h cambiaban en la misma
+     cantidad ABSOLUTA, distorsionando la relacion de aspecto con el tiempo;
+     ahora ambas escalan con el mismo FACTOR, manteniendolas consistentes."
+  ([zoom wheel-delta] (wheel->zoom zoom wheel-delta nil))
+  ([{:keys [x y w h] :or {x 0 y 0 w 1342 h 600}} wheel-delta anchor]
+   (let [{:keys [min-w max-w min-h max-h]} zoom-bounds
+         ;; El pellizco del trackpad manda deltaY NEGATIVO al separar los dedos
+         ;; (zoom-in esperado) y POSITIVO al juntarlos (zoom-out).
+         ;; Con exp(+delta*0.001): delta negativo -> scale<1 -> viewBox achica ->
+         ;; contenido mas grande = zoom-in. Sentido natural del gesto. ✓
+         scale (js/Math.exp (* 0.0016 wheel-delta))
+         new-w (clamp (* w scale) min-w max-w w)
+         new-h (clamp (* h scale) min-h max-h h)
+         [ax ay] (or anchor [(+ x (/ w 2)) (+ y (/ h 2))])]
+     {:x (- ax (* (- ax x) (/ new-w w)))
+      :y (- ay (* (- ay y) (/ new-h h)))
+      :w new-w
+      :h new-h})))
 
 ;; --- eventos re-frame: el unico punto donde el resultado de una interaccion
 ;; entra al app-db (y, salvo pan/zoom, al historial de undo) ------------------
@@ -154,16 +197,58 @@
   (fn [db [_ app-id state-id corner]]
     (assoc-in db [:applications :editable app-id :states state-id :diagram :corner] corner)))
 
+;; Valor por defecto del viewBox cuando :svg-ctrl :zoom todavia no existe en
+;; el db (antes del primer pan/zoom). merge-ado SIEMPRE antes de tocar
+;; :x/:y/:w/:h para no perder w/h si :zoom era nil o un mapa parcial (p.ej. el
+;; resultado de un :canvas/pan-by! anterior a que existiera este default).
+(def default-zoom {:x 0 :y 0 :w 1342 :h 600})
+
+;; Pan final (al soltar el arrastre de fondo): un solo evento por gesto ->
+;; se trackea directamente.
 (re-frame/reg-event-db
   :canvas/pan!
+  [undo/track]
   (fn [db [_ app-id [x y]]]
-    (update-in db [:applications :editable app-id :svg-ctrl :zoom] merge {:x x :y y})))
+    (update-in db [:applications :editable app-id :svg-ctrl :zoom]
+               (fn [zoom] (merge default-zoom zoom {:x x :y y})))))
+
+;; --- debounce para eventos de rueda (pan-by! y zoom!) ------------------------
+;; Ambos se disparan docenas de veces por segundo durante el gesto.  Si se
+;; trackearan uno a uno el historial de undo se llena de micro-pasos y se
+;; vuelve inusable.  En cambio acumulamos los cambios en el db (rapido, sin
+;; snapshot) y 400 ms despues del ULTIMO evento de rueda disparamos
+;; :canvas/commit-viewport! (un no-op trackeado), que captura todo el gesto
+;; como UNA SOLA entrada de undo.
+(defonce ^:private viewport-timer (atom nil))
+
+(defn- schedule-viewport-commit! [app-id]
+  (when @viewport-timer (js/clearTimeout @viewport-timer))
+  (reset! viewport-timer
+    (js/setTimeout
+      #(do (reset! viewport-timer nil)
+           (re-frame/dispatch [:canvas/commit-viewport! app-id]))
+      400)))
+
+(re-frame/reg-event-db
+  :canvas/commit-viewport!
+  [undo/track]
+  (fn [db _] db))
+
+(re-frame/reg-event-db
+  :canvas/pan-by!
+  (fn [db [_ app-id [dx dy]]]
+    (schedule-viewport-commit! app-id)
+    (update-in db [:applications :editable app-id :svg-ctrl :zoom]
+               (fn [zoom]
+                 (let [{:keys [x y] :as zoom} (merge default-zoom zoom)]
+                   (assoc zoom :x (+ x dx) :y (+ y dy)))))))
 
 (re-frame/reg-event-db
   :canvas/zoom!
-  (fn [db [_ app-id wheel-delta]]
+  (fn [db [_ app-id wheel-delta anchor]]
+    (schedule-viewport-commit! app-id)
     (update-in db [:applications :editable app-id :svg-ctrl :zoom]
-               (fn [zoom] (wheel->zoom (or zoom {}) wheel-delta)))))
+               (fn [zoom] (wheel->zoom (or zoom {}) wheel-delta anchor)))))
 
 (re-frame/reg-event-db
   :canvas/connect!

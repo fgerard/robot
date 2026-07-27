@@ -10,9 +10,7 @@
             [robot2.widgets :as widgets]
             [robot2.operations.dialog :as opr-dialog]
             [robot2.canvas.render :as canvas]
-            [robot2.designer.params :as params]
-            [robot2.apps.stored :as apps-stored]
-            [robot2.apps.loaded :as apps-loaded]))
+            [robot2.designer.params :as params]))
 
 (re-frame/reg-sub :applications/editable (fn [db _] (get-in db [:applications :editable])))
 (re-frame/reg-sub :designer/ctrl (fn [db _] (:designer/ctrl db)))
@@ -142,9 +140,7 @@
            [re-com/v-box
             :class "vertical-box" :width "100%"
             :children
-            [[re-com/h-box
-              :children [[apps-stored/apps-stored-com] [re-com/gap :size "1em"] [apps-loaded/apps-loaded-com]]]
-             [toolbar app app-names running?]
+            [[toolbar app app-names running?]
              (when (seq app)
                [params/app-params-panel app editable ready watch-instance-atm open-instances-atm new-instance-atm])]]
            :panel-2

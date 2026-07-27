@@ -23,11 +23,25 @@
 </head>
 
 <body>
-  <div id="app" style="font-family: Segoe UI, Roboto, sans-serif;"></div>
+  <div id="version-chooser" style="font-family: Segoe UI, Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 16px;">
+    <h2>Selecciona la versión</h2>
+    <div style="display: flex; gap: 12px;">
+      <button id="choose-v1" style="padding: 10px 24px; font-size: 16px; cursor: pointer;">Versión 1</button>
+      <button id="choose-v2" style="padding: 10px 24px; font-size: 16px; cursor: pointer;">Versión 2</button>
+    </div>
+  </div>
+  <div id="app" style="font-family: Segoe UI, Roboto, sans-serif; display: none;"></div>
   <script src="js/lib/externs.js"></script>
   <script src="js/compiled/robot-ui.js"></script>
   <script>
-    robot.ui.core.init();
+    document.getElementById('choose-v1').addEventListener('click', function () {
+      document.getElementById('version-chooser').style.display = 'none';
+      document.getElementById('app').style.display = '';
+      robot.ui.core.init();
+    });
+    document.getElementById('choose-v2').addEventListener('click', function () {
+      window.location.href = 'robot2.html';
+    });
   </script>
 </body>
 

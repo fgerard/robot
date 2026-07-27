@@ -99,7 +99,7 @@
 (re-frame/reg-event-db
   :params/set!
   [undo/track]
-  (fn [db [_ path k v]]
+  (fn [db [_ path {:keys [k v]}]]
     (assoc-in db (concat [:applications :editable] path [(keyword k)]) v)))
 
 (re-frame/reg-event-db
@@ -111,8 +111,12 @@
 (defn edit-params
   "params: mapa a mostrar. path: donde viven dentro de :applications/editable
    (nil = solo lectura, p.ej. viendo los parametros en runtime de una
-   instancia). width/with-click controlan presentacion."
-  ([params path width] (edit-params params path width true))
+   instancia). width/with-click controlan presentacion.
+   NOTA: es un componente form-2 (devuelve fn de render) -- Reagent invoca esa
+   fn de render con los MISMOS args literales del tag hiccup, sin pasar por
+   esta dispatch de aridad. Una arity de 3 args que llamara recursivamente a
+   la de 4 no funcionaria: con-click llegaria `undefined` en cada re-render.
+   Por eso todos los call-sites deben pasar los 4 args explicitos."
   ([params path width with-click]
    (let [entry (reagent/atom {:k "" :v ""})]
      (fn [params path width with-click]
@@ -143,11 +147,11 @@
                                   (reset! entry {:k "" :v ""}))
                               (swap! entry assoc :v txt)))]
               [re-com/md-icon-button
-               :md-icon-name "zmdi-close-circle-o" :tooltip "Clear boxes"
+               :md-icon-name "zmdi-close-circle-o" :class "eraser-btn" :tooltip "Clear boxes"
                :on-click (fn [] (reset! entry {:k "" :v ""}))]
               (when path
                 [re-com/md-icon-button
-                 :md-icon-name "zmdi-plus-circle-o" :tooltip "Add parameter"
+                 :md-icon-name "zmdi-plus-circle-o" :class "add-btn" :tooltip "Add parameter"
                  :disabled? (or (not (valid-name? k)) (nil? (seq k)) (nil? (seq v)))
                  :on-click (fn []
                              (re-frame/dispatch [:params/set! path @entry])
@@ -165,15 +169,20 @@
                    :style {:cursor "pointer"}
                    :attr {:on-click (fn [_] (when with-click (reset! entry {:k (subs (str pk) 1) :v (str pv)})))}
                    :children
-                   [[re-com/label :label (str pk) :width "30%" :class "app-param-key"]
+                   [[re-com/gap :size "0.2em"]
+                    [re-com/label :label (str pk) :width "30%" :class "app-param-key"
+                     :style {:overflow "hidden" :flex "initial"}]
+                    [re-com/gap :size "0.2em"]
                     (cond
                       (re-find #"[Pp][Aa][Ss][Ss]|[Pp][Ww][Dd]|[Cc][Ll][Aa][Vv][Ee]" (str pk))
-                      [re-com/label :label "*****" :width "60%"]
+                      [re-com/label :label "*****" :width "60%" :class "app-param-value"]
                       :else
-                      [re-com/label :label (str pv) :width "60%"])
+                      [re-com/label :label (str pv) :width "60%" :class "app-param-value"])
                     (when path
                       [re-com/md-icon-button
-                       :md-icon-name "zmdi-delete" :tooltip "Delete parameter" :size :smaller
+                       :md-icon-name "zmdi-delete" :class "delete-btn" :tooltip "Delete parameter"
+                       :tooltip-position :right-center :size :smaller
+                       :style {:overflow "hidden" :flex "initial"}
                        :on-click (fn [e]
                                    (.preventDefault e) (.stopPropagation e)
                                    (re-frame/dispatch [:params/remove! path pk]))])]]))]]]]])))))

@@ -23,52 +23,59 @@
         m (if (not= x2 x1)
             (/ (- y2 y1) (- x2 x1)))
         w1' (/ w1 2)
-        h1' (/ h1 1.6666)
         w2' (/ w2 2)
-        h2' (/ h2 1.6666)
+        ;; El "centro" de referencia (y1/y2 arriba) esta corrido al 60% de la
+        ;; altura, no al 50% -- por eso la distancia real hasta el borde de
+        ;; ARRIBA y hasta el de ABAJO no es la misma y hace falta una h1' para
+        ;; cada lado (si se usa una sola, las salidas/entradas por abajo
+        ;; sobrepasan el borde real de la caja, dejando un hueco visible).
+        h1'-top (/ h1 1.6666)
+        h1'-bot (- h1 (/ h1 1.6666))
+        h2'-top (/ h2 1.6666)
+        h2'-bot (- h2 (/ h2 1.6666))
 
         [x1' y1'] (cond
                     (> x2 x1)
                     (if (<= m 0)
                       (if (<= (Math/abs m) alfa1)
                         [(+ x1 w1') (+ y1 (* w1' m))]
-                        [(- x1 (/ h1' m)) (- y1 h1')])
+                        [(- x1 (/ h1'-top m)) (- y1 h1'-top)])
                       (if (<= (Math/abs m) alfa1)
                         [(+ x1 w1') (+ y1 (* w1' m))]
-                        [(+ x1 (/ h1' m)) (+ y1 h1')]))
+                        [(+ x1 (/ h1'-bot m)) (+ y1 h1'-bot)]))
                     (< x2 x1)
                     (if (<= m 0)
                       (if (<= (Math/abs m) alfa1)
                         [(- x1 w1') (- y1 (* w1' m))]
-                        [(+ x1 (/ h1' m)) (+ y1 h1')])
+                        [(+ x1 (/ h1'-bot m)) (+ y1 h1'-bot)])
                       (if (<= (Math/abs m) alfa1)
                         [(- x1 w1') (- y1 (* w1' m))]
-                        [(- x1 (/ h1' m)) (- y1 h1')]))
+                        [(- x1 (/ h1'-top m)) (- y1 h1'-top)]))
                     (= x2 x1)
                     (if (>= y1 y2)
-                      [x1 (- y1 h1')]
-                      [x1 (+ y1 h1')]))
+                      [x1 (- y1 h1'-top)]
+                      [x1 (+ y1 h1'-bot)]))
         [x2' y2'] (cond
                     (> x1 x2)
                     (if (<= m 0)
                       (if (<= (Math/abs m) alfa2)
                         [(+ x2 w2') (+ y2 (* w2' m))]
-                        [(- x2 (/ h2' m)) (- y2 h2')])
+                        [(- x2 (/ h2'-top m)) (- y2 h2'-top)])
                       (if (<= (Math/abs m) alfa2)
                         [(+ x2 w2') (+ y2 (* w2' m))]
-                        [(+ x2 (/ h2' m)) (+ y2 h2')]))
+                        [(+ x2 (/ h2'-bot m)) (+ y2 h2'-bot)]))
                     (< x1 x2)
                     (if (<= m 0)
                       (if (<= (Math/abs m) alfa2)
                         [(- x2 w2') (- y2 (* w2' m))]
-                        [(+ x2 (/ h2' m)) (+ y2 h2')])
+                        [(+ x2 (/ h2'-bot m)) (+ y2 h2'-bot)])
                       (if (<= (Math/abs m) alfa2)
                         [(- x2 w2') (- y2 (* w2' m))]
-                        [(- x2 (/ h2' m)) (- y2 h2')]))
+                        [(- x2 (/ h2'-top m)) (- y2 h2'-top)]))
                     (= x1 x2)
                     (if (>= y2 y1)
-                      [x2 (- y2 h2')]
-                      [x2 (+ y2 h2')]))]
+                      [x2 (- y2 h2'-top)]
+                      [x2 (+ y2 h2'-bot)]))]
     [[x1' y1'] [x2' y2']]))
 
 (defn compute-exit2point

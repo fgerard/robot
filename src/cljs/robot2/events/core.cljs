@@ -39,6 +39,15 @@
   (fn [db [_ log-entry]]
     (update db :log (fn [log] (take 1000 (conj log log-entry))))))
 
+(re-frame/reg-sub
+  :ui/error-dialog
+  (fn [db _] (:ui/error-dialog db)))
+
+(re-frame/reg-event-db
+  :ui/error-dialog!
+  (fn [db [_ status body]]
+    (assoc db :ui/error-dialog {:status status :body (str body)})))
+
 (re-frame/reg-event-db
   :pprint
   (fn [db _]

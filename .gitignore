@@ -14,7 +14,7 @@ project.clj.BUENO.java11
 project.clj.VERSIONES-NUEVAS-LA-NO-JALA
 project.clj.bk
 project.clj.dev
-resources/public/js/compiled/out/
+resources/public/js/compiled/
 *.tgz
 robot-3.1.4/
 src/clj-tests/

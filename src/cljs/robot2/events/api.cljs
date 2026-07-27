@@ -15,6 +15,7 @@
             [cljs-http.client :as http]
             [taoensso.sente :as sente]
             [robot2.interop :as interop]
+            [robot2.undo :as undo]
             [robot2.events.core :refer [create-log]]))
 
 ;; --- efecto :http ------------------------------------------------------------
@@ -47,11 +48,21 @@
   (.log js/console "chsk/handshake"))
 
 (defmethod ws-event-handler :chsk/recv [{:keys [event send-fn]}]
+  ;; sente (wrap-recv-evs? true por default) envuelve TODO push del servidor
+  ;; como [:chsk/recv ev-original] -- entonces event aqui es
+  ;; [:chsk/recv [:robot/update [:robot/state app inst ctx]]], no solo
+  ;; [:robot/update ...]. El primer elemento es siempre :chsk/recv (repetido,
+  ;; redundante con :id) y hay que descartarlo para llegar al verbo real.
   (let [[_ [verb data]] event]
     (cond
       (= verb :chsk/ws-ping) (send-fn [:robot-client/ws-pong])
       (= verb :robot/update) (re-frame/dispatch data)
       :else nil)))
+
+(re-frame/reg-event-db
+  :robot/state
+  (fn [db [_ app inst state]]
+    (assoc-in db [:applications :ready app inst] state)))
 
 (re-frame/reg-fx
   :ws-connect
@@ -83,10 +94,10 @@
     {:db (-> db
              (assoc-in [:control :uid] uid)
              (assoc-in [:control :admin] (= status 200)))
+     :ws-connect {}
      :dispatch-n [(create-log :info status (str uid (if (= status 200) " logged in as admin" " logged in")))
                   [:api/load-applications]
-                  [:api/load-operations]
-                  [:api/ws-connect]]}))
+                  [:api/load-operations]]}))
 
 (re-frame/reg-event-fx
   :api/login-failed
@@ -117,7 +128,14 @@
 (re-frame/reg-event-db
   :applications/replace
   (fn [db [_ _status body]]
-    (update-in db [:applications] merge body)))
+    ;; Al reemplazar el catalogo de apps, reinicializamos el historial de undo
+    ;; para que su snapshot mas antiguo sea este estado ya cargado, no el db
+    ;; vacio inicial.  Sin esto, al deshacer mas alla del primer cambio tracked
+    ;; se restauraba el snapshot de arranque (aplicaciones :editable {}) y
+    ;; "borraba todo" en la pantalla.
+    (-> db
+        (update-in [:applications] merge body)
+        undo/init-history)))
 
 (re-frame/reg-event-fx
   :api/load-operations
@@ -146,11 +164,20 @@
 (re-frame/reg-event-fx
   :api/instantiate
   (fn [{:keys [db]} [_ app-id]]
+    ;; instantiate responde 204 sin cuerpo (solo le dice al backend que
+    ;; refresque su modelo en memoria para esta app) -- no hay que tocar
+    ;; :editable con la respuesta, o se borraria el diagrama que el usuario
+    ;; ya tenia cargado (justo lo que se guardo un segundo antes).
     {:http {:method :post
             :url (str (:url-base db) "instantiate/" app-id)
             :headers {"Accept" "application/edn"}
-            :on-success [:applications/editable-replace app-id]
+            :on-success [:api/instantiate-ok app-id]
             :on-failure [:api/log-error]}}))
+
+(re-frame/reg-event-fx
+  :api/instantiate-ok
+  (fn [_ [_ app-id status]]
+    {:dispatch (create-log :info status (str "App " app-id " saved and reloaded in backend"))}))
 
 (re-frame/reg-event-db
   :applications/editable-replace
@@ -282,4 +309,5 @@
 (re-frame/reg-event-fx
   :api/log-error
   (fn [_ [_ status body]]
-    {:dispatch (create-log :error status body)}))
+    {:dispatch-n [(create-log :error status body)
+                  [:ui/error-dialog! status body]]}))

@@ -51,10 +51,10 @@
                 [:div {:class (str "instance-name-container" (when bad? "-bad"))}
                  [re-com/label :label inst :class (str "instance-name" (when bad? "-bad"))]]
                 [:span {:class "btn-container"} action-button mood-button]
-                [re-com/label :label (if (= current "none") "-" current) :width "auto"
+                [re-com/label :label (if (= current :none) "-" current) :width "auto"
                  :class (str "current-state" (when bad? "-bad"))]]]))
 
-(defn- app-row [app insts open-instances-atm app-open-fltr badges bad?]
+(defn- app-row [app insts app-open-fltr badges bad?]
   ^{:key (str app)}
   [re-com/h-box
    :width "688px"
@@ -69,7 +69,7 @@
                   [re-com/gap :size "5px"]
                   [widgets/md-open-close-button
                    "zmdi zmdi-caret-right btn-cursor" "zmdi zmdi-caret-down btn-cursor"
-                   insts open-instances-atm]
+                   app app-open-fltr]
                   [re-com/label :label app :class "app-name" :width "12em"]
                   [:div.separator-0] [:div.separator-1]
                   [re-com/gap :size "7.5rem"]]]
@@ -78,7 +78,6 @@
 
 (defn inst-control []
   (let [ready (re-frame/subscribe [:apps/ready])
-        open-instances-atm (reagent/atom #{})
         app-fltr (reagent/atom "")
         inst-fltr (reagent/atom "")
         status-fltr (reagent/atom :menu)
@@ -135,5 +134,5 @@
                         :on-change (fn [txt] (reset! inst-fltr txt))]]]
            (doall
              (for [[app insts] apps]
-               (app-row app insts open-instances-atm app-open-fltr (app-badges summaries app) (pos? (bad-apps app)))))
+               (app-row app insts app-open-fltr (app-badges summaries app) (pos? (bad-apps app)))))
            [:div {:style {:border-top "1px solid #EEEEEE"}} ""]]]]))))
