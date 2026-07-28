@@ -39,9 +39,13 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
       window.__googInitialized = true;
     }
     google.accounts.id.prompt(function(notification) {
-      var dismissed = (notification.isNotDisplayed && notification.isNotDisplayed())
-        || (notification.isSkippedMoment && notification.isSkippedMoment());
-      if (dismissed) window.__googOnError("Google login was dismissed or unavailable");
+      var reason;
+      if (notification.isNotDisplayed && notification.isNotDisplayed()) {
+        reason = notification.getNotDisplayedReason && notification.getNotDisplayedReason();
+      } else if (notification.isSkippedMoment && notification.isSkippedMoment()) {
+        reason = notification.getSkippedReason && notification.getSkippedReason();
+      }
+      if (reason) window.__googOnError("Google login was dismissed or unavailable (" + reason + ")");
     });
   },
   GOOGlogout = this.GOOGlogout = function() {
