@@ -1,5 +1,28 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400');
+
+// Custom properties minimas para los pocos lugares fuera del pipeline de LESS
+// (estilos inline en index.html/robot2.html) que necesitan responder al
+// toggle claro/oscuro. El resto del tema NO usa custom properties -- Bootstrap
+// 3 aplica darken()/lighten() a sus variables en tiempo de compilacion, y eso
+// no funciona sobre un var(...) -- por eso el resto de este archivo compila
+// el tema oscuro tal cual (ver bootstrap/variables.less) y theme-light.less
+// lo sobreescribe con selectores explicitos cuando html[data-theme="light"].
+:root {
+  --bg-app: #1B1C1F;
+  --bg-panel-alt: #2A2C30;
+  --border-subtle: #44464F;
+  --text-body: #E4E4E6;
+  --accent-orange: #E2724B;
+}
+html[data-theme="light"] {
+  --bg-app: #ffffff;
+  --bg-panel-alt: #eeeeee;
+  --border-subtle: #cccccc;
+  --text-body: #333333;
+  --accent-orange: #E2724B;
+}
+
 @import 'bootstrap/bootstrap';
 @import 'codemirror';
 @import 'custom-login-button';
@@ -12,3 +35,4 @@
 @import 'designer.less';
 @import 'console.less';
 @import 'vendor-dark.less';
+@import 'theme-light.less';

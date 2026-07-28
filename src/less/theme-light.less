@@ -1,0 +1,273 @@
+// Tema claro (el look original, pre-oscuro) como capa de override explicita
+// sobre el tema oscuro, que es lo que compila por default en este archivo
+// (ver bootstrap/variables.less y los @base-color/@sub-color de
+// main/login/logger/console/designer/config/splitter.less).
+//
+// No se usan variables/custom-properties para esto porque Bootstrap 3 aplica
+// darken()/lighten() a sus variables en tiempo de compilacion de LESS, y eso
+// no funciona sobre un var(...) -- asi que en vez de recompilar todo
+// Bootstrap una segunda vez, aqui se re-declaran a mano, con valores
+// literales, los selectores concretos que genera Bootstram/las hojas propias
+// para cada variable que se oscurecio. El naranja de marca (@base-color) y
+// los colores de estado (verde/ambar/rojo) NO cambian entre temas -- son
+// parte del branding, no del contraste claro/oscuro.
+//
+// El selector con el atributo [data-theme="light"] siempre tiene mas
+// especificidad que el selector plano que compila Bootstrap, asi que estas
+// reglas ganan sin importar el orden de import.
+html[data-theme="light"] {
+
+  // --- Bootstrap: base -------------------------------------------------------
+  body {
+    color: #333333;
+    background-color: #ffffff;
+  }
+  hr {
+    border-top-color: #eeeeee;
+  }
+  .text-muted,
+  .help-block,
+  small,
+  .small {
+    color: #777777;
+  }
+
+  // --- Bootstrap: tablas -------------------------------------------------------
+  .table > thead > tr > th,
+  .table > tbody > tr > th,
+  .table > tfoot > tr > th,
+  .table > thead > tr > td,
+  .table > tbody > tr > td,
+  .table > tfoot > tr > td,
+  .table-bordered,
+  .table-bordered > thead > tr > th,
+  .table-bordered > tbody > tr > th,
+  .table-bordered > tfoot > tr > th,
+  .table-bordered > thead > tr > td,
+  .table-bordered > tbody > tr > td,
+  .table-bordered > tfoot > tr > td {
+    border-color: #dddddd;
+  }
+  .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+  }
+  .table-hover > tbody > tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  // --- Bootstrap: botones -------------------------------------------------------
+  .btn-default {
+    color: #333333;
+    background-color: #ffffff;
+    border-color: #cccccc;
+  }
+  .btn-default:hover,
+  .btn-default:focus {
+    background-color: #e6e6e6;
+    border-color: #adadad;
+  }
+
+  // --- Bootstrap: forms -------------------------------------------------------
+  .form-control {
+    background-color: #ffffff;
+    border-color: #cccccc;
+    color: #555555;
+  }
+  .form-control::-moz-placeholder,
+  .form-control:-ms-input-placeholder,
+  .form-control::-webkit-input-placeholder {
+    color: #999999;
+  }
+  .form-control:focus {
+    border-color: #66afe9;
+  }
+  .form-control[disabled],
+  .form-control[readonly],
+  fieldset[disabled] .form-control {
+    background-color: #eeeeee;
+  }
+
+  // --- Bootstrap: dropdown -------------------------------------------------------
+  .dropdown-menu {
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border: 1px solid rgba(0, 0, 0, .15);
+  }
+  .dropdown-menu > li > a {
+    color: #333333;
+  }
+  .dropdown-menu > li > a:hover,
+  .dropdown-menu > li > a:focus {
+    color: #262626;
+    background-color: #f5f5f5;
+  }
+  .dropdown-menu .divider {
+    background-color: #e5e5e5;
+  }
+
+  // --- Bootstrap: navbar -------------------------------------------------------
+  .navbar-default {
+    background-color: #f8f8f8;
+    border-color: #e7e7e7;
+  }
+  .navbar-default .navbar-brand,
+  .navbar-default .navbar-nav > li > a {
+    color: #777777;
+  }
+  .navbar-default .navbar-nav > .active > a {
+    color: #555555;
+    background-color: #e7e7e7;
+  }
+
+  // --- Bootstrap: paneles / well / modal -------------------------------------------------------
+  .panel,
+  .list-group-item {
+    background-color: #ffffff;
+  }
+  .panel-default,
+  .list-group-item {
+    border-color: #dddddd;
+  }
+  .panel-default > .panel-heading {
+    background-color: #f5f5f5;
+    color: #333333;
+    border-color: #dddddd;
+  }
+  a.list-group-item:hover,
+  a.list-group-item:focus {
+    background-color: #f5f5f5;
+  }
+  .well {
+    background-color: #f5f5f5;
+    border-color: #dcdcdc;
+  }
+  .modal-content {
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, .2);
+  }
+
+  // --- Bootstrap: code/pre -------------------------------------------------------
+  code {
+    color: #c7254e;
+    background-color: #f9f2f4;
+  }
+  pre {
+    color: #333333;
+    background-color: #f5f5f5;
+    border-color: #cccccc;
+  }
+
+  // --- console.less -------------------------------------------------------------
+  .console-container {
+    .header-bar .console-header {
+      background-color: #97D0E5;
+    }
+    .header-bar .icons {
+      background-color: #ffffff;
+      color: #000000;
+    }
+    .header-bar .state {
+      background-color: #ffffff;
+    }
+    .console-status {
+      color: #000000;
+    }
+  }
+
+  // --- designer.less --------------------------------------------------------------
+  .split-container {
+    .toolbar-container {
+      border-bottom-color: #97D0E5;
+      .app-container .app-selector,
+      .app-container .app-selector a {
+        background-color: #97D0E5;
+        border-color: #97D0E5;
+      }
+    }
+    .internal-split .opr-container .opr-selector {
+      background-color: #97D0E5;
+      a {
+        border-color: #848484;
+        b {
+          color: #000000;
+        }
+      }
+    }
+    .form-control {
+      border-color: #848484;
+    }
+    .app-param-panel .param-list .rc-h-box:nth-of-type(even) {
+      background-color: #eeeeee;
+    }
+  }
+
+  // --- config.less ------------------------------------------------------------------
+  .config-tab .input-container .mail-input {
+    border-color: #666666;
+  }
+
+  // --- logger.less --------------------------------------------------------------------
+  .logger .filter {
+    &::-webkit-input-placeholder { color: #97D0E5; }
+    &:-moz-placeholder { color: #97D0E5; }
+    &::-moz-placeholder { color: #97D0E5; }
+    &:-ms-input-placeholder { color: #97D0E5; }
+  }
+
+  // --- CodeMirror (Designer) -----------------------------------------------------------
+  .CodeMirror {
+    color: #000000;
+    background-color: #ffffff;
+    border-color: gray;
+  }
+  .CodeMirror-scrollbar-filler,
+  .CodeMirror-gutter-filler {
+    background-color: #ffffff;
+  }
+  .CodeMirror-gutters {
+    border-right-color: #dddddd;
+    background-color: #f7f7f7;
+  }
+  .CodeMirror-linenumber {
+    color: #999999;
+  }
+  .CodeMirror-guttermarker {
+    color: #000000;
+  }
+  .CodeMirror-guttermarker-subtle {
+    color: #999999;
+  }
+  .CodeMirror div.CodeMirror-cursor {
+    border-left-color: #000000;
+  }
+  .CodeMirror-ruler {
+    border-left-color: #cccccc;
+  }
+  .cm-s-default .cm-header { color: blue; }
+  .cm-s-default .cm-quote { color: #090909; }
+  .cm-negative { color: #dd4444; }
+  .cm-positive { color: #229922; }
+  .cm-s-default .cm-keyword { color: #770088; }
+  .cm-s-default .cm-atom { color: #221199; }
+  .cm-s-default .cm-number { color: #116644; }
+  .cm-s-default .cm-def { color: #0000ff; }
+  .cm-s-default .cm-variable-2 { color: #0055aa; }
+  .cm-s-default .cm-variable-3 { color: #008855; }
+  .cm-s-default .cm-comment { color: #aa5500; }
+  .cm-s-default .cm-string { color: #aa1111; }
+  .cm-s-default .cm-string-2 { color: #ff5500; }
+  .cm-s-default .cm-meta { color: #555555; }
+  .cm-s-default .cm-qualifier { color: #555555; }
+  .cm-s-default .cm-builtin { color: #3300aa; }
+  .cm-s-default .cm-bracket { color: #997700; }
+  .cm-s-default .cm-tag { color: #117700; }
+  .cm-s-default .cm-attribute { color: #0000cc; }
+  .cm-s-default .cm-hr { color: #999999; }
+  .cm-s-default .cm-link { color: #0000cc; }
+  .cm-s-default .cm-error { color: #ff0000; }
+  .cm-invalidchar { color: #ff0000; }
+  div.CodeMirror span.CodeMirror-matchingbracket { color: #00ff00; }
+  div.CodeMirror span.CodeMirror-nonmatchingbracket { color: #ff2222; }
+  .CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
+  .CodeMirror-activeline-background { background: #e8f2ff; }
+}

@@ -50,6 +50,9 @@
   (let [ts (now)]
     [:log [(t-fmt/unparse (t-fmt/formatter "yyyy-MM-dd HH:mm:ss.SSS") ts) level status msg (pr-str ts)]]))
 
+(defn current-theme []
+  (or (.getAttribute (.-documentElement js/document) "data-theme") "dark"))
+
 (re-frame/reg-event-db
   :initialize-db
   (fn [_ [_ url-base]]
@@ -57,7 +60,17 @@
       (assoc
         db
         :url-base url-base
+        :ui/theme (current-theme)
         :history {:curr-idx 0 :snapshots (list (dissoc db :history))}))))
+
+(re-frame/reg-event-db
+  :ui/set-theme
+  (fn [db [_ theme]]
+    (.setAttribute (.-documentElement js/document) "data-theme" theme)
+    (try
+      (.setItem js/localStorage "robot-theme" theme)
+      (catch :default _))
+    (assoc db :ui/theme theme)))
 
 (re-frame/reg-event-db
   :reset!

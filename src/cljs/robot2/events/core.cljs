@@ -16,8 +16,18 @@
   :initialize-db
   (fn [_ [_ url-base]]
     (-> db/default-db
-        (assoc :url-base url-base)
+        (assoc :url-base url-base :ui/theme (interop/current-theme))
         undo/init-history)))
+
+(re-frame/reg-sub
+  :ui/theme
+  (fn [db _] (:ui/theme db)))
+
+(re-frame/reg-event-db
+  :ui/set-theme
+  (fn [db [_ theme]]
+    (interop/apply-theme! theme)
+    (assoc db :ui/theme theme)))
 
 (re-frame/reg-event-db
   :reset!

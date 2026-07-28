@@ -1,4 +1,56 @@
 @base-color: #E2724B;
+
+.theme-toggle-btn {
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 1000;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-panel-alt);
+    color: @base-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+    transition: transform .35s ease, border-color .2s ease, background-color .2s ease;
+    .zmdi {
+        font-size: 18px;
+        line-height: 1;
+    }
+    &:hover {
+        transform: rotate(20deg) scale(1.08);
+        border-color: @base-color;
+    }
+    &:active {
+        transform: rotate(20deg) scale(0.94);
+    }
+}
+// Variante para cuando va dentro del flujo normal del header (junto al
+// logout, en la franja naranja de user-info) en vez de flotando en la
+// esquina -- misma forma/icono, pero pensada para verse bien sobre @base-color.
+.theme-toggle-btn--inline {
+    position: static;
+    width: 28px;
+    height: 28px;
+    margin-right: 0.4em;
+    background-color: rgba(255, 255, 255, .15);
+    border-color: rgba(255, 255, 255, .4);
+    color: #ffffff;
+    box-shadow: none;
+    .zmdi {
+        font-size: 15px;
+    }
+    &:hover {
+        background-color: rgba(255, 255, 255, .25);
+        border-color: #ffffff;
+    }
+}
+
 .header {
     .logo-container {
         padding-top: 1.5em;

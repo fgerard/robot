@@ -13,6 +13,9 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
     var trans="translate("+(x1-x0)+"px,"+(y1-y0)+"px)";
     e.animate([{transform:'translate(0px,0px)'},{transform:trans}],{duration:delta,iterations:1,fill:"forwards"});
   },
+  SVGHasPointerCapture = this.SVGHasPointerCapture = function(el, pointerId) {
+    return el.hasPointerCapture(pointerId);
+  },
   GOOGdecodeJwt = function(idToken) {
     var b64 = idToken.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
     var binary = window.atob(b64);

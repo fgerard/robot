@@ -23,6 +23,20 @@
   (let [uid (re-frame/subscribe [:control/uid])]
     (fn [] [re-com/title :label @uid :level :level4 :class "user-email"])))
 
+;; floating? true -> boton flotante fijo en la esquina (pantalla de login, que
+;; no tiene header); floating? false -> boton normal dentro del flujo del
+;; header, junto al logout (evita que el flotante se encime con el logo).
+(defn- theme-toggle [floating?]
+  (let [theme (re-frame/subscribe [:ui/theme])]
+    (fn [floating?]
+      (let [dark? (= @theme "dark")]
+        [:button
+         {:type "button"
+          :class (str "theme-toggle-btn" (when-not floating? " theme-toggle-btn--inline"))
+          :title (if dark? "Cambiar a modo claro" "Cambiar a modo oscuro")
+          :on-click (fn [] (re-frame/dispatch [:ui/set-theme (if dark? "light" "dark")]))}
+         [:i {:class (str "zmdi " (if dark? "zmdi-sun" "zmdi-brightness-2"))}]]))))
+
 (defn- title []
   [re-com/h-box
    :width "100%" :class "header"
@@ -31,6 +45,7 @@
     [:div {:class "user-info"}
      [re-com/h-box
       :children [[user]
+                 [theme-toggle false]
                  [re-com/md-icon-button
                   :class "logout-btn" :md-icon-name "zmdi-directions-run"
                   :tooltip "Logout" :tooltip-position :right-center
@@ -198,6 +213,7 @@
   (let [registered-uid (re-frame/subscribe [:control/uid])]
     (fn []
       [:<>
+       (when-not @registered-uid [theme-toggle true])
        [re-com/v-split
         :width "100%" :height "100vh" :class "split-vertical" :style {:border "0px" :margin "0px"}
         :initial-split "80%"

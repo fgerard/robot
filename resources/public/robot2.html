@@ -2,6 +2,16 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
+  <!-- Fija el tema en <html> antes de que cargue el CSS, para que no haya un
+       parpadeo del tema equivocado mientras arranca el bundle cljs. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('robot-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    })();
+  </script>
   <link rel="icon" type="image/png" href="/images/logo_login_icon.png">
   <script type="text/javascript" src="https://accounts.google.com/gsi/client" async defer></script>
   <meta name="google-signin-client_id" content="778404026513-l4nknm85bhbg3gicc4sq3pa0jccbpi6q.apps.googleusercontent.com">

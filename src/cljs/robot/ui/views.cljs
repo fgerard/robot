@@ -30,6 +30,20 @@
        :class "user-email"
        ])))
 
+;; floating? true -> boton flotante fijo en la esquina (pantalla de login, que
+;; no tiene header); floating? false -> boton normal dentro del flujo del
+;; header, junto al logout (evita que el flotante se encime con el logo).
+(defn theme-toggle [floating?]
+  (let [theme (re-frame/subscribe [:ui/theme])]
+    (fn [floating?]
+      (let [dark? (= @theme "dark")]
+        [:button
+         {:type "button"
+          :class (str "theme-toggle-btn" (when-not floating? " theme-toggle-btn--inline"))
+          :title (if dark? "Cambiar a modo claro" "Cambiar a modo oscuro")
+          :on-click (fn [] (re-frame/dispatch [:ui/set-theme (if dark? "light" "dark")]))}
+         [:i {:class (str "zmdi " (if dark? "zmdi-sun" "zmdi-brightness-2"))}]]))))
+
 (defn title []
   (let []
     (fn []
@@ -42,6 +56,7 @@
                   [:div {:class "user-info"}
                    [re-com/h-box
                     :children [[user]
+                               [theme-toggle false]
                                [re-com/md-icon-button
                                 :class "logout-btn"
                                 :md-icon-name "zmdi-directions-run"
@@ -69,7 +84,6 @@
                                 (reset! main-tab-atm selection))]
                   [(ui-robot-control/main-tab-panel @main-tab-atm)]
                   ]])))
-
 
 (defn g-button [on-success on-error]
   (create-class
@@ -278,30 +292,29 @@
 (defn main-panel []
   (let [registered-uid (re-frame/subscribe [[:control :uid]])]
     (fn []
-      #_[re-com/v-box
-       :children [
-                  ]]
-      [re-com/v-split
-       :width "100%"
-       :height "100vh"
-       :class "split-vertical"
-       :style {:border "0px"
-               :margin "0px"}
-       :initial-split "80%"
-       :panel-1
-       [re-com/v-box
+      [:<>
+       (when-not @registered-uid [theme-toggle true])
+       [re-com/v-split
         :width "100%"
-        ;:height "100vh"
-        :children (if @registered-uid
-                    [[title]
-                     [work-area]]
-                    [[login-dialog]])]
+        :height "100vh"
+        :class "split-vertical"
+        :style {:border "0px"
+                :margin "0px"}
+        :initial-split "80%"
+        :panel-1
+        [re-com/v-box
+         :width "100%"
+         ;:height "100vh"
+         :children (if @registered-uid
+                     [[title]
+                      [work-area]]
+                     [[login-dialog]])]
 
-       :panel-2 [re-com/v-box
+        :panel-2 [re-com/v-box
 
-                 :children [[logger]]
-                 :width "100%"
-                 ;:height "100%"
-                 ]
-       ]
+                  :children [[logger]]
+                  :width "100%"
+                  ;:height "100%"
+                  ]
+        ]]
       )))

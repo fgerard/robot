@@ -1,61 +1,65 @@
 // Overrides para el widget "chosen" (usado por re-com/single-dropdown en
 // Designer/Console/Config) empaquetado en resources/public/vendor/css/re-com.css.
-// Ese CSS de terceros no se edita a mano -- este archivo se importa al final
-// de index.less para que gane la cascada sobre sus fondos/colores claros
-// fijos, y asi el dropdown combine con el resto del tema oscuro.
-.chosen-container .chosen-drop {
-    background: #242427;
-    border: 1px solid #44464F;
-}
-.chosen-container .chosen-results {
-    color: #E4E4E6;
-}
-.chosen-container .chosen-results li em {
-    background: #3B3E47;
-}
-.chosen-container .chosen-results li.group-result {
-    color: #B3B3B3;
-}
-.chosen-container .chosen-results li.highlighted {
-    background-color: #E2724B;
-    color: #ffffff;
-}
-.chosen-container .chosen-results li.disabled-result {
-    color: #7A7C85;
-}
-.chosen-container .chosen-results .no-results {
-    background: #2A2C30;
-    color: #E4E4E6;
-}
-.chosen-container .chosen-results-scroll {
-    background: #242427;
-}
-.chosen-container-single .chosen-single {
-    background-color: #242427;
-    border: 1px solid #44464F;
-    color: #E4E4E6;
-}
-.chosen-container-single .chosen-default {
-    color: #7A7C85;
-}
-.chosen-container-single .chosen-search input[type="text"] {
-    background-color: #242427;
-    border: 1px solid #44464F;
-    color: #E4E4E6;
-}
-.chosen-container-multi .chosen-choices {
-    background-color: #242427;
-    border: 1px solid #44464F;
-}
-.chosen-container-active .chosen-single,
-.chosen-container-active.chosen-with-drop .chosen-single {
-    background-color: #242427;
-    border-color: #E2724B;
-}
+// Ese CSS de terceros no se edita a mano -- este archivo se importa despues
+// de re-com.css (index.css carga al final en index.html/robot2.html) para que
+// gane la cascada sobre sus fondos/colores claros fijos cuando el tema activo
+// es oscuro. En claro no hace falta nada -- el propio re-com.css ya trae ese
+// look por default.
+html[data-theme="dark"] {
+    .chosen-container .chosen-drop {
+        background: #242427;
+        border: 1px solid #44464F;
+    }
+    .chosen-container .chosen-results {
+        color: #E4E4E6;
+    }
+    .chosen-container .chosen-results li em {
+        background: #3B3E47;
+    }
+    .chosen-container .chosen-results li.group-result {
+        color: #B3B3B3;
+    }
+    .chosen-container .chosen-results li.highlighted {
+        background-color: #E2724B;
+        color: #ffffff;
+    }
+    .chosen-container .chosen-results li.disabled-result {
+        color: #7A7C85;
+    }
+    .chosen-container .chosen-results .no-results {
+        background: #2A2C30;
+        color: #E4E4E6;
+    }
+    .chosen-container .chosen-results-scroll {
+        background: #242427;
+    }
+    .chosen-container-single .chosen-single {
+        background-color: #242427;
+        border: 1px solid #44464F;
+        color: #E4E4E6;
+    }
+    .chosen-container-single .chosen-default {
+        color: #7A7C85;
+    }
+    .chosen-container-single .chosen-search input[type="text"] {
+        background-color: #242427;
+        border: 1px solid #44464F;
+        color: #E4E4E6;
+    }
+    .chosen-container-multi .chosen-choices {
+        background-color: #242427;
+        border: 1px solid #44464F;
+    }
+    .chosen-container-active .chosen-single,
+    .chosen-container-active.chosen-with-drop .chosen-single {
+        background-color: #242427;
+        border-color: #E2724B;
+    }
 
-// re-com.css fija `html, body { color: rgba(68,68,68,1) }` -- gana sobre el
-// @text-color de bootstrap/variables.less porque tiene la misma especificidad
-// y este archivo carga despues.
-html, body {
-    color: #E4E4E6;
+    // re-com.css fija `html, body { color: rgba(68,68,68,1) }` -- gana sobre
+    // @text-color de bootstrap/variables.less porque tiene la misma
+    // especificidad y re-com.css carga despues (index.css es lo ultimo).
+    &, body {
+        color: #E4E4E6;
+    }
 }

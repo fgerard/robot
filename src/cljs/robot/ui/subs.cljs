@@ -8,6 +8,11 @@
    (:name db)))
 
 (re-frame/reg-sub
+ :ui/theme
+ (fn [db [_]]
+   (:ui/theme db)))
+
+(re-frame/reg-sub
  [:control :uid]
  (fn [db [path]]
    (get-in db path)))

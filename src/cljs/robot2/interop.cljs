@@ -3,30 +3,31 @@
    Nada fuera de este namespace debe llamar js/* directamente.")
 
 ;; --- Transformacion de coordenadas SVG -------------------------------------
-;; Reemplaza el SVGWrap de externs.js (que hacia exactamente esto mismo desde
-;; JS a mano) por la misma Web API estandar invocada directo desde cljs:
-;; createSVGPoint + getScreenCTM + matrixTransform. Un solo lugar de verdad,
-;; sin pasar por una funcion global adicional.
+;; Usa SVGWrap de externs.js (createSVGPoint + getScreenCTM + matrixTransform)
+;; en vez de llamar esos metodos directo desde cljs: externs.js se compila
+;; aparte del bundle cljs, asi que el Closure Compiler de los builds
+;; :advanced (robot2-min) no le renombra las propiedades -- llamar los
+;; metodos SVG crudos desde cljs si se mangleaba, dejando drag/resize/conectar
+;; rotos en produccion aunque funcionaran en dev (:none/figwheel).
 (defn client-point->svg-point
   "Convierte coordenadas de cliente (event.clientX/Y) a coordenadas internas
    del SVG identificado por svg-el, respetando el viewBox/zoom actual."
   [svg-el client-x client-y]
-  (let [pt (.createSVGPoint svg-el)]
-    (set! (.-x pt) client-x)
-    (set! (.-y pt) client-y)
-    (let [m (.. svg-el (getScreenCTM) (inverse))
-          transformed (.matrixTransform pt m)]
-      [(.-x transformed) (.-y transformed)])))
+  (let [p (js/SVGWrap svg-el client-x client-y)]
+    [(.-x p) (.-y p)]))
 
 ;; --- Pointer capture --------------------------------------------------------
 ;; setPointerCapture asegura que pointermove/pointerup sigan llegando al mismo
 ;; elemento aunque el cursor salga del SVG durante un arrastre, eliminando la
 ;; necesidad de los handlers mouseout/mouseleave de respaldo de la version 1.
+;; hasPointerCapture pasa por SVGHasPointerCapture de externs.js por la misma
+;; razon que client-point->svg-point (setPointerCapture/releasePointerCapture
+;; si sobreviven el build :advanced actual, por eso se quedan como llamada directa).
 (defn capture-pointer! [dom-el pointer-id]
   (.setPointerCapture dom-el pointer-id))
 
 (defn release-pointer! [dom-el pointer-id]
-  (when (.hasPointerCapture dom-el pointer-id)
+  (when (js/SVGHasPointerCapture dom-el pointer-id)
     (.releasePointerCapture dom-el pointer-id)))
 
 ;; --- Wheel no-pasivo ----------------------------------------------------------
@@ -61,6 +62,20 @@
 
 (defn remove-unsaved-changes-listener! []
   (js/removeListener))
+
+;; --- Tema claro/oscuro --------------------------------------------------------
+;; El <html data-theme="..."> ya se fija sincronamente en un <script> inline en
+;; el <head> del HTML (leyendo localStorage, antes de que cargue el CSS, para
+;; evitar un parpadeo del tema equivocado) -- current-theme solo lee ese
+;; estado inicial para que el re-frame db arranque en sync con el DOM real.
+(defn current-theme []
+  (or (.getAttribute (.-documentElement js/document) "data-theme") "dark"))
+
+(defn apply-theme! [theme]
+  (.setAttribute (.-documentElement js/document) "data-theme" theme)
+  (try
+    (.setItem js/localStorage "robot-theme" theme)
+    (catch :default _)))
 
 ;; --- console -------------------------------------------------------------------
 (defn log [& args]

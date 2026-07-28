@@ -1,5 +1,19 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700');
 @import url('https://fonts.googleapis.com/css?family=Roboto+Mono:100,300,400');
+:root {
+  --bg-app: #1B1C1F;
+  --bg-panel-alt: #2A2C30;
+  --border-subtle: #44464F;
+  --text-body: #E4E4E6;
+  --accent-orange: #E2724B;
+}
+html[data-theme="light"] {
+  --bg-app: #ffffff;
+  --bg-panel-alt: #eeeeee;
+  --border-subtle: #cccccc;
+  --text-body: #333333;
+  --accent-orange: #E2724B;
+}
 /*!
  * Bootstrap v3.3.7 (http://getbootstrap.com)
  * Copyright 2011-2016 Twitter, Inc.
@@ -7417,6 +7431,53 @@ span.CodeMirror-selectedtext {
   font-weight: 400;
   letter-spacing: 0.03em;
 }
+.theme-toggle-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 1000;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-panel-alt);
+  color: #e2724b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 0.35s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.theme-toggle-btn .zmdi {
+  font-size: 18px;
+  line-height: 1;
+}
+.theme-toggle-btn:hover {
+  transform: rotate(20deg) scale(1.08);
+  border-color: #e2724b;
+}
+.theme-toggle-btn:active {
+  transform: rotate(20deg) scale(0.94);
+}
+.theme-toggle-btn--inline {
+  position: static;
+  width: 28px;
+  height: 28px;
+  margin-right: 0.4em;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  box-shadow: none;
+}
+.theme-toggle-btn--inline .zmdi {
+  font-size: 15px;
+}
+.theme-toggle-btn--inline:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: #ffffff;
+}
 .header .logo-container {
   padding-top: 1.5em;
   padding-left: 2.0em;
@@ -8452,56 +8513,340 @@ fieldset[disabled] a.console-container .btn-container .zmdi-settings-off :before
   padding-bottom: 0.5rem;
   width: 7.5rem;
 }
-.chosen-container .chosen-drop {
+html[data-theme="dark"] .chosen-container .chosen-drop {
   background: #242427;
   border: 1px solid #44464F;
 }
-.chosen-container .chosen-results {
+html[data-theme="dark"] .chosen-container .chosen-results {
   color: #E4E4E6;
 }
-.chosen-container .chosen-results li em {
+html[data-theme="dark"] .chosen-container .chosen-results li em {
   background: #3B3E47;
 }
-.chosen-container .chosen-results li.group-result {
+html[data-theme="dark"] .chosen-container .chosen-results li.group-result {
   color: #B3B3B3;
 }
-.chosen-container .chosen-results li.highlighted {
+html[data-theme="dark"] .chosen-container .chosen-results li.highlighted {
   background-color: #E2724B;
   color: #ffffff;
 }
-.chosen-container .chosen-results li.disabled-result {
+html[data-theme="dark"] .chosen-container .chosen-results li.disabled-result {
   color: #7A7C85;
 }
-.chosen-container .chosen-results .no-results {
+html[data-theme="dark"] .chosen-container .chosen-results .no-results {
   background: #2A2C30;
   color: #E4E4E6;
 }
-.chosen-container .chosen-results-scroll {
+html[data-theme="dark"] .chosen-container .chosen-results-scroll {
   background: #242427;
 }
-.chosen-container-single .chosen-single {
+html[data-theme="dark"] .chosen-container-single .chosen-single {
   background-color: #242427;
   border: 1px solid #44464F;
   color: #E4E4E6;
 }
-.chosen-container-single .chosen-default {
+html[data-theme="dark"] .chosen-container-single .chosen-default {
   color: #7A7C85;
 }
-.chosen-container-single .chosen-search input[type="text"] {
+html[data-theme="dark"] .chosen-container-single .chosen-search input[type="text"] {
   background-color: #242427;
   border: 1px solid #44464F;
   color: #E4E4E6;
 }
-.chosen-container-multi .chosen-choices {
+html[data-theme="dark"] .chosen-container-multi .chosen-choices {
   background-color: #242427;
   border: 1px solid #44464F;
 }
-.chosen-container-active .chosen-single,
-.chosen-container-active.chosen-with-drop .chosen-single {
+html[data-theme="dark"] .chosen-container-active .chosen-single,
+html[data-theme="dark"] .chosen-container-active.chosen-with-drop .chosen-single {
   background-color: #242427;
   border-color: #E2724B;
 }
-html,
-body {
+html[data-theme="dark"],
+html[data-theme="dark"] body {
   color: #E4E4E6;
+}
+html[data-theme="light"] body {
+  color: #333333;
+  background-color: #ffffff;
+}
+html[data-theme="light"] hr {
+  border-top-color: #eeeeee;
+}
+html[data-theme="light"] .text-muted,
+html[data-theme="light"] .help-block,
+html[data-theme="light"] small,
+html[data-theme="light"] .small {
+  color: #777777;
+}
+html[data-theme="light"] .table > thead > tr > th,
+html[data-theme="light"] .table > tbody > tr > th,
+html[data-theme="light"] .table > tfoot > tr > th,
+html[data-theme="light"] .table > thead > tr > td,
+html[data-theme="light"] .table > tbody > tr > td,
+html[data-theme="light"] .table > tfoot > tr > td,
+html[data-theme="light"] .table-bordered,
+html[data-theme="light"] .table-bordered > thead > tr > th,
+html[data-theme="light"] .table-bordered > tbody > tr > th,
+html[data-theme="light"] .table-bordered > tfoot > tr > th,
+html[data-theme="light"] .table-bordered > thead > tr > td,
+html[data-theme="light"] .table-bordered > tbody > tr > td,
+html[data-theme="light"] .table-bordered > tfoot > tr > td {
+  border-color: #dddddd;
+}
+html[data-theme="light"] .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #f9f9f9;
+}
+html[data-theme="light"] .table-hover > tbody > tr:hover {
+  background-color: #f5f5f5;
+}
+html[data-theme="light"] .btn-default {
+  color: #333333;
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+html[data-theme="light"] .btn-default:hover,
+html[data-theme="light"] .btn-default:focus {
+  background-color: #e6e6e6;
+  border-color: #adadad;
+}
+html[data-theme="light"] .form-control {
+  background-color: #ffffff;
+  border-color: #cccccc;
+  color: #555555;
+}
+html[data-theme="light"] .form-control::-moz-placeholder,
+html[data-theme="light"] .form-control:-ms-input-placeholder,
+html[data-theme="light"] .form-control::-webkit-input-placeholder {
+  color: #999999;
+}
+html[data-theme="light"] .form-control:focus {
+  border-color: #66afe9;
+}
+html[data-theme="light"] .form-control[disabled],
+html[data-theme="light"] .form-control[readonly],
+html[data-theme="light"] fieldset[disabled] .form-control {
+  background-color: #eeeeee;
+}
+html[data-theme="light"] .dropdown-menu {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+html[data-theme="light"] .dropdown-menu > li > a {
+  color: #333333;
+}
+html[data-theme="light"] .dropdown-menu > li > a:hover,
+html[data-theme="light"] .dropdown-menu > li > a:focus {
+  color: #262626;
+  background-color: #f5f5f5;
+}
+html[data-theme="light"] .dropdown-menu .divider {
+  background-color: #e5e5e5;
+}
+html[data-theme="light"] .navbar-default {
+  background-color: #f8f8f8;
+  border-color: #e7e7e7;
+}
+html[data-theme="light"] .navbar-default .navbar-brand,
+html[data-theme="light"] .navbar-default .navbar-nav > li > a {
+  color: #777777;
+}
+html[data-theme="light"] .navbar-default .navbar-nav > .active > a {
+  color: #555555;
+  background-color: #e7e7e7;
+}
+html[data-theme="light"] .panel,
+html[data-theme="light"] .list-group-item {
+  background-color: #ffffff;
+}
+html[data-theme="light"] .panel-default,
+html[data-theme="light"] .list-group-item {
+  border-color: #dddddd;
+}
+html[data-theme="light"] .panel-default > .panel-heading {
+  background-color: #f5f5f5;
+  color: #333333;
+  border-color: #dddddd;
+}
+html[data-theme="light"] a.list-group-item:hover,
+html[data-theme="light"] a.list-group-item:focus {
+  background-color: #f5f5f5;
+}
+html[data-theme="light"] .well {
+  background-color: #f5f5f5;
+  border-color: #dcdcdc;
+}
+html[data-theme="light"] .modal-content {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+html[data-theme="light"] code {
+  color: #c7254e;
+  background-color: #f9f2f4;
+}
+html[data-theme="light"] pre {
+  color: #333333;
+  background-color: #f5f5f5;
+  border-color: #cccccc;
+}
+html[data-theme="light"] .console-container .header-bar .console-header {
+  background-color: #97D0E5;
+}
+html[data-theme="light"] .console-container .header-bar .icons {
+  background-color: #ffffff;
+  color: #000000;
+}
+html[data-theme="light"] .console-container .header-bar .state {
+  background-color: #ffffff;
+}
+html[data-theme="light"] .console-container .console-status {
+  color: #000000;
+}
+html[data-theme="light"] .split-container .toolbar-container {
+  border-bottom-color: #97D0E5;
+}
+html[data-theme="light"] .split-container .toolbar-container .app-container .app-selector,
+html[data-theme="light"] .split-container .toolbar-container .app-container .app-selector a {
+  background-color: #97D0E5;
+  border-color: #97D0E5;
+}
+html[data-theme="light"] .split-container .internal-split .opr-container .opr-selector {
+  background-color: #97D0E5;
+}
+html[data-theme="light"] .split-container .internal-split .opr-container .opr-selector a {
+  border-color: #848484;
+}
+html[data-theme="light"] .split-container .internal-split .opr-container .opr-selector a b {
+  color: #000000;
+}
+html[data-theme="light"] .split-container .form-control {
+  border-color: #848484;
+}
+html[data-theme="light"] .split-container .app-param-panel .param-list .rc-h-box:nth-of-type(even) {
+  background-color: #eeeeee;
+}
+html[data-theme="light"] .config-tab .input-container .mail-input {
+  border-color: #666666;
+}
+html[data-theme="light"] .logger .filter::-webkit-input-placeholder {
+  color: #97D0E5;
+}
+html[data-theme="light"] .logger .filter:-moz-placeholder {
+  color: #97D0E5;
+}
+html[data-theme="light"] .logger .filter::-moz-placeholder {
+  color: #97D0E5;
+}
+html[data-theme="light"] .logger .filter:-ms-input-placeholder {
+  color: #97D0E5;
+}
+html[data-theme="light"] .CodeMirror {
+  color: #000000;
+  background-color: #ffffff;
+  border-color: gray;
+}
+html[data-theme="light"] .CodeMirror-scrollbar-filler,
+html[data-theme="light"] .CodeMirror-gutter-filler {
+  background-color: #ffffff;
+}
+html[data-theme="light"] .CodeMirror-gutters {
+  border-right-color: #dddddd;
+  background-color: #f7f7f7;
+}
+html[data-theme="light"] .CodeMirror-linenumber {
+  color: #999999;
+}
+html[data-theme="light"] .CodeMirror-guttermarker {
+  color: #000000;
+}
+html[data-theme="light"] .CodeMirror-guttermarker-subtle {
+  color: #999999;
+}
+html[data-theme="light"] .CodeMirror div.CodeMirror-cursor {
+  border-left-color: #000000;
+}
+html[data-theme="light"] .CodeMirror-ruler {
+  border-left-color: #cccccc;
+}
+html[data-theme="light"] .cm-s-default .cm-header {
+  color: blue;
+}
+html[data-theme="light"] .cm-s-default .cm-quote {
+  color: #090909;
+}
+html[data-theme="light"] .cm-negative {
+  color: #dd4444;
+}
+html[data-theme="light"] .cm-positive {
+  color: #229922;
+}
+html[data-theme="light"] .cm-s-default .cm-keyword {
+  color: #770088;
+}
+html[data-theme="light"] .cm-s-default .cm-atom {
+  color: #221199;
+}
+html[data-theme="light"] .cm-s-default .cm-number {
+  color: #116644;
+}
+html[data-theme="light"] .cm-s-default .cm-def {
+  color: #0000ff;
+}
+html[data-theme="light"] .cm-s-default .cm-variable-2 {
+  color: #0055aa;
+}
+html[data-theme="light"] .cm-s-default .cm-variable-3 {
+  color: #008855;
+}
+html[data-theme="light"] .cm-s-default .cm-comment {
+  color: #aa5500;
+}
+html[data-theme="light"] .cm-s-default .cm-string {
+  color: #aa1111;
+}
+html[data-theme="light"] .cm-s-default .cm-string-2 {
+  color: #ff5500;
+}
+html[data-theme="light"] .cm-s-default .cm-meta {
+  color: #555555;
+}
+html[data-theme="light"] .cm-s-default .cm-qualifier {
+  color: #555555;
+}
+html[data-theme="light"] .cm-s-default .cm-builtin {
+  color: #3300aa;
+}
+html[data-theme="light"] .cm-s-default .cm-bracket {
+  color: #997700;
+}
+html[data-theme="light"] .cm-s-default .cm-tag {
+  color: #117700;
+}
+html[data-theme="light"] .cm-s-default .cm-attribute {
+  color: #0000cc;
+}
+html[data-theme="light"] .cm-s-default .cm-hr {
+  color: #999999;
+}
+html[data-theme="light"] .cm-s-default .cm-link {
+  color: #0000cc;
+}
+html[data-theme="light"] .cm-s-default .cm-error {
+  color: #ff0000;
+}
+html[data-theme="light"] .cm-invalidchar {
+  color: #ff0000;
+}
+html[data-theme="light"] div.CodeMirror span.CodeMirror-matchingbracket {
+  color: #00ff00;
+}
+html[data-theme="light"] div.CodeMirror span.CodeMirror-nonmatchingbracket {
+  color: #ff2222;
+}
+html[data-theme="light"] .CodeMirror-matchingtag {
+  background: rgba(255, 150, 0, 0.3);
+}
+html[data-theme="light"] .CodeMirror-activeline-background {
+  background: #e8f2ff;
 }
