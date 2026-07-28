@@ -108,7 +108,7 @@
         ts-atm (reagent/atom "") level-atm (reagent/atom :all)
         status-atm (reagent/atom "") msg-atm (reagent/atom "")
         pat (fn [s] (when (seq s) (re-pattern s)))
-        level-color {:info "green" :warn "#b59429" :error "red"}]
+        level-color {:info "#519E3C" :warn "#E7AE22" :error "#E3383C"}]
     (fn []
       (let [ts-pat (pat @ts-atm) status-pat (pat (str @status-atm)) msg-pat (pat @msg-atm)
             entries (filter (fn [[ts level status msg]]

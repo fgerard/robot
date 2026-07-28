@@ -37,7 +37,7 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
       });
       window.__googInitialized = true;
     }
-    google.accounts.id.renderButton(container, {theme: "outline", size: "large", text: "signin_with", shape: "rectangular", width: 220});
+    google.accounts.id.renderButton(container, {theme: "filled_black", size: "large", text: "signin_with", shape: "rectangular", width: 220});
   },
   GOOGlogout = this.GOOGlogout = function() {
     if (window.google && window.google.accounts && window.google.accounts.id) {

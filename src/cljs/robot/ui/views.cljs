@@ -167,9 +167,9 @@
         msg-agt (reagent/atom "")
         pat-build (fn [txt] (if (and txt (seq txt)) (re-pattern txt)))
         level-color (fn [level]
-                      (get {:info  "green"
-                            :warn  "#b59429"
-                            :error "red"} level))
+                      (get {:info  "#519E3C"
+                            :warn  "#E7AE22"
+                            :error "#E3383C"} level))
         extract-agt (fn [agt]
                       (let [val @agt]
                         (if (seq (str val))
