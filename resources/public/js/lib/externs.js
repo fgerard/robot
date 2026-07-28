@@ -30,7 +30,6 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
     if (!window.__googInitialized) {
       google.accounts.id.initialize({
         client_id: document.querySelector('meta[name="google-signin-client_id"]').content,
-        use_fedcm_for_prompt: true,
         callback: function(response) {
           var email = GOOGdecodeJwt(response.credential).email;
           window.__googOnSuccess(email, response.credential);
