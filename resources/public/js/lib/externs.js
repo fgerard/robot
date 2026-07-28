@@ -20,7 +20,7 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
     for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     return JSON.parse(new TextDecoder("utf-8").decode(bytes));
   },
-  GOOGlogin = this.GOOGlogin = function(onSuccess, onError) {
+  GOOGrenderButton = this.GOOGrenderButton = function(container, onSuccess, onError) {
     if (!(window.google && window.google.accounts && window.google.accounts.id)) {
       onError("Google login requires internet connection");
       return;
@@ -37,15 +37,7 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
       });
       window.__googInitialized = true;
     }
-    google.accounts.id.prompt(function(notification) {
-      var reason;
-      if (notification.isNotDisplayed && notification.isNotDisplayed()) {
-        reason = notification.getNotDisplayedReason && notification.getNotDisplayedReason();
-      } else if (notification.isSkippedMoment && notification.isSkippedMoment()) {
-        reason = notification.getSkippedReason && notification.getSkippedReason();
-      }
-      if (reason) window.__googOnError("Google login was dismissed or unavailable (" + reason + ")");
-    });
+    google.accounts.id.renderButton(container, {theme: "outline", size: "large", text: "signin_with", shape: "rectangular", width: 220});
   },
   GOOGlogout = this.GOOGlogout = function() {
     if (window.google && window.google.accounts && window.google.accounts.id) {

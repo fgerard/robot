@@ -49,8 +49,8 @@
   (js/SVGAnimate dom-id x0 y0 x1 y1 duration-ms))
 
 ;; --- Google sign-in -----------------------------------------------------------
-(defn google-login! [on-success on-error]
-  (js/GOOGlogin on-success on-error))
+(defn google-render-button! [dom-el on-success on-error]
+  (js/GOOGrenderButton dom-el on-success on-error))
 
 (defn google-logout! []
   (js/GOOGlogout))
