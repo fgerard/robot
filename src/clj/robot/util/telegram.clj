@@ -17,7 +17,18 @@
   ([token chat-id options text]
    (try
      (let [url  (str base-url token "/sendMessage")
-           body (into {:chat_id chat-id :parse_mode "MarkdownV2" :text text} options)
+           ;; Sin :parse_mode -- texto plano. Ningun caller de send-text/send-message
+           ;; en este repo (el /help del bot, el "Procesing /app instance", ni el
+           ;; operador generico de telegram en operations.clj) escapa los
+           ;; caracteres reservados de Markdown (. - ! ( ) _ * [ ] ~ ` > # + = | { }),
+           ;; asi que :parse_mode "MarkdownV2" tumbaba el envio con "can't parse
+           ;; entities" en cuanto el texto traia alguno (ej. nombres de apps/
+           ;; instancias con puntos o guiones) -- el error se logueaba pero el
+           ;; usuario nunca veia el mensaje en Telegram.
+           ;; Si algun dia se quiere Markdown real: pasar {:parse_mode "MarkdownV2"}
+           ;; en options (se mezcla encima de este mapa) Y escapar a mano esos
+           ;; caracteres en las partes dinamicas del texto antes de mandarlo.
+           body (into {:chat_id chat-id :text text} options)
            resp @(http/request {:request-method "post"
                                 :url url
                                 :headers {"Content-Type" "application/json"}
