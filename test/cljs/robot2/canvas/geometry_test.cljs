@@ -46,3 +46,26 @@
 (deftest position&rotate-test
   (testing "incluye translate al punto destino"
     (is (re-find #"translate\(100 50\)" (geom/position&rotate 0 0 100 50)))))
+
+(deftest bounding-viewbox-test
+  (let [default {:x 0 :y 0 :w 1342 :h 600}]
+    (testing "sin cajas (app sin estados todavia): regresa default tal cual"
+      (is (= default (geom/bounding-viewbox [] 60 default))))
+    (testing "una sola caja chica: el resultado no baja del piso de default"
+      (let [vb (geom/bounding-viewbox [{:x 10 :y 10 :w 130 :h 60}] 60 default)]
+        (is (= (:w vb) 1342) "w no baja del piso de default")
+        (is (= (:h vb) 600) "h no baja del piso de default")
+        (is (= (:x vb) -50) "x = min-x - margin")
+        (is (= (:y vb) -50) "y = min-y - margin")))
+    (testing "estado bien abajo del alto del default (1342x600) -- el caso reportado: se recortaba"
+      (let [vb (geom/bounding-viewbox [{:x 0 :y 0 :w 130 :h 60}
+                                       {:x 0 :y 900 :w 130 :h 60}] 60 default)]
+        (is (>= (+ (:y vb) (:h vb)) 960) "el viewbox debe llegar hasta el borde inferior de la caja de mas abajo (900+60) mas margen")
+        (is (= (:y vb) -60) "y = min-y (0) - margin")))
+    (testing "varias cajas mas alla del piso de default: el viewbox encuadra desde la mas a la izquierda/arriba hasta la mas a la derecha/abajo"
+      (let [vb (geom/bounding-viewbox [{:x 0 :y 0 :w 100 :h 50}
+                                       {:x 2000 :y 1500 :w 100 :h 50}] 20 default)]
+        (is (= (:x vb) -20))
+        (is (= (:y vb) -20))
+        (is (= (:w vb) 2140) "(2000+100 - 0) + 2*20")
+        (is (= (:h vb) 1590) "(1500+50 - 0) + 2*20")))))

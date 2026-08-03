@@ -9,6 +9,31 @@
   (:require [goog.string :as gstring]
             [goog.string.format]))
 
+(def STATE-W-MIN 130)
+(def STATE-H 60)
+
+(defn state-width [state-id]
+  (max STATE-W-MIN (* 15 (count (name state-id)))))
+
+(defn bounding-viewbox
+  "Viewbox {:x :y :w :h} que encuadra todas las cajas de boxes (secuencia de
+   {:x :y :w :h}), con margin de aire alrededor. Si boxes viene vacio (app
+   sin estados todavia) regresa default tal cual.
+
+   default tambien pone un piso a w/h del resultado -- un diagrama de un solo
+   estado chiquito no debe terminar con un zoom absurdamente cerrado."
+  [boxes margin default]
+  (if (empty? boxes)
+    default
+    (let [min-x (apply min (map :x boxes))
+          min-y (apply min (map :y boxes))
+          max-x (apply max (map (fn [{:keys [x w]}] (+ x w)) boxes))
+          max-y (apply max (map (fn [{:keys [y h]}] (+ y h)) boxes))]
+      {:x (- min-x margin)
+       :y (- min-y margin)
+       :w (max (:w default) (+ (- max-x min-x) (* 2 margin)))
+       :h (max (:h default) (+ (- max-y min-y) (* 2 margin)))})))
+
 (defn compute-entry&exit
   "Dadas dos cajas {:x :y :h :w}, regresa los puntos [[x1 y1] [x2 y2]] donde
    una flecha debe entrar/salir de cada una para apuntar a la otra."

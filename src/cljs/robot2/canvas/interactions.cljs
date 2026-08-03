@@ -20,7 +20,8 @@
             [re-frame.core :as re-frame]
             [robot2.interop :as interop]
             [robot2.undo :as undo]
-            [robot2.canvas.flow :as flow]))
+            [robot2.canvas.flow :as flow]
+            [robot2.canvas.geometry :as geom]))
 
 ;; --- estado local de interaccion ---------------------------------------------
 ;; {:drag    nil | {:type :state|:pan|:connector|:arrow
@@ -203,14 +204,33 @@
 ;; resultado de un :canvas/pan-by! anterior a que existiera este default).
 (def default-zoom {:x 0 :y 0 :w 1342 :h 600})
 
+(def ^:private VIEWPORT-MARGIN 60)
+
+(defn- states->boxes [states]
+  (map (fn [[state-id {:keys [diagram]}]]
+         (let [[x y] (:corner diagram [0 0])]
+           {:x x :y y :w (geom/state-width state-id) :h geom/STATE-H}))
+       states))
+
+(defn fit-to-content-zoom
+  "Viewbox {:x :y :w :h} que encuadra TODOS los estados de states, para usar
+   como default en vez del default-zoom fijo de arriba. Un diagrama con
+   estados mas abajo/a la derecha de lo que default-zoom (1342x600) alcanzaba
+   a cubrir se quedaba con esos estados recortados hasta que el usuario
+   hiciera zoom-out lo suficiente por su cuenta -- ahora la primera vista ya
+   encuadra el diagrama completo, sea cual sea su tamano."
+  [states]
+  (geom/bounding-viewbox (states->boxes states) VIEWPORT-MARGIN default-zoom))
+
 ;; Pan final (al soltar el arrastre de fondo): un solo evento por gesto ->
 ;; se trackea directamente.
 (re-frame/reg-event-db
   :canvas/pan!
   [undo/track]
   (fn [db [_ app-id [x y]]]
-    (update-in db [:applications :editable app-id :svg-ctrl :zoom]
-               (fn [zoom] (merge default-zoom zoom {:x x :y y})))))
+    (let [states (get-in db [:applications :editable app-id :states])]
+      (update-in db [:applications :editable app-id :svg-ctrl :zoom]
+                 (fn [zoom] (merge (fit-to-content-zoom states) zoom {:x x :y y}))))))
 
 ;; --- debounce para eventos de rueda (pan-by! y zoom!) ------------------------
 ;; Ambos se disparan docenas de veces por segundo durante el gesto.  Si se
@@ -238,17 +258,19 @@
   :canvas/pan-by!
   (fn [db [_ app-id [dx dy]]]
     (schedule-viewport-commit! app-id)
-    (update-in db [:applications :editable app-id :svg-ctrl :zoom]
-               (fn [zoom]
-                 (let [{:keys [x y] :as zoom} (merge default-zoom zoom)]
-                   (assoc zoom :x (+ x dx) :y (+ y dy)))))))
+    (let [states (get-in db [:applications :editable app-id :states])]
+      (update-in db [:applications :editable app-id :svg-ctrl :zoom]
+                 (fn [zoom]
+                   (let [{:keys [x y] :as zoom} (merge (fit-to-content-zoom states) zoom)]
+                     (assoc zoom :x (+ x dx) :y (+ y dy))))))))
 
 (re-frame/reg-event-db
   :canvas/zoom!
   (fn [db [_ app-id wheel-delta anchor]]
     (schedule-viewport-commit! app-id)
-    (update-in db [:applications :editable app-id :svg-ctrl :zoom]
-               (fn [zoom] (wheel->zoom (or zoom {}) wheel-delta anchor)))))
+    (let [states (get-in db [:applications :editable app-id :states])]
+      (update-in db [:applications :editable app-id :svg-ctrl :zoom]
+                 (fn [zoom] (wheel->zoom (or zoom (fit-to-content-zoom states)) wheel-delta anchor))))))
 
 (re-frame/reg-event-db
   :canvas/connect!
