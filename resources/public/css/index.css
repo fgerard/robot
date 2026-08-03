@@ -8746,6 +8746,9 @@ html[data-theme="light"] .CodeMirror {
   background-color: #ffffff;
   border-color: gray;
 }
+html[data-theme="light"] .CodeMirror pre {
+  background: transparent;
+}
 html[data-theme="light"] .CodeMirror-scrollbar-filler,
 html[data-theme="light"] .CodeMirror-gutter-filler {
   background-color: #ffffff;
@@ -8770,10 +8773,10 @@ html[data-theme="light"] .CodeMirror-ruler {
   border-left-color: #cccccc;
 }
 html[data-theme="light"] .CodeMirror-selected {
-  background: rgba(226, 114, 75, 0.22);
+  background: rgba(226, 114, 75, 0.45);
 }
 html[data-theme="light"] .CodeMirror-focused .CodeMirror-selected {
-  background: rgba(226, 114, 75, 0.35);
+  background: rgba(226, 114, 75, 0.55);
 }
 html[data-theme="light"] .CodeMirror-line::selection,
 html[data-theme="light"] .CodeMirror-line > span::selection,
@@ -8781,7 +8784,7 @@ html[data-theme="light"] .CodeMirror-line > span > span::selection,
 html[data-theme="light"] .CodeMirror-line::-moz-selection,
 html[data-theme="light"] .CodeMirror-line > span::-moz-selection,
 html[data-theme="light"] .CodeMirror-line > span > span::-moz-selection {
-  background: rgba(226, 114, 75, 0.35);
+  background: rgba(226, 114, 75, 0.55);
 }
 html[data-theme="light"] .cm-s-default .cm-header {
   color: blue;

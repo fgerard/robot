@@ -220,6 +220,16 @@ html[data-theme="light"] {
     background-color: #ffffff;
     border-color: gray;
   }
+  // El "pre" generico de Bootstrap de mas arriba (html[data-theme="light"] pre)
+  // tiene mas especificidad que .CodeMirror pre {background:transparent} de
+  // codemirror.less (por el atributo [data-theme] extra), asi que le ganaba y
+  // pintaba un fondo opaco #f5f5f5 sobre cada linea de codigo -- eso tapaba
+  // por completo la capa de seleccion (.CodeMirror-selected/::selection), que
+  // se dibuja detras. Se reafirma aqui, con especificidad suficiente para
+  // ganarle a ese "pre" generico.
+  .CodeMirror pre {
+    background: transparent;
+  }
   .CodeMirror-scrollbar-filler,
   .CodeMirror-gutter-filler {
     background-color: #ffffff;
@@ -248,10 +258,10 @@ html[data-theme="light"] {
   // usa el naranja de marca con transparencia (mismo tono que ya se usa para
   // el highlight de parentesis que hacen match) para que sea clarametne visible.
   .CodeMirror-selected {
-    background: rgba(226, 114, 75, .22);
+    background: rgba(226, 114, 75, .45);
   }
   .CodeMirror-focused .CodeMirror-selected {
-    background: rgba(226, 114, 75, .35);
+    background: rgba(226, 114, 75, .55);
   }
   .CodeMirror-line::selection,
   .CodeMirror-line > span::selection,
@@ -259,7 +269,7 @@ html[data-theme="light"] {
   .CodeMirror-line::-moz-selection,
   .CodeMirror-line > span::-moz-selection,
   .CodeMirror-line > span > span::-moz-selection {
-    background: rgba(226, 114, 75, .35);
+    background: rgba(226, 114, 75, .55);
   }
   .cm-s-default .cm-header { color: blue; }
   .cm-s-default .cm-quote { color: #090909; }
