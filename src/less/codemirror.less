@@ -154,7 +154,12 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #FF6259;}
 .CodeMirror {
   position: relative;
   overflow: hidden;
-  background: white;
+  // Esta es una SEGUNDA declaracion de .CodeMirror en el CSS original de
+  // CodeMirror (la primera, arriba, trae el color/fondo/borde) -- background
+  // aqui le ganaba en cascada al fondo oscuro de arriba (mismo selector,
+  // aparece despues), dejando el editor con fondo blanco fijo sin importar
+  // el tema, y la seleccion gris casi invisible encima de ese blanco.
+  background-color: #1B1C1F;
 }
 
 .CodeMirror-scroll {
