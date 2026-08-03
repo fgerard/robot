@@ -243,6 +243,24 @@ html[data-theme="light"] {
   .CodeMirror-ruler {
     border-left-color: #cccccc;
   }
+  // El gris/lavanda default de CodeMirror (#d9d9d9/#d7d4f0) es de por si bajo
+  // contraste sobre blanco -- casi no se distingue al seleccionar texto. Se
+  // usa el naranja de marca con transparencia (mismo tono que ya se usa para
+  // el highlight de parentesis que hacen match) para que sea clarametne visible.
+  .CodeMirror-selected {
+    background: rgba(226, 114, 75, .22);
+  }
+  .CodeMirror-focused .CodeMirror-selected {
+    background: rgba(226, 114, 75, .35);
+  }
+  .CodeMirror-line::selection,
+  .CodeMirror-line > span::selection,
+  .CodeMirror-line > span > span::selection,
+  .CodeMirror-line::-moz-selection,
+  .CodeMirror-line > span::-moz-selection,
+  .CodeMirror-line > span > span::-moz-selection {
+    background: rgba(226, 114, 75, .35);
+  }
   .cm-s-default .cm-header { color: blue; }
   .cm-s-default .cm-quote { color: #090909; }
   .cm-negative { color: #dd4444; }
