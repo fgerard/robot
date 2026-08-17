@@ -157,7 +157,7 @@
                              (re-frame/dispatch [:params/set! path @entry])
                              (reset! entry {:k "" :v ""}))])]]
             [re-com/scroller
-             :v-scroll :on :height "7em"
+             :v-scroll :auto :max-height "7em"
              :child
              [re-com/v-box
               :class "param-list"
