@@ -9,10 +9,12 @@
  {:db-path "./leveldb"}
 
   :robot.web/rest-server
-  {:https-port 4050
+  {:https-host "0.0.0.0"
+   :https-port 4050
    :server-key "resources/security/innovacion-mx.key"
    ;:server-key-pass
    :server-crt "resources/security/innovacion-mx.crt"
+   :http-host "0.0.0.0"
    :http-port 8050
    :handler #ig/ref :robot/handlers
    }

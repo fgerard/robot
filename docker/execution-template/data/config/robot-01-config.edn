@@ -9,10 +9,12 @@
  {:db-path "./konservedb"}
 
   :robot.web/rest-server
-  {:https-port 4050
-   :server-key "resources/security/robot.key"           ; innovacion-mx.key
-   ;:server-key-pass
-   :server-crt "resources/security/robot.crt"          ;innovacion-mx.crt
+  {:https-host "0.0.0.0"                                 ; sin esto el server solo
+   :https-port 4050                                       ; escucha en loopback (default
+   :server-key "resources/security/robot.key"             ; de rest_server.clj) y el trafico
+   ;:server-key-pass                                       ; reenviado por docker desde afuera
+   :server-crt "resources/security/robot.crt"              ; del contenedor nunca lo alcanza
+   :http-host "0.0.0.0"
    :http-port 8050
    :handler #ig/ref :robot/handlers
    }
