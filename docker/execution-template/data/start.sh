@@ -65,6 +65,7 @@ DOCKER_ARGS=(
               --name="$CONTAINER_NAME"
               --restart=always
               --network=quantum-network
+              --add-host=host.docker.internal:host-gateway
               --log-opt max-size=1m
               -e TIMEZONE="$TIMEZONE"
               -e MININUM_MEMORY="$MININUM_MEMORY"
