@@ -7814,6 +7814,8 @@ span.CodeMirror-selectedtext {
 }
 .split-container .toolbar-container .app-container .app-selector a {
   height: 2rem;
+  line-height: 2rem;
+  padding: 0 12px;
   background-color: #3b3e47;
   color: #FFFFFF;
   border: 1px solid #3b3e47;
@@ -7825,9 +7827,6 @@ span.CodeMirror-selectedtext {
 .split-container .toolbar-container .app-container .app-selector a b {
   background-position: center center;
   background-image: url('../images/icons/triangle.png');
-}
-.split-container .toolbar-container .app-container .app-selector a span {
-  margin-top: -3px;
 }
 .split-container .toolbar-container div .zmdi {
   color: transparent !important;
