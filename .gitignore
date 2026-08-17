@@ -11,6 +11,7 @@ app-log/
 estado/
 konservedb/
 logs/
+figwheel_server.log
 project.clj.BUENO.java11
 project.clj.VERSIONES-NUEVAS-LA-NO-JALA
 project.clj.bk

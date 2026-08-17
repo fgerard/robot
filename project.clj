@@ -160,7 +160,11 @@
   :profiles
   {:dev {:source-paths ["dev" "src" "test"]
          :dependencies [[org.clojure/tools.namespace "0.2.11"]
-                        [binaryage/devtools "0.8.2"]]
+                        [binaryage/devtools "0.8.2"]
+                        ;; figwheel-sidecar 0.5.7 (2017) usa javax.xml.bind.DatatypeConverter
+                        ;; en tiempo de ejecucion -- removido del JDK desde Java 11, hay que
+                        ;; traerlo aparte para poder correr "lein figwheel" con JDK 11+.
+                        [javax.xml.bind/jaxb-api "2.3.1"]]
          :plugins      [[lein-figwheel "0.5.7"]]
          :main robot.main.starter
          }
@@ -188,6 +192,7 @@
      :jar true
      :compiler     {:main            robot.ui.core
                     :output-to       "resources/public/js/compiled/robot-ui.js"
+                    :output-dir      "target/cljsbuild-min-out"
                     :optimizations   :advanced ;:simple
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
@@ -211,6 +216,7 @@
      :jar true
      :compiler     {:main            robot2.core
                     :output-to       "resources/public/js/compiled/robot2-ui.js"
+                    :output-dir      "target/cljsbuild-robot2-min-out"
                     :optimizations   :advanced
                     :closure-defines {goog.DEBUG false}
                     :pretty-print    false}}
