@@ -39,9 +39,11 @@ build_project() {
   lein cljsbuild once robot2-min robot2-min
 }
 
-stage_execution_template() {
-  printf "Copiando project.clj a execution-template (para que start.sh lea VERSION) ... \t"
-  cp $ROOT_DIR/project.clj $ROOT_DIR/docker/execution-template/project.clj
+sync_instance_env() {
+  ENV_FILE=$ROOT_DIR/docker/execution-template/data/config/instance.env
+  printf "Actualizando VERSION/IMAGE_NAME en execution-template/data/config/instance.env ... \t"
+  sed -i.bak -E "s/^VERSION=.*/VERSION=$VERSION/; s/^IMAGE_NAME=.*/IMAGE_NAME=$NAME/" $ENV_FILE
+  rm -f $ENV_FILE.bak
   echo "OK"
 }
 
@@ -95,5 +97,5 @@ echo "VERSION=$VERSION"
 cd $ROOT_DIR
 lein clean
 build_project
-stage_execution_template
+sync_instance_env
 build_docker_image

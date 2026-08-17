@@ -176,8 +176,15 @@
 
 (re-frame/reg-event-fx
   :api/instantiate-ok
-  (fn [_ [_ app-id status]]
-    {:dispatch (create-log :info status (str "App " app-id " saved and reloaded in backend"))}))
+  (fn [{:keys [db]} [_ app-id status]]
+    ;; El backend acaba de recrear las instancias de app-id desde cero
+    ;; (agentes nuevos, parados, en el estado inicial) -- el ultimo
+    ;; :robot/current/:robot/status/:robot/mood que teniamos cacheado en
+    ;; :ready para esta app ya no corresponde a nada real, asi que lo
+    ;; limpiamos para que el marcador de posicion y el panel de contexto no
+    ;; se queden mostrando el run anterior hasta el proximo Start.
+    {:db (update-in db [:applications :ready] dissoc app-id)
+     :dispatch (create-log :info status (str "App " app-id " saved and reloaded in backend"))}))
 
 (re-frame/reg-event-db
   :applications/editable-replace
