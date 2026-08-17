@@ -154,8 +154,8 @@
             :panel-2
             (if (seq @watch-instance-atm)
               [re-com/scroller
-               :h-scroll :auto :v-scroll :auto :width "100%"
-               :child [widgets/edit-params (get-in ready [app @watch-instance-atm]) nil "100%" false]]
+               :h-scroll :auto :v-scroll :auto :width "100%" :height "100%"
+               :child [widgets/edit-params (get-in ready [app @watch-instance-atm]) nil "100%" "100%" false]]
               [re-com/title :label "Please select an instance to watch!"])]]
           (when (= :create new-app)
             [re-com/modal-panel

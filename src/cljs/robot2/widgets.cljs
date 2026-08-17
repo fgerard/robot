@@ -111,15 +111,19 @@
 (defn edit-params
   "params: mapa a mostrar. path: donde viven dentro de :applications/editable
    (nil = solo lectura, p.ej. viendo los parametros en runtime de una
-   instancia). width/with-click controlan presentacion.
+   instancia). width/with-click controlan presentacion. max-height limita
+   (y activa el scroll de) la lista de parejas llave/valor -- p.ej. \"7em\"
+   en paneles compactos, o \"100%\" cuando el llamador le da a este
+   componente una altura real y quiere que la lista aproveche todo ese
+   espacio, hacer scroll solo si no alcanza.
    NOTA: es un componente form-2 (devuelve fn de render) -- Reagent invoca esa
    fn de render con los MISMOS args literales del tag hiccup, sin pasar por
    esta dispatch de aridad. Una arity de 3 args que llamara recursivamente a
    la de 4 no funcionaria: con-click llegaria `undefined` en cada re-render.
-   Por eso todos los call-sites deben pasar los 4 args explicitos."
-  ([params path width with-click]
+   Por eso todos los call-sites deben pasar los 5 args explicitos."
+  ([params path width max-height with-click]
    (let [entry (reagent/atom {:k "" :v ""})]
-     (fn [params path width with-click]
+     (fn [params path width max-height with-click]
        (let [{:keys [k v]} @entry
              filter-pred (if path
                            (constantly true)
@@ -127,10 +131,10 @@
                                               (re-find (re-pattern (or v "")) (str pv)))))
              view-params (into {} (filter filter-pred params))]
          [re-com/border
-          :border "1px" :radius "5px" :width width
+          :border "1px" :radius "5px" :width width :height "100%"
           :child
           [re-com/v-box
-           :width "100%" :class "app-param-panel"
+           :width "100%" :height "100%" :class "app-param-panel"
            :children
            [[re-com/h-box
              :width "100%" :class "add-panel"
@@ -157,7 +161,7 @@
                              (re-frame/dispatch [:params/set! path @entry])
                              (reset! entry {:k "" :v ""}))])]]
             [re-com/scroller
-             :v-scroll :auto :max-height "7em"
+             :v-scroll :auto :max-height max-height :flex "1"
              :child
              [re-com/v-box
               :class "param-list"
