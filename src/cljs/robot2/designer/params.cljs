@@ -46,40 +46,44 @@
 
 (defn app-params-panel [app editable ready watch-instance-atm open-instances-atm new-instance-atm]
   (let [regex-inst widgets/NAME-RE]
-    [re-com/scroller
-     :h-scroll :off :v-scroll :on :width "100%"
-     :child
-     [re-com/v-box
-      :style {:margin-bottom "20px"}
-      :children
-      [[re-com/h-box
-        :class "instance-main"
-        :children [[re-com/title :label "Application Parameters" :class "title"]
-                   [re-com/gap :size "5em"]
-                   [re-com/label :width "25%" :label app :class "instance-label"]
-                   [re-com/gap :size "0.5em"]
-                   [re-com/md-icon-button
-                    :md-icon-name "zmdi-close-circle-o" :class "eraser-btn"
-                    :tooltip "Delete application"
-                    :on-click (fn [] (re-frame/dispatch [:api/remove-app app]))]]]
-       [widgets/edit-params (get-in editable [app :app-params]) [app :app-params] "100%" "7em" true]
-       [re-com/title :label "Application Instances" :class "title"]
-       [re-com/h-box
-        :class "add-instance"
-        :children
-        [[re-com/input-text
-          :placeholder "Instance Name" :width "87%" :model new-instance-atm :change-on-blur? false
-          :status (widgets/name-status @new-instance-atm)
-          :on-change (fn [name]
-                       (if (and (= name @new-instance-atm) (re-matches regex-inst @new-instance-atm))
-                         (re-frame/dispatch [:designer/create-inst! app @new-instance-atm])
-                         (reset! new-instance-atm name)))]
-         [re-com/md-icon-button
-          :md-icon-name "zmdi-plus" :class "add-btn" :tooltip "New instance"
-          :on-click (fn []
-                      (when (re-matches regex-inst @new-instance-atm)
-                        (re-frame/dispatch [:designer/create-inst! app @new-instance-atm])))]]]
+    [re-com/v-box
+     :height "100%" :width "100%" :flex "1"
+     :children
+     [[re-com/h-box
+       :class "instance-main"
+       :children [[re-com/title :label "Application Parameters" :class "title"]
+                  [re-com/gap :size "5em"]
+                  [re-com/label :width "25%" :label app :class "instance-label"]
+                  [re-com/gap :size "0.5em"]
+                  [re-com/md-icon-button
+                   :md-icon-name "zmdi-close-circle-o" :class "eraser-btn"
+                   :tooltip "Delete application"
+                   :on-click (fn [] (re-frame/dispatch [:api/remove-app app]))]]]
+      [widgets/edit-params (get-in editable [app :app-params]) [app :app-params] "100%" "7em" true]
+      [re-com/title :label "Application Instances" :class "title"]
+      [re-com/h-box
+       :class "add-instance"
+       :children
+       [[re-com/input-text
+         :placeholder "Instance Name" :width "87%" :model new-instance-atm :change-on-blur? false
+         :status (widgets/name-status @new-instance-atm)
+         :on-change (fn [name]
+                      (if (and (= name @new-instance-atm) (re-matches regex-inst @new-instance-atm))
+                        (re-frame/dispatch [:designer/create-inst! app @new-instance-atm])
+                        (reset! new-instance-atm name)))]
+        [re-com/md-icon-button
+         :md-icon-name "zmdi-plus" :class "add-btn" :tooltip "New instance"
+         :on-click (fn []
+                     (when (re-matches regex-inst @new-instance-atm)
+                       (re-frame/dispatch [:designer/create-inst! app @new-instance-atm])))]]]
+      ;; La lista de instancias es la que se estira para aprovechar el
+      ;; espacio que le sobra al panel (arriba, params/instances son de
+      ;; alto fijo/compacto) -- solo hace scroll si no alcanza.
+      [re-com/scroller
+       :h-scroll :off :v-scroll :auto :flex "1"
+       :child
        [re-com/v-box
+        :style {:margin-bottom "20px"}
         :children
         (doall
           (for [[inst-id inst-params] (sort (get-in editable [app :instances]))]

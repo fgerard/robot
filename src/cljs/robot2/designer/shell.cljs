@@ -138,7 +138,7 @@
            :class "split-container" :initial-split "25%"
            :panel-1
            [re-com/v-box
-            :class "vertical-box" :width "100%"
+            :class "vertical-box" :width "100%" :height "100%"
             :children
             [[toolbar app app-names running?]
              (when (seq app)
