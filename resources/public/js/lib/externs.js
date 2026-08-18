@@ -23,9 +23,19 @@ var SVGWrap = this.SVGWrap = function(b, c, d) {
     for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     return JSON.parse(new TextDecoder("utf-8").decode(bytes));
   },
-  GOOGrenderButton = this.GOOGrenderButton = function(container, onSuccess, onError) {
+  GOOGrenderButton = this.GOOGrenderButton = function(container, onSuccess, onError, retriesLeft) {
+    if (retriesLeft === undefined) retriesLeft = 50; // ~5s a 100ms por intento
     if (!(window.google && window.google.accounts && window.google.accounts.id)) {
-      onError("Google login requires internet connection");
+      if (retriesLeft <= 0) {
+        onError("Google login requires internet connection");
+        return;
+      }
+      // El script de accounts.google.com/gsi/client carga con async/defer --
+      // puede no estar listo todavia cuando este componente monta. Reintenta
+      // en vez de rendirse de inmediato.
+      window.setTimeout(function() {
+        GOOGrenderButton(container, onSuccess, onError, retriesLeft - 1);
+      }, 100);
       return;
     }
     window.__googOnSuccess = onSuccess;

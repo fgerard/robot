@@ -1,4 +1,4 @@
-(defproject fgerard/robot "4.0.1"
+(defproject fgerard/robot "4.0.2"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
@@ -16,7 +16,27 @@
                  [org.openjdk.nashorn/nashorn-core "15.4"]]
 
   :dependencies [[org.clojure/clojure "1.12.5"]
-                 [org.clojure/clojurescript "1.10.520" :exclusions [com.fasterxml.jackson.core/jackson-core]]
+                 ;; excluye el closure-compiler transitivo de clojurescript
+                 ;; (mas viejo que el que shadow-cljs realmente necesita) para
+                 ;; que gane el que trae thheller/shadow-cljs de abajo.
+                 [org.clojure/clojurescript "1.11.132"
+                  :exclusions [com.fasterxml.jackson.core/jackson-core
+                               com.google.javascript/closure-compiler-unshaded
+                               com.google.javascript/closure-compiler-externs]]
+                 ;; shadow-cljs.edn usa :lein true -- necesita esta lib (la
+                 ;; contraparte JVM del CLI de npm) en el classpath del
+                 ;; proyecto para poder correr "lein run -m shadow.cljs..."
+                 [thheller/shadow-cljs "2.28.5"]
+                 ;; pin explicito -- sin esto ganaba una guava vieja (~2018,
+                 ;; transitiva de las libs de google-oauth-client de abajo)
+                 ;; que le falta ImmutableMap$Builder.buildOrThrow(), y el
+                 ;; closure-compiler que trae shadow-cljs truena al arrancar.
+                 [com.google.guava/guava "33.3.1-jre"]
+                 ;; robot.core.operations usa org.mozilla.javascript.Context
+                 ;; (motor Rhino, operador :js) directo -- antes solo estaba
+                 ;; en el classpath de rebote, transitivo del closure-compiler
+                 ;; viejo que se excluyo arriba.
+                 [org.mozilla/rhino "1.7R5"]
                  [org.clojure/core.async "1.5.648"]
 
                  [org.clojure/core.cache "1.0.225"]
@@ -144,7 +164,7 @@
 
   :aot [robot.main.starter robot.util.selenium-direct]
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljs"]
   ;:clean-targets ^{:protect false} ["resources/public/js/compiled" "target" "robot-distro/" "robot-distro.tgz"]
   :clean-targets ^{:protect false} ["target" "robot-distro/" "robot-distro.tgz"]
 
@@ -168,7 +188,9 @@
          :plugins      [[lein-figwheel "0.5.7"]]
          :main robot.main.starter
          }
-   :prod {:prep-tasks [["cljsbuild" "once" "min"] "compile"]
+   ;; el cljs de robot (v1) se compila aparte con shadow-cljs
+   ;; (ver docker/build_image.sh) -- :prep-tasks ya no corre cljsbuild.
+   :prod {:prep-tasks ["compile"]
           :main robot.main.starter
           }}
 

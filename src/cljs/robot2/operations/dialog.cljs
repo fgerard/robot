@@ -14,11 +14,11 @@
             [robot2.undo :as undo]
             [robot2.widgets :as widgets]
             [robot2.operations.registry :as registry]
-            [cljsjs.codemirror]
-            [cljsjs.codemirror.mode.javascript]
-            [cljsjs.codemirror.mode.clojure]
-            cljsjs.codemirror.addon.edit.closebrackets
-            cljsjs.codemirror.addon.edit.matchbrackets))
+            ["codemirror" :as CodeMirror]
+            ["codemirror/mode/javascript/javascript"]
+            ["codemirror/mode/clojure/clojure"]
+            ["codemirror/addon/edit/closebrackets"]
+            ["codemirror/addon/edit/matchbrackets"]))
 
 (def KEYWORD-RE #":[a-zA-ZñÑ][a-zA-ZñÑ0-9\-_]*")
 
@@ -67,7 +67,7 @@
      :component-did-mount
      (fn [this]
        (let [dom (reagent.dom/dom-node this)
-             cm (js/CodeMirror dom (clj->js {:value value :mode mode :tabMode "indent"
+             cm (CodeMirror dom (clj->js {:value value :mode mode :tabMode "indent"
                                               :autoCloseBrackets true :matchBrackets true
                                               :lineNumbers true}))]
          (.setSize cm 700 300)

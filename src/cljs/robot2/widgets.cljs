@@ -161,7 +161,15 @@
                              (re-frame/dispatch [:params/set! path @entry])
                              (reset! entry {:k "" :v ""}))])]]
             [re-com/scroller
-             :v-scroll :auto :max-height max-height :size "1"
+             ;; :size "1" (flex-basis 0%) solo tiene sentido cuando
+             ;; max-height es un % y necesitamos que crezca hasta llenar un
+             ;; ancestro con altura real (ver panel-1 de app-params-panel).
+             ;; Con un max-height fijo (ej. "7em", como en los parametros de
+             ;; instancia, anidados sin altura definida) flex-basis:0% hacia
+             ;; que el scroller colapsara a 0 -- escondia hasta las filas ya
+             ;; existentes, no solo las nuevas.
+             :v-scroll :auto :max-height max-height
+             :size (if (string/ends-with? max-height "%") "1" "none")
              :child
              [re-com/v-box
               :class "param-list"
