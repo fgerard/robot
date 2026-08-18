@@ -10,9 +10,7 @@
     [goog.string.format]
     [fipp.edn :refer (pprint) :rename {pprint fipp}]
     [robot.ui.state-editor :as state-editor]
-    [robot.ui.events :refer [snapshot-event]]
-    ;[cljsjs.snapsvg]
-    [cljsjs.svgjs]))
+    [robot.ui.events :refer [snapshot-event]]))
 
 ;;;;;;;;;;;;;;;; SUBSCRIPTIONS
 

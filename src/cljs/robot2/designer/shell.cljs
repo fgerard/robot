@@ -132,7 +132,7 @@
             current-state-ids (set (keys (get-in editable [app :states])))
             running? (boolean (seq (params/get-running-instances ready app)))]
         [re-com/h-box
-         :width "100%" :height "85%"
+         :width "100%" :height "100%" :size "1"
          :children
          [[re-com/h-split
            :class "split-container" :initial-split "25%"
@@ -148,9 +148,17 @@
             :class "internal-split" :initial-split "80%"
             :panel-1
             [re-com/v-box
-             :width "100%"
+             :width "100%" :height "100%"
              :children [[opr-dialog/operations-toolbar app current-state-ids]
-                        [canvas/svg-comp editable ready "100%" "100%" app @watch-instance-atm]]]
+                        ;; :size "1" -- el canvas (no un componente re-com,
+                        ;; no puede llevar :size el mismo) se queda con lo
+                        ;; que le sobra al v-box despues del toolbar, para
+                        ;; que su <svg height="100%"> tenga de que altura
+                        ;; real partir (antes no tenia, y no seguia el
+                        ;; resize del split).
+                        [re-com/box
+                         :size "1"
+                         :child [canvas/svg-comp editable ready "100%" "100%" app @watch-instance-atm]]]]
             :panel-2
             (if (seq @watch-instance-atm)
               [re-com/scroller

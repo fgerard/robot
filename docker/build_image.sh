@@ -28,15 +28,14 @@ build_project() {
   lein less once
   echo "OK"
 
-  printf "Compilando uberjar (incluye cljs robot v1 optimizado) ... \n"
-  lein with-profile prod uberjar
+  printf "Instalando dependencias npm (shadow-cljs, react, codemirror) ... \n"
+  npm install
 
-  printf "Compilando cljs robot2 v2 optimizado ... \n"
-  # "lein cljsbuild once <un-solo-id>" no hace nada (bug de parseo de argumentos
-  # entre lein-cljsbuild 1.1.8 y Leiningen moderno: imprime "Compiling
-  # ClojureScript..." y sale con exit 0 sin compilar nada). Pasando el mismo id
-  # dos veces si funciona -- es el workaround.
-  lein cljsbuild once robot2-min robot2-min
+  printf "Compilando cljs robot v1 y robot2 v2 optimizados (shadow-cljs) ... \n"
+  npx shadow-cljs release robot robot2
+
+  printf "Compilando uberjar (backend) ... \n"
+  lein with-profile prod uberjar
 }
 
 sync_instance_env() {

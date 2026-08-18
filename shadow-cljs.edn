@@ -1,0 +1,27 @@
+;; Reemplaza lein-cljsbuild + lein-figwheel para la compilacion de cljs.
+;; :lein true -- shadow-cljs resuelve el classpath (deps de Maven: reagent,
+;; re-frame, re-com, los cljsjs/*, etc.) corriendo `lein classpath`, asi que
+;; project.clj sigue siendo la unica fuente de verdad para esas dependencias.
+;; El backend Clojure (bin/robot, lein run) no cambia -- esto solo reemplaza
+;; como se compila/observa el cljs.
+{:lein true
+ :nrepl {:port 8777}
+
+ :builds
+ {;; robot (v1) -- equivalente a los builds "dev"/"min" de project.clj.
+  ;; `shadow-cljs watch robot` = dev con hot-reload; `shadow-cljs release
+  ;; robot` = equivalente optimizado a "min".
+  :robot
+  {:target     :browser
+   :output-dir "resources/public/js/compiled"
+   :asset-path "js/compiled"
+   :modules    {:robot-ui {:entries [robot.ui.core]}}
+   :devtools   {:after-load robot.ui.core/mount-root}}
+
+  ;; robot2 (v2) -- equivalente a "robot2"/"robot2-min".
+  :robot2
+  {:target     :browser
+   :output-dir "resources/public/js/compiled"
+   :asset-path "js/compiled"
+   :modules    {:robot2-ui {:entries [robot2.core]}}
+   :devtools   {:after-load robot2.core/mount-root}}}}

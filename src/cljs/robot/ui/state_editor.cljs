@@ -6,15 +6,15 @@
             [re-frame.core :as re-frame]
             [re-com.core :as re-com]
             [robot.ui.events :as events]
-            [cljsjs.codemirror]
-            [cljsjs.codemirror.mode.javascript]
-            [cljsjs.codemirror.mode.htmlmixed]
-            [cljsjs.codemirror.mode.clojure]
-            [cljsjs.codemirror.keymap.sublime]
-            [cljsjs.codemirror.addon.hint.javascript-hint]
-            cljsjs.codemirror.addon.edit.closebrackets
-            cljsjs.codemirror.addon.edit.matchbrackets
-            [cljsjs.codemirror.addon.display.rulers]
+            ["codemirror" :as CodeMirror]
+            ["codemirror/mode/javascript/javascript"]
+            ["codemirror/mode/htmlmixed/htmlmixed"]
+            ["codemirror/mode/clojure/clojure"]
+            ["codemirror/keymap/sublime"]
+            ["codemirror/addon/hint/javascript-hint"]
+            ["codemirror/addon/edit/closebrackets"]
+            ["codemirror/addon/edit/matchbrackets"]
+            ["codemirror/addon/display/rulers"]
             [cljs.reader :as reader]))
 
 
@@ -177,7 +177,7 @@
     (reagent/create-class
       {:component-did-mount
                      (fn []
-                       (let [codemirror (js/CodeMirror (.getElementById js/document "editor")
+                       (let [codemirror (CodeMirror (.getElementById js/document "editor")
                                                        (clj->js {:value             value
                                                                  :mode              mode
                                                                  :tabMode           "indent",

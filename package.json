@@ -1,0 +1,12 @@
+{
+  "name": "robot",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "^2.28.5"
+  },
+  "dependencies": {
+    "codemirror": "^5.24.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
