@@ -70,9 +70,33 @@
              cm (CodeMirror dom (clj->js {:value value :mode mode :tabMode "indent"
                                               :autoCloseBrackets true :matchBrackets true
                                               :lineNumbers true}))]
-         (.setSize cm 700 300)
+         ;; el <div> (dom) trae "resize: both" en su estilo -- CodeMirror
+         ;; llena ese contenedor al 100% en vez de un tamano fijo, y se
+         ;; re-mide con ResizeObserver cada vez que el usuario arrastra la
+         ;; manija de resize nativa del navegador (o cambia el tamano de la
+         ;; ventana).
+         (.setSize cm "100%" "100%")
+         (.observe (js/ResizeObserver. (fn [_] (.refresh cm))) dom)
          (when onchange (.on cm "change" onchange))))
-     :reagent-render (fn [_] [:div])}))
+     :reagent-render (fn [_]
+                        ;; padding + border-box: CodeMirror llena el 100% del
+                        ;; content-box, pero deja libres unos px de la esquina
+                        ;; inferior derecha del wrapper -- si CodeMirror cubre
+                        ;; ESA esquina por completo (con width/height 100% a
+                        ;; raz), su propio manejo de mouse tapa el hit-area
+                        ;; nativo de resize del navegador y ni se ve la manija
+                        ;; ni se puede arrastrar.
+                        [:div {:style {:resize "both" :overflow "hidden"
+                                       :box-sizing "border-box"
+                                       :width "700px" :height "300px"
+                                       :min-width "300px" :min-height "150px"
+                                       ;; el dialogo (operation-modal) es de
+                                       ;; ancho fijo -- sin este tope se podia
+                                       ;; arrastrar el editor mas ancho que su
+                                       ;; propio marco.
+                                       :max-width "100%"
+                                       :padding "0 6px 6px 0"
+                                       :border "1px solid #999"}}])}))
 
 ;; --- editor de parametros libres (mapa nombre -> valor) ----------------------
 (defn- edit-params-comp [kwd conf-atm]
