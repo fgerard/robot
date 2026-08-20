@@ -279,9 +279,16 @@
 (re-frame/reg-event-fx
   :api/import-app-ok
   (fn [_ [_ app-name status _body]]
+    ;; :api/instantiate a proposito no toca :editable (ver su comentario) --
+    ;; para una app YA cargada eso evita borrar el diagrama, pero una app
+    ;; recien importada nunca estuvo en :editable, asi que sin cargarla
+    ;; explicitamente no aparecia en el combo hasta el proximo logout/login.
+    ;; :api/load-stored-app la trae de vuelta del backend y la mete ahi.
     {:dispatch-n [[:api/instantiate app-name]
+                  [:api/load-stored-app app-name]
                   (create-log :info status "App saved!")
-                  [:reset! [:designer/ctrl :import] nil]]}))
+                  [:reset! [:designer/ctrl :import] nil]
+                  [:reset! [:designer/ctrl :app] app-name]]}))
 
 ;; --- usuarios -------------------------------------------------------------------
 (re-frame/reg-event-fx
