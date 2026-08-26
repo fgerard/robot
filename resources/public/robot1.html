@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
+  <!-- UI v1, deprecada: la entrada oficial es index.html, que carga la v2.
+       Esta pagina se conserva para poder volver a la v1 si hace falta; no se
+       liga desde ningun lado. -->
   <!-- Fija el tema en <html> antes de que cargue el CSS, para que no haya un
        parpadeo del tema equivocado mientras arranca el bundle cljs. -->
   <script>
@@ -14,13 +17,8 @@
   </script>
   <!-- requerido por Google Identity Services al probar sobre http://localhost (no https) -->
   <meta name="referrer" content="no-referrer-when-downgrade">
-  <link rel="icon"
-    type="image/png"
-    href="/images/logo_login_icon.png">
+  <link rel="icon" type="image/png" href="/images/logo_login_icon.png">
   <script type="text/javascript" src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- meta name="google-signin-client_id" content="305479419588-5nl2tv6p7k2cu2e8am2qo2j8q39do4so.apps.googleusercontent.com" -->
-  <!--meta name="google-signin-client_id" content="805510066459-ittuiv9rblbdo5ttoudpjbn8f26a6eud.apps.googleusercontent.com"-->
-  <!--meta name="google-signin-client_id" content="788457858895-o69tcvusra5rq9458hchnv3ivieho32l.apps.googleusercontent.com"-->
   <meta name="google-signin-client_id" content="778404026513-l4nknm85bhbg3gicc4sq3pa0jccbpi6q.apps.googleusercontent.com">
   <meta http-equiv="cache-control" content="max-age=0" />
   <meta http-equiv="cache-control" content="no-cache" />
@@ -32,15 +30,18 @@
   <link href="vendor/css/re-com.css" type="text/css" rel="stylesheet" />
   <link href="css/index.css" type="text/css" rel="stylesheet" />
 
-  <title>Robot</title>
+  <title>Robot (UI v1, deprecada)</title>
 </head>
 
 <body>
+  <div style="font-family: Segoe UI, Roboto, sans-serif; padding: 8px 16px; background-color: var(--accent-orange); color: #ffffff;">
+    UI v1 deprecada. La versión oficial es <a href="index.html" style="color: #ffffff;">index.html</a>.
+  </div>
   <div id="app" style="font-family: Segoe UI, Roboto, sans-serif;"></div>
   <script src="js/lib/externs.js"></script>
-  <script src="js/compiled/robot2-ui.js"></script>
+  <script src="js/compiled/robot-ui.js"></script>
   <script>
-    robot2.core.init();
+    robot.ui.core.init();
   </script>
 </body>
 
