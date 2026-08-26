@@ -1,4 +1,4 @@
-(defproject fgerard/robot "4.0.2"
+(defproject fgerard/robot "4.1.0-test"
   :description "Project robot"
   :url "https://fgerard.github.io/robot.docs"
   :license {:name "Eclipse Public License"
