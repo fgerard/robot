@@ -477,10 +477,22 @@
 ;;{:api-tokens {"123123:asd123a2134" [bot-channel cmd-atom]}
 ; :cmd-atom {}}
 
+(defn- opt-int
+  "Campo numerico opcional: vacio o invalido se va al default sin reventar."
+  [context v default]
+  (let [s (S/trim (str (U/contextualize context v)))]
+    (if (S/blank? s)
+      default
+      (try
+        (Integer/parseInt s)
+        (catch NumberFormatException _
+          (log/warn "Valor numerico invalido: " s " - usando " default)
+          default)))))
+
 (defmethod ig/init-key :robot.core.operations/telegram-opr-factory
   [_ ui]
   [(fn telegram-opr-factory
-     [{:keys [bot-token chat-tokens message path]
+     [{:keys [bot-token chat-tokens message path max-length max-messages]
        :as   conf}] ;
      (fn telegram-opr [{app :robot/app instance :robot/instance :as context} you]
        (log/debug "Operación Telegram " you)
@@ -489,12 +501,24 @@
                           (S/trim
                            (U/contextualize context chat-tokens)) #",")
              message (U/contextualize context message)
-             message (subs message 0 (min 1024 (count message)))
-             path (U/contextualize context path)]
+             path (U/contextualize context path)
+             limit (if (seq path) telegram/CAPTION-LIMIT telegram/TEXT-LIMIT)
+             max-length (min limit (max 1 (opt-int context max-length limit)))
+             max-messages (max 1 (opt-int context max-messages
+                                          telegram/DEFAULT-MAX-MESSAGES))
+             pages (telegram/split-pages message max-length max-messages)]
 
          ;(telegram/start-server bot-token)
          (try
-           (if-let [response (telegram/send-message bot-token chat-tokens message path)]
+           ;; la imagen va solo en el primer envio: es el caption de sendPhoto,
+           ;; el resto son mensajes de texto de seguimiento
+           (if-let [response (doall
+                              (map-indexed
+                               (fn [i page]
+                                 (telegram/send-message
+                                  bot-token chat-tokens page
+                                  (when (zero? i) path)))
+                               pages))]
              (assoc context you "scheduled for sending")
              (assoc context you "telegram unavailable"))
          (catch Throwable e

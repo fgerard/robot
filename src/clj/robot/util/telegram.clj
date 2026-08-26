@@ -58,6 +58,73 @@
 (defn send-photo [token chat-id options image]
   (send-file token chat-id options image "/sendPhoto" "photo" "photo.png"))
 
+;; Topes de la API de Telegram: sendMessage admite 4096 caracteres de texto,
+;; pero el caption de sendPhoto solo 1024. De ahi salia el 1024 que antes se
+;; aplicaba a todo mensaje, con o sin imagen.
+(def ^:const TEXT-LIMIT 4096)
+(def ^:const CAPTION-LIMIT 1024)
+
+(def ^:const DEFAULT-MAX-MESSAGES 5)
+
+(defn- hard-split [s n]
+  (mapv #(apply str %) (partition-all n s)))
+
+(defn- pack
+  "Empaca lineas completas en trozos de a lo mas max-length. Una linea que por
+   si sola no cabe se parte a la fuerza."
+  [lines max-length]
+  (loop [[line & more] lines
+         cur nil
+         out []]
+    (cond
+      (nil? line)
+      (if cur (conj out cur) out)
+
+      (> (count line) max-length)
+      (let [pieces (hard-split line max-length)]
+        (recur more
+               (last pieces)
+               (into (if cur (conj out cur) out) (butlast pieces))))
+
+      (nil? cur)
+      (recur more line out)
+
+      (<= (+ (count cur) 1 (count line)) max-length)
+      (recur more (str cur "\n" line) out)
+
+      :else
+      (recur more line (conj out cur)))))
+
+(defn- cap-pages
+  "Deja a lo mas max-pages trozos y marca en el ultimo cuanto se quedo fuera."
+  [pages max-length max-pages total-chars]
+  (if (<= (count pages) max-pages)
+    pages
+    (let [tmpl "\n… (truncado, %s caracteres omitidos)"
+          reserve (count (format tmpl (str total-chars)))
+          kept (vec (take max-pages pages))
+          room (max 0 (- max-length reserve))
+          trimmed (let [p (peek kept)]
+                    (if (> (count p) room) (subs p 0 room) p))
+          kept (conj (pop kept) trimmed)
+          omitted (max 0 (- total-chars (count (S/join "\n" kept))))]
+      (conj (pop kept) (str trimmed (format tmpl omitted))))))
+
+(defn split-pages
+  "Parte text en a lo mas max-pages trozos de max-length caracteres, cortando en
+   saltos de linea para no serruchar un renglon a la mitad. Con mas de un trozo
+   cada uno se numera [n/N]; el prefijo se descuenta de max-length, calculado
+   sobre max-pages porque N nunca lo rebasa."
+  [text max-length max-pages]
+  (let [lines (S/split-lines (or text ""))]
+    (if (<= (count (pack lines max-length)) 1)
+      (pack lines max-length)
+      (let [prefix-size (count (str "[" max-pages "/" max-pages "]\n"))
+            room (max 1 (- max-length prefix-size))
+            pages (cap-pages (pack lines room) room max-pages (count text))
+            total (count pages)]
+        (vec (map-indexed (fn [i p] (str "[" (inc i) "/" total "]\n" p)) pages))))))
+
 (defn send-message [bot-token chat-ids text path]
   (doall
     (map (fn [chat-id]

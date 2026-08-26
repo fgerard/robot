@@ -397,6 +397,16 @@
                                            :label       "Message"
                                            :info        "Please specify the Telegram message to be send, it can be a value stored in context, E.g. Hello, :context-key"
                                            :placeholder "Enter Message"}
+                                          {:kwd         :max-length
+                                           :re          #"[0-9]*"
+                                           :label       "Max length (Optional)"
+                                           :info        "Max characters per Telegram message. Leave empty for the API limit: 4096 for a text message, 1024 when an image is set, since that is the caption limit. Longer text is split into several messages."
+                                           :placeholder "4096"}
+                                          {:kwd         :max-messages
+                                           :re          #"[0-9]*"
+                                           :label       "Max messages (Optional)"
+                                           :info        "How many messages a long text may be split into before the rest is dropped. Leave empty for 5. The last message says how many characters were omitted."
+                                           :placeholder "5"}
                                           ]}
                      :telegram-get {:title "CMD Telegram operation"
                                       :flds  [{:kwd         :bot-token
