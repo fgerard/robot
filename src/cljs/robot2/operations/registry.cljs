@@ -11,8 +11,11 @@
 (re-frame/reg-event-fx
   :operations/load-schema
   (fn [_ _]
+    ;; El ?t= es a proposito: el .edn se pide por HTTP y el navegador se lo
+    ;; queda cacheado, asi que despues de cambiar el esquema los campos nuevos
+    ;; no salian hasta hacer un reload duro. Son 21K una vez por sesion.
     {:http {:method :get
-            :url "edn/operations-schema.edn"
+            :url (str "edn/operations-schema.edn?t=" (.getTime (js/Date.)))
             :headers {"Accept" "application/edn"}
             :on-success [:operations/schema-loaded]
             :on-failure [:api/log-error]}}))
