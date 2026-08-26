@@ -313,7 +313,13 @@
     :label "Max messages (Optional)",
     :info
     "How many messages a long text may be split into before the rest is dropped. Leave empty for 5. The last message says how many characters were omitted.",
-    :placeholder "5"}]},
+    :placeholder "5"}
+   {:kwd :format,
+    :re "(mono)?",
+    :label "Format (Optional)",
+    :info
+    "Leave empty for plain text, as always. Set to 'mono' to send the whole message in a monospace font, which is what keeps table columns lined up; robot escapes the text itself, so the message can contain any characters. Neither option interprets markup: no bold, italics or links.",
+    :placeholder "mono"}]},
  :mq
  {:title "IBM-MQ operation",
   :flds

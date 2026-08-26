@@ -492,7 +492,7 @@
 (defmethod ig/init-key :robot.core.operations/telegram-opr-factory
   [_ ui]
   [(fn telegram-opr-factory
-     [{:keys [bot-token chat-tokens message path max-length max-messages]
+     [{:keys [bot-token chat-tokens message path max-length max-messages format]
        :as   conf}] ;
      (fn telegram-opr [{app :robot/app instance :robot/instance :as context} you]
        (log/debug "Operación Telegram " you)
@@ -506,7 +506,11 @@
              max-length (min limit (max 1 (opt-int context max-length limit)))
              max-messages (max 1 (opt-int context max-messages
                                           telegram/DEFAULT-MAX-MESSAGES))
-             pages (telegram/split-pages message max-length max-messages)]
+             format (S/trim (str (U/contextualize context format)))
+             pages (telegram/pages-for message format max-length max-messages)
+             options (if-let [pm (telegram/parse-mode format)]
+                       {:parse_mode pm}
+                       {})]
 
          ;(telegram/start-server bot-token)
          (try
@@ -517,7 +521,7 @@
                                (fn [i page]
                                  (telegram/send-message
                                   bot-token chat-tokens page
-                                  (when (zero? i) path)))
+                                  (when (zero? i) path) options))
                                pages))]
              (assoc context you "scheduled for sending")
              (assoc context you "telegram unavailable"))

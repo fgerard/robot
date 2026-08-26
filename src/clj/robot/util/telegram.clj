@@ -66,8 +66,27 @@
 
 (def ^:const DEFAULT-MAX-MESSAGES 5)
 
+(defn escape-html [s]
+  (-> (str s)
+      (S/replace "&" "&amp;")
+      (S/replace "<" "&lt;")
+      (S/replace ">" "&gt;")))
+
+(defn- safe-cut
+  "Punto de corte que no parte una entidad html (&amp; y demas) a la mitad."
+  [s n]
+  (let [head (subs s 0 n)
+        amp  (S/last-index-of head "&")]
+    (if (and amp (> amp (- n 8)) (not (S/includes? (subs head amp) ";")))
+      amp
+      n)))
+
 (defn- hard-split [s n]
-  (mapv #(apply str %) (partition-all n s)))
+  (loop [s s out []]
+    (if (<= (count s) n)
+      (conj out s)
+      (let [cut (max 1 (safe-cut s n))]
+        (recur (subs s cut) (conj out (subs s 0 cut)))))))
 
 (defn- pack
   "Empaca lineas completas en trozos de a lo mas max-length. Una linea que por
@@ -125,7 +144,35 @@
             total (count pages)]
         (vec (map-indexed (fn [i p] (str "[" (inc i) "/" total "]\n" p)) pages))))))
 
-(defn send-message [bot-token chat-ids text path]
+(defn parse-mode
+  "mono se manda como HTML porque el texto va envuelto en <pre>. Cualquier otro
+   valor es texto plano, sin parse_mode, como se mandaba siempre.
+
+   HTML y no MarkdownV2 a proposito: aqui solo hay que escapar & < > en vez de
+   los 18 reservados de MarkdownV2, que es justo lo que tumbaba los envios con
+   'can't parse entities' (ver el comentario de send-text)."
+  [fmt]
+  (when (= "mono" (str fmt)) "HTML"))
+
+(defn pages-for
+  "Parte el texto en mensajes listos para enviar segun el formato.
+
+   En mono se escapa ANTES de partir, porque escapar despues puede pasarse del
+   limite, y cada trozo se envuelve en su propio <pre>: un <pre>...</pre>
+   partido a la mitad deja etiquetas rotas en los dos mensajes y Telegram
+   rechaza las dos."
+  [text fmt max-length max-pages]
+  (if (= "mono" (str fmt))
+    (let [open "<pre>" close "</pre>"
+          room (max 1 (- max-length (count open) (count close)))]
+      (mapv #(str open % close)
+            (split-pages (escape-html text) room max-pages)))
+    (split-pages text max-length max-pages)))
+
+(defn send-message
+  ([bot-token chat-ids text path]
+   (send-message bot-token chat-ids text path {}))
+  ([bot-token chat-ids text path options]
   (doall
     (map (fn [chat-id]
            (try
@@ -137,7 +184,7 @@
                (let [imagen (java.io.File. path)]
                  (if (.exists imagen)
                    (send-photo bot-token chat-id
-                               {:caption text}
+                               (assoc options :caption text)
                                imagen)
                    (let [decoded (.decode (java.util.Base64/getDecoder) path)
                          imagen (java.io.File/createTempFile "robot" ".png")
@@ -145,13 +192,13 @@
                      (with-open [out (java.io.FileOutputStream. imagen)]
                        (.write out decoded))
                      (send-photo bot-token chat-id
-                                     {:caption text}
+                                     (assoc options :caption text)
                                      imagen))))
-               (send-text bot-token chat-id text))
+               (send-text bot-token chat-id options text))
              (catch Throwable e
                (-> e .printStackTrace)
                (log/warn "Problem with chat-id: " chat-id))))
-         chat-ids)))
+         chat-ids))))
 
 
 ; Este atomo tiene la siguiente estructura ejemplo:
