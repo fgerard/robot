@@ -1,10 +1,40 @@
 #!/bin/bash
 #
 # Compila el uberjar y el cljs de robot (v1) y robot2 (v2), y construye
-# (y sube) la imagen docker quantumlabs/robot:$VERSION, con VERSION tomada
-# de project.clj -- unica fuente de verdad para la version.
+# la imagen docker quantumlabs/robot:$VERSION, con VERSION tomada de
+# project.clj -- unica fuente de verdad para la version.
 #
+#   ./docker/build_image.sh              imagen local (arch del host), sin subir
+#   ./docker/build_image.sh --push       igual, y ademas la sube con docker push
+#   ./docker/build_image.sh --multiarch  amd64+arm64 directo al registro
+#
+# --push construye con --load y luego hace docker push, asi que queda copia
+# local Y en el registro. Eso solo funciona con una arquitectura: buildx no
+# puede cargar un manifiesto multi-arch en el docker del host, y docker push
+# sube lo que hay en el daemon, que es una sola arch. Para publicar las dos
+# esta --multiarch, que sube directo y NO deja copia local.
 set -e
+
+PUSH=0
+MULTIARCH=0
+PLATFORM=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --push)      PUSH=1; shift ;;
+    --multiarch) MULTIARCH=1; shift ;;
+    --platform)  PLATFORM="${2:?falta el valor de --platform}"; shift 2 ;;
+    -h|--help)   sed -n '3,15p' "$0"; exit 0 ;;
+    *)           echo "Argumento desconocido: $1" >&2; exit 1 ;;
+  esac
+done
+
+host_platform() {
+  case "$( uname -m )" in
+    x86_64|amd64)  echo linux/amd64 ;;
+    arm64|aarch64) echo linux/arm64 ;;
+    *)             echo "Arquitectura no reconocida: $( uname -m )" >&2; exit 1 ;;
+  esac
+}
 
 check_os() {
   UNAME=$( uname -s )
@@ -71,15 +101,48 @@ build_docker_image() {
       DOCKER="docker"
     fi
   fi
+  TAG="quantumlabs/$NAME:$VERSION"
+
+  if test "$MULTIARCH" = "1"; then
+    PLATFORM=${PLATFORM:-linux/arm64,linux/amd64}
+    OUTPUT="--push"
+  else
+    # --load solo acepta una plataforma
+    PLATFORM=${PLATFORM:-$( host_platform )}
+    OUTPUT="--load"
+  fi
+
+  BUILD_CMD="buildx build -f docker/Dockerfile -t $TAG --platform $PLATFORM $OUTPUT ."
+
   if test "$DOCKER" = ""; then
     echo "Your OS $OS is not supported by this script"
     echo "Try to execute the following commands to create the image:"
     echo ""
     echo "cd $ROOT_DIR"
-    echo "docker buildx build -f docker/Dockerfile -t quantumlabs/$NAME:$VERSION --platform linux/arm64,linux/amd64 --push ."
+    echo "docker $BUILD_CMD"
+    test "$PUSH" = "1" && echo "docker push $TAG"
+    return
+  fi
+
+  cd $ROOT_DIR
+  echo "Construyendo $TAG [$PLATFORM] $OUTPUT ..."
+  $DOCKER $BUILD_CMD
+
+  if test "$MULTIARCH" = "1"; then
+    echo ""
+    echo "Subida $TAG para $PLATFORM. Sin copia local: un manifiesto multi-arch"
+    echo "no se puede cargar en el docker del host."
+    return
+  fi
+
+  echo ""
+  echo "Imagen local lista: $TAG"
+  if test "$PUSH" = "1"; then
+    echo "Subiendo $TAG ..."
+    $DOCKER push "$TAG"
+    echo "Subida $TAG (solo $PLATFORM). Para publicar las dos arquitecturas: --multiarch"
   else
-    cd $ROOT_DIR
-    $DOCKER buildx build -f docker/Dockerfile -t quantumlabs/$NAME:$VERSION --platform linux/arm64,linux/amd64 --push .
+    echo "Para subirla: ./docker/build_image.sh --push"
   fi
 }
 
