@@ -276,8 +276,8 @@
             ]
         (log/debug (str "robot-stats:" (pr-str {:app-id app-id :inst-id inst-id :opr-id current :delta delta :result (get ctx current)})))
         (put! publisher [:robot/state app-id inst-id new-ctx])
-        ;; send-off y no send: aqui toda operacion bloquea -- wait-till duerme hasta 10s,
-        ;; os-cmd espera al shell, telegram y http a la red -- y el pool de send es fijo,
+        ;; send-off y no send: aqui toda operacion bloquea -- wait-till duerme,
+        ;; os-cmd espera al shell, telegram y http a la red, etc -- y el pool de send es fijo,
         ;; de 2+cores. Las instancias de mas se formaban detras de una dormida.
         (send-off *agent* (partial mutate-state publisher))
         new-inst-agent)
