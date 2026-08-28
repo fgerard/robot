@@ -283,6 +283,12 @@
         new-inst-agent)
       inst-agent)))
 
+(defn stop-all [instances publisher]
+  (dorun
+    (map (fn [[inst-name {:keys [inst-agent]}]]
+           (if inst-agent
+             (send inst-agent (partial change-executor-status publisher :stopped)))) instances)))
+
 (defmulti robot-cmd (fn [_ _ _ [cmd & _]]
                       cmd))
 
@@ -290,10 +296,14 @@
   (log/info :instantiate (pr-str [cmd app-id]))
   (let [[status {:keys [err-msg instantiated-app]}] (app-controller :instantiate {:app-id app-id :app-conf (get-in robot [:apps app-id])})]
     (if (= :success status)
-      (-> robot
-          (assoc-in [:ready-apps app-id] instantiated-app)
-          (assoc :cmd-status :success)
-          (dissoc :cmd-err))
+      ;; instantiated-app viene sin :inst-agent: sin el stop-all, lo que este
+      ;; corriendo queda girando sin quien lo referencie, y con el :states viejo.
+      (do
+        (stop-all (get-in robot [:ready-apps app-id :instances]) (:publish robot))
+        (-> robot
+            (assoc-in [:ready-apps app-id] instantiated-app)
+            (assoc :cmd-status :success)
+            (dissoc :cmd-err)))
       (-> robot
           (assoc :cmd-status status)
           (assoc :cmd-err err-msg)))))
@@ -327,12 +337,6 @@
       (-> robot
           (assoc :cmd-status status)
           (assoc :cmd-err err-msg)))))
-
-(defn stop-all [instances publisher]
-  (dorun
-    (map (fn [[inst-name {:keys [inst-agent]}]]
-           (if inst-agent
-             (send inst-agent (partial change-executor-status publisher :stopped)))) instances)))
 
 (defmethod robot-cmd :remove [robot app-controller operations [cmd {:keys [app-id inst-id] :as params}]]
   (log/info :remove (pr-str params))
@@ -372,10 +376,11 @@
   (if-let [init-ctx (get-in robot [:ready-apps app-id :instances inst-id :init-ctx])]
     (let [publisher (:publish robot)
           states (get-in robot [:ready-apps app-id :states])
-          inst-agent (get-in robot [:ready-apps app-id :instances inst-id :inst-agent] (create-ctx-agte
-                                                                                         app-id inst-id
-                                                                                         {:ctx    (into {} init-ctx)
-                                                                                          :states states}))
+          ;; or y no el default de get-in, que se evalua siempre y creaba un agente de mas
+          inst-agent (or (get-in robot [:ready-apps app-id :instances inst-id :inst-agent])
+                         (create-ctx-agte app-id inst-id
+                                          {:ctx    (into {} init-ctx)
+                                           :states states}))
           current-status (get-in @inst-agent [:ctx :robot/status])]
       (when (not= :running current-status)
         (send-off inst-agent (comp
@@ -444,7 +449,10 @@
     (fn robot-controler
       ([] @robot)
       ([[cmd payload :as params]]
-       (swap! robot robot-cmd app-controller operations params)))))
+       ;; locking porque robot-cmd tiene efectos: si el CAS falla, swap! lo
+       ;; reintenta y deja un agente huerfano girando que ya nadie puede parar.
+       (locking robot
+         (swap! robot robot-cmd app-controller operations params))))))
 
 (defmethod ig/init-key :robot.core.essentials/robot-info
   [_ {:keys [robot-controller db]}]
