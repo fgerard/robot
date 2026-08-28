@@ -276,7 +276,10 @@
             ]
         (log/debug (str "robot-stats:" (pr-str {:app-id app-id :inst-id inst-id :opr-id current :delta delta :result (get ctx current)})))
         (put! publisher [:robot/state app-id inst-id new-ctx])
-        (send *agent* (partial mutate-state publisher))
+        ;; send-off y no send: aqui toda operacion bloquea -- wait-till duerme hasta 10s,
+        ;; os-cmd espera al shell, telegram y http a la red -- y el pool de send es fijo,
+        ;; de 2+cores. Las instancias de mas se formaban detras de una dormida.
+        (send-off *agent* (partial mutate-state publisher))
         new-inst-agent)
       inst-agent)))
 
@@ -375,9 +378,9 @@
                                                                                           :states states}))
           current-status (get-in @inst-agent [:ctx :robot/status])]
       (when (not= :running current-status)
-        (send inst-agent (comp
-                           (partial mutate-state publisher)
-                           (partial change-executor-status publisher :running)))
+        (send-off inst-agent (comp
+                               (partial mutate-state publisher)
+                               (partial change-executor-status publisher :running)))
         (app-controller :start {:app-id app-id :inst-id inst-id}))
       (-> robot
           (assoc :cmd-status :success)
