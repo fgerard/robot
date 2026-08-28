@@ -20,10 +20,18 @@
              (not= old selection) (update-in [:applications :ctrl :ready] dissoc :instances))
        :dispatch [:api/load-applications]})))
 
+(defn- running-instances [db app]
+  (->> (get-in db [:applications :ready app])
+       (keep (fn [[inst-name {:robot/keys [status]}]]
+               (when (= status :running) inst-name)))
+       set))
+
 (re-frame/reg-event-fx
   :apps/set-ready-instances!
   (fn [{:keys [db]} [_ app instances]]
-    (let [old (get-in db [:applications :ctrl :ready :instances] #{})
+    ;; El default de old es lo que de veras esta corriendo, no #{}: al entrar a una
+    ;; app :instances viene vacio, y con #{} la primera deseleccion no apagaba nada.
+    (let [old (get-in db [:applications :ctrl :ready :instances] (running-instances db app))
           turn-on (set/difference instances old)
           turn-off (set/difference old instances)]
       {:db (assoc-in db [:applications :ctrl :ready :instances] instances)
@@ -56,13 +64,27 @@
                                      (if (= status :running) (conj running inst-name) running)])
                                   [[] #{}]
                                   instances)]
-          [re-com/v-box
-           :width "100%"
-           :children
-           [[re-com/title :label "Instances" :level :level2]
-            [re-com/selection-list
-             :choices choices
-             :model (or @instances-selected running)
-             :height "150px"
-             :multi-select? true
-             :on-change (fn [selection] (re-frame/dispatch [:apps/set-ready-instances! app selection]))]]])))))
+          (let [model (or @instances-selected running)
+                all (set (keys instances))]
+            [re-com/v-box
+             :width "100%"
+             :gap "6px"
+             :children
+             [[re-com/title :label "Instances" :level :level2]
+              [re-com/selection-list
+               :choices choices
+               :model model
+               :height "150px"
+               :multi-select? true
+               :on-change (fn [selection] (re-frame/dispatch [:apps/set-ready-instances! app selection]))]
+              [re-com/h-box
+               :gap "8px"
+               :children
+               [[re-com/button
+                 :label "Start all"
+                 :disabled? (= model all)
+                 :on-click #(re-frame/dispatch [:apps/set-ready-instances! app all])]
+                [re-com/button
+                 :label "Stop all"
+                 :disabled? (empty? model)
+                 :on-click #(re-frame/dispatch [:apps/set-ready-instances! app #{}])]]]]]))))))
