@@ -217,10 +217,8 @@
 
 (def ^:const FILE-MARK "tg-file:")
 
-;; Los nombres los generamos aqui, con esta forma exacta, y la limpieza solo borra
-;; lo que casa con ella. El file_path que manda Telegram nunca toca el disco: es
-;; texto ajeno, y ademas data/tmp lo comparten otros (get-profile-media escribe sus
-;; image-N.jpg ahi), asi que un barrido por edad a secas se llevaria cosas vivas.
+;; La limpieza solo borra lo que casa con esta forma: data/tmp lo comparten otros
+;; (get-profile-media deja ahi sus image-N.jpg) y un barrido por edad se los llevaria.
 (def image-name-rx #"^tg-\d+-[0-9a-f]{8}\.[a-z0-9]{1,5}$")
 
 (defn message-file-id
@@ -290,7 +288,8 @@
             _ (log/debug "get-message2 d-chan: " d-chan)
             d-msg (if d-chan (poll! d-chan))]
         (log/debug "get-message3: " d-msg)
-        (if (seq d-msg)
+        ;; some? y no seq: [] es un comando sin parametros, nil es que no hay nada.
+        (if (some? d-msg)
           d-msg
           (recur remaining))))))
 
@@ -376,13 +375,9 @@
            (doseq [message result]
              (log/debug (pr-str [:start-bot-poll message]))
              (let [msg (:message message)
-                   ;; Una foto no trae :text -- el comando viene en :caption.
                    {:keys [app instance params] :as parsed} (parser-cmd (or (:text msg) (:caption msg)))
                    file-id (message-file-id msg)
-                   ;; El file_id viaja como un parametro mas y lo baja la operacion,
-                   ;; que es la que tiene configurado el directorio. Aqui no: este
-                   ;; go-loop corre en el pool fijo de core.async y una descarga
-                   ;; lenta detendria el poleo de todos los bots.
+                   ;; Solo el file_id: bajar aqui pararia el poleo de todos los bots.
                    params (if file-id
                             (concat (or params []) [(str FILE-MARK file-id)])
                             params)
@@ -396,9 +391,7 @@
                  (and stored? running? parsed)
                  (let [d-chan (get-or-create-channel-of bot-token chat-id app instance)]
                    (send-text bot-token chat-id (str "Procesing /" app " " instance " "  params))
-                   (if params 
-                     (>!! d-chan params)
-                     (send-text bot-token chat-id  "Add params to send!")))
+                   (>!! d-chan (or params [])))
 
                  (and stored? running?)
                  (log/warn "Invalid message:" message)
@@ -406,8 +399,6 @@
                  (and stored? (not running?))
                  (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!, try /help"))
 
-                 ;; Foto sin pie: no hay a donde mandarla. Antes caia en el
-                 ;; "I don't find: [nil nil]", que no dice que hacer.
                  (and file-id (nil? parsed))
                  (send-text bot-token chat-id
                             "Manda el comando en el pie de foto, p.ej. /get profile 522")

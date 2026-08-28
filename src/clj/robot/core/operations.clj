@@ -529,9 +529,8 @@
            (assoc context you (str e)))))))
    ui])
 
-;; Un dia. La imagen tiene que sobrevivir a todo el flujo que la usa, y un flujo
-;; puede quedarse parado en un wait-till: guardarla de mas es barato, borrarla
-;; antes de tiempo no.
+;; Generoso a proposito: la imagen tiene que sobrevivir al flujo entero, y un
+;; flujo puede quedarse parado en un wait-till.
 (def ^:const DEFAULT-IMAGE-MAX-AGE-MINS 1440)
 
 (defmethod ig/init-key :robot.core.operations/cmd-telegram-opr-factory
@@ -547,9 +546,6 @@
                            (U/contextualize context chat-tokens)) #",")
              image-dir (S/trim (str (U/contextualize context image-dir)))
              max-age (max 1 (opt-int context image-max-age-mins DEFAULT-IMAGE-MAX-AGE-MINS))
-             ;; La descarga va aqui y no en el poller: alla es un go-loop sobre el
-             ;; pool fijo de core.async y una bajada lenta detendria el poleo de
-             ;; todos los bots. Aca corre en el hilo del agente de esta instancia.
              resolve-file (fn [param]
                             (if-not (S/starts-with? (str param) telegram/FILE-MARK)
                               param
