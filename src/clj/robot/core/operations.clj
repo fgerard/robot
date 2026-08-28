@@ -513,6 +513,7 @@
                        {})]
 
          ;(telegram/start-server bot-token)
+         (telegram/sweep-temp!)
          (try
            ;; la imagen va solo en el primer envio: es el caption de sendPhoto,
            ;; el resto son mensajes de texto de seguimiento
@@ -529,14 +530,11 @@
            (assoc context you (str e)))))))
    ui])
 
-;; Generoso a proposito: la imagen tiene que sobrevivir al flujo entero, y un
-;; flujo puede quedarse parado en un wait-till.
-(def ^:const DEFAULT-IMAGE-MAX-AGE-MINS 1440)
 
 (defmethod ig/init-key :robot.core.operations/cmd-telegram-opr-factory
   [_ ui]
   [(fn cmd-telegram-opr-factory
-     [{:keys [bot-token chat-tokens image-dir image-max-age-mins]
+     [{:keys [bot-token chat-tokens]
        :as   conf}]
      (retry-fn cmd-telegram-opr 2000 1 100 [{app :robot/app instance :robot/instance :as context} you]
        (log/debug "Operación Telegram")
@@ -544,22 +542,15 @@
              chat-tokens (S/split
                           (S/trim
                            (U/contextualize context chat-tokens)) #",")
-             image-dir (S/trim (str (U/contextualize context image-dir)))
-             max-age (max 1 (opt-int context image-max-age-mins DEFAULT-IMAGE-MAX-AGE-MINS))
              resolve-file (fn [param]
                             (if-not (S/starts-with? (str param) telegram/FILE-MARK)
                               param
                               (let [file-id (subs (str param) (count telegram/FILE-MARK))]
-                                (cond
-                                  (S/blank? image-dir)
-                                  (do (log/error "llego una imagen pero :image-dir esta vacio")
-                                      "sin-image-dir")
-                                  :else
-                                  (or (telegram/download-file! bot-token file-id image-dir)
-                                      "no-se-pudo-bajar")))))]
+                                (or (telegram/download-file! bot-token file-id)
+                                    "no-se-pudo-bajar"))))]
          ;(telegram/start-server bot-token)
          (telegram/register-telegram-bot bot-token)
-         (telegram/sweep-images! image-dir max-age)
+         (telegram/sweep-temp!)
          (if-let [response (telegram/get-message bot-token chat-tokens app instance)]
            (assoc context you (reduce str (interpose "," (map resolve-file response))))
            (assoc context you "no cmd available")))))

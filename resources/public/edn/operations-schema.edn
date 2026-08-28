@@ -33,19 +33,7 @@
     :label "Chat Tokens",
     :info
     "Please specify the Telegram chat tokens to send message,must be comma separated E.g. 309085949, 309382943",
-    :placeholder "Enter Chat Tokens"}
-   {:kwd :image-dir,
-    :re ".+",
-    :label "Image dir",
-    :info
-    "Directory where photos sent to the bot are saved. Required. Its path is appended to the request as one more comma-separated parameter. Use a directory of its own: cleanup only removes files named tg-<ts>-<hex>.<ext>, but pointing this at a shared directory is asking for trouble. E.g. :tmpdir or data/tmp/telegram",
-    :placeholder "Enter directory for received images"}
-   {:kwd :image-max-age-mins,
-    :re "[0-9]*",
-    :label "Image max age (mins)",
-    :info
-    "How long a received image is kept before it is deleted, in minutes. Default 1440 (one day). Cleanup runs at most once per hour and only deletes files it created. Be generous: the image has to outlive the whole flow that uses it, and a flow can sit waiting in a wait-till.",
-    :placeholder "1440"}]},
+    :placeholder "Enter Chat Tokens"}]},
  :os-cmd
  {:title "OS cmd operation",
   :flds

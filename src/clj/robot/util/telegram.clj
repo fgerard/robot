@@ -169,6 +169,45 @@
             (split-pages (escape-html text) room max-pages)))
     (split-pages text max-length max-pages)))
 
+;; Todo lo temporal del robot vive en java.io.tmpdir con este prefijo. El barrido
+;; borra por prefijo y nunca por edad sola: asi no puede llevarse nada que no
+;; hayamos creado nosotros, aunque el tmpdir lo compartan otros.
+(def ^:const TEMP-PREFIX "robot-")
+(def ^:const TEMP-MAX-AGE-MINS 1440)
+(def ^:const SWEEP-EVERY-MS 3600000)
+
+(defn temp-dir ^java.io.File []
+  (java.io.File. (System/getProperty "java.io.tmpdir")))
+
+(defn temp-file
+  "Archivo nuevo en el tmpdir compartido, con la extension dada (sin punto)."
+  ^java.io.File [ext]
+  (java.io.File. (temp-dir)
+                 (format "%s%d-%08x.%s" TEMP-PREFIX (System/currentTimeMillis)
+                         (rand-int Integer/MAX_VALUE) ext)))
+
+(defonce ^:private last-sweep (atom 0))
+
+(defn sweep-temp!
+  "Borra del tmpdir lo que empiece con TEMP-PREFIX y pase de TEMP-MAX-AGE-MINS.
+   Se rinde solito si ya barrio en la ultima hora."
+  []
+  (let [now (System/currentTimeMillis)
+        [old _] (swap-vals! last-sweep #(if (> (- now %) SWEEP-EVERY-MS) now %))]
+    (when (> (- now old) SWEEP-EVERY-MS)
+      (try
+        (let [cutoff (- now (* 60000 TEMP-MAX-AGE-MINS))
+              borrados (->> (.listFiles (temp-dir))
+                            (filter #(and (.isFile %)
+                                          (S/starts-with? (.getName %) TEMP-PREFIX)
+                                          (< (.lastModified %) cutoff)))
+                            (filter #(.delete %))
+                            count)]
+          (when (pos? borrados)
+            (log/info :sweep-temp :borrados borrados)))
+        (catch Throwable e
+          (log/warn e "no se pudo limpiar el tmpdir"))))))
+
 (defn send-message
   ([bot-token chat-ids text path]
    (send-message bot-token chat-ids text path {}))
@@ -187,7 +226,7 @@
                                (assoc options :caption text)
                                imagen)
                    (let [decoded (.decode (java.util.Base64/getDecoder) path)
-                         imagen (java.io.File/createTempFile "robot" ".png")
+                         imagen (temp-file "png")
                          _ (log/debug "created:" imagen)]
                      (with-open [out (java.io.FileOutputStream. imagen)]
                        (.write out decoded))
@@ -217,10 +256,6 @@
 
 (def ^:const FILE-MARK "tg-file:")
 
-;; La limpieza solo borra lo que casa con esta forma: data/tmp lo comparten otros
-;; (get-profile-media deja ahi sus image-N.jpg) y un barrido por edad se los llevaria.
-(def image-name-rx #"^tg-\d+-[0-9a-f]{8}\.[a-z0-9]{1,5}$")
-
 (defn message-file-id
   "file_id de la foto mas grande, o del documento. nil si el mensaje no trae archivo."
   [msg]
@@ -233,15 +268,13 @@
     (-> resp :body bs/to-string (json/read-str :key-fn keyword) :result :file_path)))
 
 (defn download-file!
-  "Baja file-id a dir y devuelve la ruta absoluta, o nil si no se pudo."
-  [token file-id dir]
+  "Baja file-id al tmpdir compartido y devuelve la ruta, o nil si no se pudo."
+  [token file-id]
   (try
     (if-let [file-path (file-path-of token file-id)]
       (let [ext  (let [e (S/lower-case (or (last (S/split file-path #"\.")) ""))]
                    (if (re-matches #"[a-z0-9]{1,5}" e) e "jpg"))
-            name (format "tg-%d-%08x.%s" (System/currentTimeMillis)
-                         (rand-int Integer/MAX_VALUE) ext)
-            dest (io/file dir name)
+            dest (temp-file ext)
             url  (str "https://api.telegram.org/file/bot" token "/" file-path)
             body (-> @(http/request {:request-method "get" :url url}) :body bs/to-byte-array)]
         (io/make-parents dest)
@@ -253,32 +286,6 @@
       ;; getFile no pasa de 20 MB; ahi es donde cae lo que manda alguien con un video.
       (log/error e "no se pudo bajar" file-id)
       nil)))
-
-(def ^:const SWEEP-EVERY-MS 3600000)
-(defonce ^:private last-sweep (atom {}))
-
-(defn sweep-images!
-  "Borra de dir los archivos con la forma tg-... mas viejos que max-age-mins.
-   Se rinde solito si ya barrio ese dir en la ultima hora."
-  [dir max-age-mins]
-  (when-not (S/blank? (str dir))
-    (let [now (System/currentTimeMillis)
-          [old _] (swap-vals! last-sweep update dir
-                              (fn [t] (if (or (nil? t) (> (- now t) SWEEP-EVERY-MS)) now t)))
-          prev (get old dir)]
-      (when (or (nil? prev) (> (- now prev) SWEEP-EVERY-MS))
-        (try
-          (let [cutoff (- now (* 60000 (long max-age-mins)))
-                borrados (->> (.listFiles (io/file dir))
-                              (filter #(and (.isFile %)
-                                            (re-matches image-name-rx (.getName %))
-                                            (< (.lastModified %) cutoff)))
-                              (filter #(.delete %))
-                              count)]
-            (when (pos? borrados)
-              (log/info :telegram-sweep dir :borrados borrados)))
-          (catch Throwable e
-            (log/warn e "no se pudo limpiar" dir)))))))
 
 (defn get-message [token chat-ids app instance]
   (loop [[chat-id & remaining] chat-ids]
