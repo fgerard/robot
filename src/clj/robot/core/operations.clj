@@ -529,21 +529,43 @@
            (assoc context you (str e)))))))
    ui])
 
+;; Un dia. La imagen tiene que sobrevivir a todo el flujo que la usa, y un flujo
+;; puede quedarse parado en un wait-till: guardarla de mas es barato, borrarla
+;; antes de tiempo no.
+(def ^:const DEFAULT-IMAGE-MAX-AGE-MINS 1440)
+
 (defmethod ig/init-key :robot.core.operations/cmd-telegram-opr-factory
   [_ ui]
   [(fn cmd-telegram-opr-factory
-     [{:keys [bot-token chat-tokens]
+     [{:keys [bot-token chat-tokens image-dir image-max-age-mins]
        :as   conf}]
      (retry-fn cmd-telegram-opr 2000 1 100 [{app :robot/app instance :robot/instance :as context} you]
        (log/debug "Operación Telegram")
        (let [bot-token (U/contextualize context bot-token)
              chat-tokens (S/split
                           (S/trim
-                           (U/contextualize context chat-tokens)) #",")]
+                           (U/contextualize context chat-tokens)) #",")
+             image-dir (S/trim (str (U/contextualize context image-dir)))
+             max-age (max 1 (opt-int context image-max-age-mins DEFAULT-IMAGE-MAX-AGE-MINS))
+             ;; La descarga va aqui y no en el poller: alla es un go-loop sobre el
+             ;; pool fijo de core.async y una bajada lenta detendria el poleo de
+             ;; todos los bots. Aca corre en el hilo del agente de esta instancia.
+             resolve-file (fn [param]
+                            (if-not (S/starts-with? (str param) telegram/FILE-MARK)
+                              param
+                              (let [file-id (subs (str param) (count telegram/FILE-MARK))]
+                                (cond
+                                  (S/blank? image-dir)
+                                  (do (log/error "llego una imagen pero :image-dir esta vacio")
+                                      "sin-image-dir")
+                                  :else
+                                  (or (telegram/download-file! bot-token file-id image-dir)
+                                      "no-se-pudo-bajar")))))]
          ;(telegram/start-server bot-token)
          (telegram/register-telegram-bot bot-token)
+         (telegram/sweep-images! image-dir max-age)
          (if-let [response (telegram/get-message bot-token chat-tokens app instance)]
-           (assoc context you (reduce str (interpose "," response)))
+           (assoc context you (reduce str (interpose "," (map resolve-file response))))
            (assoc context you "no cmd available")))))
    ui])
 

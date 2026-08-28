@@ -215,6 +215,73 @@
 
 (def telegram-bots (atom {}))
 
+(def ^:const FILE-MARK "tg-file:")
+
+;; Los nombres los generamos aqui, con esta forma exacta, y la limpieza solo borra
+;; lo que casa con ella. El file_path que manda Telegram nunca toca el disco: es
+;; texto ajeno, y ademas data/tmp lo comparten otros (get-profile-media escribe sus
+;; image-N.jpg ahi), asi que un barrido por edad a secas se llevaria cosas vivas.
+(def image-name-rx #"^tg-\d+-[0-9a-f]{8}\.[a-z0-9]{1,5}$")
+
+(defn message-file-id
+  "file_id de la foto mas grande, o del documento. nil si el mensaje no trae archivo."
+  [msg]
+  (or (some->> (:photo msg) (sort-by #(or (:file_size %) 0)) last :file_id)
+      (some-> (:document msg) :file_id)))
+
+(defn- file-path-of [token file-id]
+  (let [url (str base-url token "/getFile")
+        resp @(http/request {:request-method "get" :url url :query-params {:file_id file-id}})]
+    (-> resp :body bs/to-string (json/read-str :key-fn keyword) :result :file_path)))
+
+(defn download-file!
+  "Baja file-id a dir y devuelve la ruta absoluta, o nil si no se pudo."
+  [token file-id dir]
+  (try
+    (if-let [file-path (file-path-of token file-id)]
+      (let [ext  (let [e (S/lower-case (or (last (S/split file-path #"\.")) ""))]
+                   (if (re-matches #"[a-z0-9]{1,5}" e) e "jpg"))
+            name (format "tg-%d-%08x.%s" (System/currentTimeMillis)
+                         (rand-int Integer/MAX_VALUE) ext)
+            dest (io/file dir name)
+            url  (str "https://api.telegram.org/file/bot" token "/" file-path)
+            body (-> @(http/request {:request-method "get" :url url}) :body bs/to-byte-array)]
+        (io/make-parents dest)
+        (io/copy body dest)
+        (log/info :telegram-download (.getPath dest) :bytes (count body))
+        (.getPath dest))
+      (do (log/warn "getFile no devolvio file_path para" file-id) nil))
+    (catch Throwable e
+      ;; getFile no pasa de 20 MB; ahi es donde cae lo que manda alguien con un video.
+      (log/error e "no se pudo bajar" file-id)
+      nil)))
+
+(def ^:const SWEEP-EVERY-MS 3600000)
+(defonce ^:private last-sweep (atom {}))
+
+(defn sweep-images!
+  "Borra de dir los archivos con la forma tg-... mas viejos que max-age-mins.
+   Se rinde solito si ya barrio ese dir en la ultima hora."
+  [dir max-age-mins]
+  (when-not (S/blank? (str dir))
+    (let [now (System/currentTimeMillis)
+          [old _] (swap-vals! last-sweep update dir
+                              (fn [t] (if (or (nil? t) (> (- now t) SWEEP-EVERY-MS)) now t)))
+          prev (get old dir)]
+      (when (or (nil? prev) (> (- now prev) SWEEP-EVERY-MS))
+        (try
+          (let [cutoff (- now (* 60000 (long max-age-mins)))
+                borrados (->> (.listFiles (io/file dir))
+                              (filter #(and (.isFile %)
+                                            (re-matches image-name-rx (.getName %))
+                                            (< (.lastModified %) cutoff)))
+                              (filter #(.delete %))
+                              count)]
+            (when (pos? borrados)
+              (log/info :telegram-sweep dir :borrados borrados)))
+          (catch Throwable e
+            (log/warn e "no se pudo limpiar" dir)))))))
+
 (defn get-message [token chat-ids app instance]
   (loop [[chat-id & remaining] chat-ids]
     (when chat-id
@@ -308,10 +375,20 @@
                robot-info (robot-info-fn)]
            (doseq [message result]
              (log/debug (pr-str [:start-bot-poll message]))
-             (let [{:keys [app instance params] :as parsed} (parser-cmd (get-in message [:message :text]))
+             (let [msg (:message message)
+                   ;; Una foto no trae :text -- el comando viene en :caption.
+                   {:keys [app instance params] :as parsed} (parser-cmd (or (:text msg) (:caption msg)))
+                   file-id (message-file-id msg)
+                   ;; El file_id viaja como un parametro mas y lo baja la operacion,
+                   ;; que es la que tiene configurado el directorio. Aqui no: este
+                   ;; go-loop corre en el pool fijo de core.async y una descarga
+                   ;; lenta detendria el poleo de todos los bots.
+                   params (if file-id
+                            (concat (or params []) [(str FILE-MARK file-id)])
+                            params)
                    stored? (contains? (into #{} (:stored robot-info)) app)
                    running?   (not (nil? (get-in robot-info [:ready app instance])))
-                   chat-id (str (get-in message [:message :chat :id]))]
+                   chat-id (str (:id (:chat msg)))]
                (cond
                  (= app "help")
                  (send-text bot-token chat-id (create-apps-msg-str robot-info))
@@ -328,6 +405,12 @@
 
                  (and stored? (not running?))
                  (send-text bot-token chat-id (str "I'm not running: " (pr-str [app instance]) "!, try /help"))
+
+                 ;; Foto sin pie: no hay a donde mandarla. Antes caia en el
+                 ;; "I don't find: [nil nil]", que no dice que hacer.
+                 (and file-id (nil? parsed))
+                 (send-text bot-token chat-id
+                            "Manda el comando en el pie de foto, p.ej. /get profile 522")
 
                  :OTHERWIZE
                  (send-text bot-token chat-id (str "I don't find: " (pr-str [app instance]) "!, try /help")))))))
