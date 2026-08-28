@@ -45,7 +45,13 @@
   (filter #(= :running (:robot/status %)) (vals (get ready app-name))))
 
 (defn app-params-panel [app editable ready watch-instance-atm open-instances-atm new-instance-atm]
-  (let [regex-inst widgets/NAME-RE]
+  (let [regex-inst widgets/NAME-RE
+        inst-ids (keys (get-in editable [app :instances]))
+        ;; sin entrada en ready es :stopped, igual que en instance-params. Las
+        ;; :transitioning no caen en ninguna de las dos: no hay que picarlas.
+        status-of (fn [inst] (get-in ready [app inst :robot/status] :stopped))
+        running (filter #(= :running (status-of %)) inst-ids)
+        stopped (filter #(= :stopped (status-of %)) inst-ids)]
     ;; v-split entre Application Parameters (arriba) y Application Instances
     ;; (abajo) -- :initial-split 50 arranca a la mitad, y la manija entre
     ;; los dos paneles se puede arrastrar con el mouse para darle mas
@@ -74,7 +80,23 @@
      [re-com/v-box
       :height "100%" :width "100%"
       :children
-      [[re-com/title :label "Application Instances" :class "title"]
+      [[re-com/h-box
+        :class "instance-main"
+        :children
+        [[re-com/title :label "Application Instances" :class "title"]
+         [re-com/gap :size "1em"]
+         [re-com/md-icon-button
+          :md-icon-name "zmdi-play-circle-outline" :class "add-btn"
+          :tooltip "Start all instances"
+          :disabled? (empty? stopped)
+          :on-click (fn [] (doseq [inst stopped]
+                             (re-frame/dispatch [:api/start app inst])))]
+         [re-com/md-icon-button
+          :md-icon-name "zmdi-stop" :class "add-btn"
+          :tooltip "Stop all instances"
+          :disabled? (empty? running)
+          :on-click (fn [] (doseq [inst running]
+                             (re-frame/dispatch [:api/stop app inst])))]]]
        [re-com/h-box
         :class "add-instance"
         :children
