@@ -18,6 +18,14 @@
     param))
 
 
+(defn- substitute
+  "De la llave mas larga a la mas corta: :x-image-path tiene que sustituirse antes
+   que :x, o el prefijo se la come y queda basura pegada."
+  [text substitution-map render]
+  (reduce (fn [result [k v]] (S/replace result (str k) (render v)))
+          text
+          (sort-by (fn [[k _]] (- (count (str k)))) substitution-map)))
+
 (defn contextualize [context text]
   (let [text (if (string? text) text (str text))
         keywords (extract-keywords-seq text)
@@ -32,11 +40,7 @@
     ;(log/debug "\n\n-------------------------------------")
     ;(log/debug :substitution-map (pr-str substitution-map))
     ;(log/debug :text (pr-str text))
-    (reduce-kv
-      (fn [result k v]
-        (S/replace result (str k) (str v)))
-      text
-      substitution-map)))
+    (substitute text substitution-map str)))
 
 (defn contextualize-edn [context text]
   (let [text (if (string? text) text (str text))
@@ -49,11 +53,7 @@
     ;(log/debug "\n\n-------------------------------------")
     ;(log/debug :substitution-map (pr-str substitution-map))
     ;(log/debug :text (pr-str text))
-    (reduce-kv
-      (fn [result k v]
-        (S/replace result (str k) (pr-str v)))
-      text
-      substitution-map)))
+    (substitute text substitution-map pr-str)))
 
 (defn contextualize-integer [context param default]
   (let [contextualized-param (contextualize context param)

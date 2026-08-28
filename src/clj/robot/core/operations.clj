@@ -542,18 +542,27 @@
              chat-tokens (S/split
                           (S/trim
                            (U/contextualize context chat-tokens)) #",")
-             resolve-file (fn [param]
-                            (if-not (S/starts-with? (str param) telegram/FILE-MARK)
-                              param
-                              (let [file-id (subs (str param) (count telegram/FILE-MARK))]
-                                (or (telegram/download-file! bot-token file-id)
-                                    "no-se-pudo-bajar"))))]
+             ;; La imagen no va en los parametros sino aparte, en <you>-image-path:
+             ;; asi el nodo de abajo no tiene que sacarla del split por comas ni
+             ;; cuidar que no se le recorran las posiciones.
+             image-key (keyword (str (name you) "-image-path"))
+             mark? (fn [param] (S/starts-with? (str param) telegram/FILE-MARK))]
          ;(telegram/start-server bot-token)
          (telegram/register-telegram-bot bot-token)
          (telegram/sweep-temp!)
          (if-let [response (telegram/get-message bot-token chat-tokens app instance)]
-           (assoc context you (reduce str (interpose "," (map resolve-file response))))
-           (assoc context you "no cmd available")))))
+           (let [file-id (some #(when (mark? %)
+                                  (subs (str %) (count telegram/FILE-MARK)))
+                               response)
+                 ;; "" y no nil: contextualize deja el :keyword literal cuando el
+                 ;; valor es nil, y telegram-send lo tomaria por una ruta.
+                 path (or (when file-id (telegram/download-file! bot-token file-id)) "")]
+             (-> context
+                 (assoc you (reduce str (interpose "," (remove mark? response))))
+                 (assoc image-key path)))
+           (-> context
+               (assoc you "no cmd available")
+               (assoc image-key ""))))))
    ui])
 
 #_(let [send-chan (chan 10)
