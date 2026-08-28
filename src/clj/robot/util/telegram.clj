@@ -386,7 +386,7 @@
                    file-id (message-file-id msg)
                    ;; Solo el file_id: bajar aqui pararia el poleo de todos los bots.
                    params (if file-id
-                            (concat (or params []) [(str FILE-MARK file-id)])
+                            (vec (concat (or params []) [(str FILE-MARK file-id)]))
                             params)
                    stored? (contains? (into #{} (:stored robot-info)) app)
                    running?   (not (nil? (get-in robot-info [:ready app instance])))
@@ -397,7 +397,11 @@
 
                  (and stored? running? parsed)
                  (let [d-chan (get-or-create-channel-of bot-token chat-id app instance)]
-                   (send-text bot-token chat-id (str "Procesing /" app " " instance " "  params))
+                   (send-text bot-token chat-id
+                              (str "Procesing /" app " " instance
+                                   (let [shown (remove #(S/starts-with? (str %) FILE-MARK) params)]
+                                     (when (seq shown) (str " " (S/join " " shown))))
+                                   (when file-id " +foto")))
                    (>!! d-chan (or params [])))
 
                  (and stored? running?)
