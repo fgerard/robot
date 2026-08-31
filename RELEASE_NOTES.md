@@ -2,6 +2,66 @@
 
 Formato libre, en orden cronológico inverso. Las versiones se taggean en git como `vX.Y.Z`.
 
+## 4.1.0 — 2026-08-31
+
+### Telegram: recibir imágenes
+
+- `telegram-get` ahora acepta fotos. La foto se baja al tmpdir y su ruta queda en una
+  variable aparte, `<nodo>-image-path` (un nodo `:get-request` deja
+  `:get-request-image-path`), y no pegada a los parámetros: como un parámetro más, una
+  foto con caption `/get identifications 5` correría la ruta al lugar del user-id y
+  rompería todo comando posicional al mandar imagen.
+- Sin imagen esa variable queda en `""` y no en `nil`: `contextualize` solo sustituye
+  llaves con valor, así que un `nil` dejaba el `:keyword` literal en el campo y
+  `telegram-send` lo tomaba por una ruta — fallaba `.exists`, se iba por la rama de
+  base64, tronaba y se comía el mensaje entero.
+- El caption del mensaje es el comando; una foto sin caption se ignora.
+- Los comandos ya no necesitan parámetros: `/get help` en vez de `/get help x`.
+
+### Mensajes largos y monoespaciado
+
+- `telegram-send` acepta `format`, con la opción `mono` para mandar en bloque
+  monoespaciado. Ojo al escribirlos: Telegram reacomoda ese bloque a ~47 caracteres y
+  manda el sobrante a la columna 0.
+- Los mensajes largos se paginan en vez de cortarse a 1024 caracteres.
+
+### Temporales en un solo lugar
+
+- Todo lo temporal —las imágenes que llegan, las que se mandan en base64 y los
+  archivos de los nodos `:clojure`— vive en `java.io.tmpdir` con prefijo `robot-`, con
+  un solo barrido cada hora que borra lo que pase de 24 h. Antes eran tres lugares
+  distintos y solo uno se limpiaba.
+- El barrido borra por prefijo y nunca por edad sola: así no puede llevarse nada que
+  no haya creado el robot.
+
+### Núcleo
+
+- El ciclo de estados corre con `send-off` y no con `send`. El pool de `send` es fijo
+  (2+cores) y aquí toda operación bloquea, así que las instancias de más se formaban
+  detrás de una dormida y los pasos tardaban de más sin razón aparente.
+- Arreglado que una instancia se quedara corriendo e inmune a stop, individual o
+  masivo. Se perdía la referencia a su agente por dos vías: `swap!` reintentando
+  `robot-cmd`, que tiene efectos, e `instantiate` rehaciendo `:instances` sin
+  `:inst-agent`. Un agente que no está en el mapa no se puede parar nunca, y encima
+  sigue publicando `:running`, que es lo que se ve en la UI.
+
+### Designer
+
+- La v2 es la oficial; la v1 queda deprecada.
+- Botones para prender y apagar todas las instancias de una app de un golpe.
+- El navegador ya no sirve un esquema de operaciones cacheado.
+- `max-length` y `max-messages` aparecen en el esquema que lee la v2.
+
+### Build
+
+- `build_image.sh` arma imagen local por omisión; `--push` además la sube al registro.
+
+### Al actualizar
+
+- `instance.env` de cada instalación: `VERSION=4.1.0`.
+- Los nodos `:clojure` que creen temporales con `createTempFile` tienen que usar el
+  prefijo `robot-` para que el barrido los alcance; si no, sus archivos se acumulan.
+
 ## 4.0.2 — 2026-08-18
 
 ### Tooling de desarrollo: migración de lein-figwheel a shadow-cljs
