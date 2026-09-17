@@ -2,6 +2,31 @@
 
 Formato libre, en orden cronológico inverso. Las versiones se taggean en git como `vX.Y.Z`.
 
+## 4.1.1 — 2026-09-17
+
+### La zona horaria del contenedor
+
+`TIMEZONE` sólo llegaba a la JVM, como `-Duser.timezone`: el log de la aplicación salía en
+hora local pero el shell del contenedor quedaba en UTC. Los `data/bin/get-*.sh` resuelven
+`--days-ago` y `--months-ago` con `date`, así que corridos dentro del contenedor después de
+las 18:00 locales pedían el día siguiente, mientras los registros que consultan están
+timbrados en hora local.
+
+- La imagen ahora trae `tzdata` y `start.sh` pasa `TZ` además de `TIMEZONE`, así que el
+  shell, los scripts y la JVM coinciden.
+- `TIMEZONE` en `instance.env` tiene que ser un nombre IANA (`America/Mexico_City`). La
+  plantilla traía `GMT-6:00`, que en `TZ` significa UTC+6 porque POSIX invierte el signo:
+  habría dejado el shell 12 horas corrido de la JVM.
+
+### Al actualizar
+
+Hay que reconstruir la imagen — `tzdata` entra en el Dockerfile, no basta con reiniciar el
+contenedor. En las instalaciones ya desplegadas, agregar a `data/start.sh`:
+
+    -e TZ="$TIMEZONE" \
+
+y verificar que `TIMEZONE` en `data/config/instance.env` sea un nombre IANA.
+
 ## 4.1.0 — 2026-08-31
 
 ### Telegram: recibir imágenes

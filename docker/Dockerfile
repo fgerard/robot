@@ -9,7 +9,7 @@ WORKDIR /opt
 # condicionales por TARGETPLATFORM, y ya deja /usr/bin/java y /usr/bin/jar
 # registrados via update-alternatives.
 RUN apt-get update -qq && \
-    apt-get install -y wget iputils-ping curl jq openssh-client openjdk-21-jdk-headless && \
+    apt-get install -y wget iputils-ping curl jq openssh-client tzdata openjdk-21-jdk-headless && \
     ln -s "$(dirname "$(dirname "$(readlink -f "$(which java)")")")" /opt/java && \
     rm -rf /var/lib/apt/lists/*
 

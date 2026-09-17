@@ -68,6 +68,7 @@ DOCKER_ARGS=(
               --add-host=host.docker.internal:host-gateway
               --log-opt max-size=1m
               -e TIMEZONE="$TIMEZONE"
+              -e TZ="$TIMEZONE"
               -e MININUM_MEMORY="$MININUM_MEMORY"
               -e MAXIMUM_MEMORY="$MAXIMUM_MEMORY"
               -e HOSTNAME="$HOSTNAME"
